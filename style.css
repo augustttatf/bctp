@@ -159,7 +159,7 @@ header p {
     background-color: #1e7e34;
 }
 
-/* --- 頁腳 (已修正為置中) --- */
+/* --- 頁腳 (置中修正) --- */
 footer {
     background-color: #333;
     color: #bbb;
@@ -173,34 +173,38 @@ footer {
 /* ====== INDEX.HTML 專用樣式調整 ====== */
 /* ======================================= */
 
+/* 容器樣式 */
 .intro-container {
     padding: 40px 20px; 
     text-align: left; 
-    max-width: 900px; 
-    margin: 80px auto; 
+    max-width: 900px; /* 擴大容器以容納並排元素 */
+    margin: 80px auto; /* 置中容器 */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* 保持卡片陰影效果 */
+    background-color: white; /* 保持白色背景 */
+    border-radius: 10px; /* 保持圓角 */
 }
 
-/* 圖片與文字的左右並排容器 */
+/* 圖片與文字的左右並排容器 (Flexbox) */
 .intro-content-wrapper {
     display: flex; 
-    align-items: center; 
+    align-items: center; /* 垂直居中對齊 */
     gap: 40px; 
     margin-bottom: 40px; 
     flex-wrap: nowrap; 
 }
 
 .intro-image-area {
-    flex: 0 0 auto; 
+    flex: 0 0 auto; /* 圖片區域不佔滿空間，只佔圖片所需空間 */
     text-align: center; 
 }
 .intro-text-area {
-    flex: 1; 
+    flex: 1; /* 文字區域佔用剩餘空間 */
     min-width: 300px; 
 }
 
 /* 圖片放大樣式 */
 .intro-logo {
-    max-width: 350px; /* 圖片寬度 */
+    max-width: 350px; /* 放大圖片尺寸 */
     height: auto;
     display: block; 
     margin: 0 auto; 
@@ -225,7 +229,7 @@ footer {
     border-radius: 5px;
     font-size: 1.5em;
     cursor: pointer;
-    text-decoration: none; 
+    text-decoration: none; /* 移除底線 */
     transition: background-color 0.3s;
     display: inline-block; 
     margin-left: 0; 
@@ -235,10 +239,10 @@ footer {
 }
 
 
-/* 針對小螢幕的調整 (圖片和文字垂直堆疊) */
+/* 針對小螢幕的調整 */
 @media (max-width: 768px) {
     .intro-content-wrapper {
-        flex-direction: column; 
+        flex-direction: column; /* 垂直堆疊 */
         text-align: center; 
     }
     .intro-image-area {

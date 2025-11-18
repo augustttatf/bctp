@@ -1,53 +1,149 @@
-/* 設定整個頁面的基本樣式 */
+/* --- 基礎設定與字體 --- */
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Noto Sans TC', 'Microsoft YaHei', sans-serif; /* 使用清晰的中文無襯線字體 */
     margin: 0;
     padding: 0;
-    background-color: #f0f8ff; /* 淺藍色背景 */
+    background-color: #f4f6f8; /* 淺灰藍色背景 */
     color: #333;
-    text-align: center;
+}
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
 }
 
-/* 標題樣式 */
+/* --- 頂部導航列 --- */
 header {
-    background-color: #4682b4; /* 鋼藍色 */
+    background-color: #004080; /* 深藍色，代表權威 */
     color: white;
     padding: 20px 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    font-weight: 700;
+}
+header p {
+    margin: 5px 0 0;
+    font-size: 1em;
+    opacity: 0.8;
 }
 
-/* 內容區塊樣式 */
-.content-box {
-    width: 80%;
-    margin: 40px auto;
+/* --- 主要內容佈局 (Flexbox/Grid for RWD) --- */
+.main-layout {
+    display: flex;
+    gap: 30px; /* 區塊間距 */
+    padding: 40px 0;
+}
+/* 在手機/小螢幕上將兩欄垂直堆疊 */
+@media (max-width: 900px) {
+    .main-layout {
+        flex-direction: column;
+    }
+}
+
+/* --- 篩選器面板 (左側) --- */
+.filter-panel {
+    flex: 1; /* 佔用 1 單位空間 */
+    background-color: #ffffff;
     padding: 30px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+}
+.filter-panel h2 {
+    color: #0056b3;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+.checkbox-group label {
+    display: block;
+    padding: 12px 0;
+    border-bottom: 1px dashed #eee;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s;
+}
+.checkbox-group label:hover {
+    background-color: #f9f9f9;
+}
+.checkbox-group input[type="checkbox"] {
+    margin-right: 10px;
 }
 
-/* 按鈕樣式 */
-#color-button {
-    background-color: #ff6347; /* 番茄紅 */
+#search-button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+    background-color: #ff6347; /* 警示色：番茄紅 */
     color: white;
     border: none;
-    padding: 10px 20px;
-    margin-top: 15px;
     border-radius: 5px;
+    font-size: 1.1em;
     cursor: pointer;
     transition: background-color 0.3s;
 }
-
-#color-button:hover {
+#search-button:hover {
     background-color: #e55337;
 }
 
-/* 底部樣式 */
+/* --- 結果面板 (右側) --- */
+.results-panel {
+    flex: 2; /* 佔用 2 單位空間，讓結果區更大 */
+}
+.results-panel h2 {
+    color: #444;
+}
+
+/* 卡片與警示訊息樣式 */
+.result-card, .alert-info {
+    background-color: white;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    text-align: left;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.statute-card {
+    border-left: 5px solid #007bff; /* 法律條文使用藍色邊框 */
+}
+.case-card {
+    border-left: 5px solid #dc3545; /* 判例使用紅色邊框強調警示 */
+}
+
+.result-card h3 {
+    margin-top: 0;
+    color: #004080;
+}
+.result-card a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+.result-card a:hover {
+    text-decoration: underline;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* --- 頁腳 --- */
 footer {
-    padding: 10px 0;
     background-color: #333;
     color: #bbb;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 0.9em;
 }

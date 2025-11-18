@@ -32,16 +32,16 @@ header p {
     opacity: 0.8;
 }
 
-/* --- 主要內容佈局 (Flexbox: 解決左右分欄問題) --- */
+/* --- 主要內容佈局 (Flexbox: query.html 使用) --- */
 .main-layout {
-    display: flex; /* 關鍵：啟用 Flexbox 左右分欄 */
+    display: flex; 
     gap: 30px; 
     padding: 40px 0;
     text-align: left; 
 }
 @media (max-width: 900px) {
     .main-layout {
-        flex-direction: column; /* 小螢幕垂直堆疊 */
+        flex-direction: column; 
     }
 }
 
@@ -167,4 +167,31 @@ footer {
     text-align: center;
     padding: 15px 0;
     font-size: 0.9em;
+}
+
+/* ======================================= */
+/* ====== INDEX.HTML 專用樣式調整 ====== */
+/* ======================================= */
+
+/* 讓 intro-container 內的內容全部靠左對齊 */
+.intro-container {
+    text-align: left; 
+}
+.intro-container h1 {
+    font-size: 2.5em;
+    padding: 0;
+}
+/* 讓按鈕靠左 */
+.start-button {
+    display: inline-block; 
+    margin-left: 0; 
+}
+/* 圖片放大並靠左的樣式 */
+.intro-logo {
+    max-width: 250px; /* 放大圖片 */
+    height: auto;
+    margin-bottom: 30px; 
+    display: block; 
+    margin-left: 0; /* 靠左 */
+    margin-right: auto; 
 }

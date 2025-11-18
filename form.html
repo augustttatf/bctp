@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCTP - 反省與回饋表單</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 專門為表單設計的樣式 */
+        .form-panel {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 40px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .form-panel h2 {
+            text-align: center;
+            color: #0056b3;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #444;
+        }
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 95%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+            resize: vertical;
+        }
+        .submit-form-button {
+            width: 100%;
+            padding: 15px;
+            background-color: #28a745; /* 成功色：綠色 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .submit-form-button:hover {
+            background-color: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>BCTP</h1>
+            <p>反省與資料回饋表單</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="form-panel">
+            <h2>霸凌行為反省與回饋表單 (模擬繳回教育部)</h2>
+            [cite_start]<p style="text-align:center; color:#dc3545;">* 填寫此表單是讓霸凌者反省的流程 [cite: 33]。</p>
+            <form>
+                <div class="form-group">
+                    <label for="name">您的姓名/學號 (必填):</label>
+                    <input type="text" id="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reflection">反省內容 (請詳細說明您在查詢系統中學到了什麼，以及未來如何改進):</label>
+                    <textarea id="reflection" rows="8" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="agreement">我確認我已閱讀並理解法律後果:</label>
+                    <input type="checkbox" id="agreement" required> (勾選)
+                </div>
+
+                <button type="submit" class="submit-form-button">提交反省表單 &rarr;</button>
+            </form>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 BCTP 專題範例</p>
+    </footer>
+</body>
+</html>

@@ -13,7 +13,7 @@ body {
     padding: 0 15px;
 }
 
-/* --- 頂部導航列 (移除置中設定) --- */
+/* --- 頂部導航列 --- */
 header {
     background-color: #004080; 
     color: white;
@@ -163,7 +163,7 @@ header p {
 footer {
     background-color: #333;
     color: #bbb;
-    text-align: left; /* 讓頁腳也靠左 */
+    text-align: left; 
     padding: 15px 0;
     font-size: 0.9em;
 }
@@ -174,32 +174,33 @@ footer {
 /* ======================================= */
 
 .intro-container {
-    padding: 40px 20px; /* 調整內邊距 */
-    text-align: left; /* 容器內容靠左 */
+    padding: 40px 20px; 
+    text-align: left; 
+    max-width: 900px; 
+    margin: 80px auto; 
 }
 
-/* 新增：圖片與文字的左右並排容器 */
+/* 圖片與文字的左右並排容器 */
 .intro-content-wrapper {
-    display: flex; /* 啟用 Flexbox */
-    align-items: center; /* 垂直居中對齊圖片和文字 */
-    gap: 40px; /* 圖片和文字之間的間距 */
-    margin-bottom: 40px; /* 整個區塊與下方按鈕的間距 */
-    flex-wrap: wrap; /* 小螢幕時允許換行 */
+    display: flex; 
+    align-items: center; 
+    gap: 40px; 
+    margin-bottom: 40px; 
+    flex-wrap: nowrap; 
 }
 
 .intro-image-area {
-    flex: 0 0 auto; /* 圖片區域不縮放 */
-    padding-right: 20px; /* 圖片右側的額外間距 */
-    text-align: center; /* 圖片在自己的區域中居中 */
+    flex: 0 0 auto; 
+    text-align: center; 
 }
 .intro-text-area {
-    flex: 1; /* 文字區域佔用剩餘空間 */
-    min-width: 300px; /* 確保文字區域在縮小屏幕時有最小寬度 */
+    flex: 1; 
+    min-width: 300px; 
 }
 
-/* 圖片樣式 */
+/* 1. 圖片放大樣式 */
 .intro-logo {
-    max-width: 350px; /* <--- 請將這裡改為 350px (或您想要的更大數值) */
+    max-width: 350px; /* 放大圖片尺寸 */
     height: auto;
     display: block; 
     margin: 0 auto; 
@@ -209,36 +210,48 @@ footer {
     font-size: 2.5em;
     padding: 0;
     margin-top: 0;
-    margin-bottom: 15px; /* 標題下方間距 */
+    margin-bottom: 15px; 
 }
 .intro-container p {
-    margin-bottom: 25px; /* 段落下方間距 */
+    margin-bottom: 25px; 
 }
 
-/* 按鈕樣式 (不需要修改，因為在 .intro-text-area 內部) */
+/* 2. 按鈕化超連結樣式 */
 .start-button {
+    padding: 15px 30px;
+    background-color: #ff6347; /* 橘色背景 */
+    color: white; /* 白色文字 */
+    border: none;
+    border-radius: 5px;
+    font-size: 1.5em;
+    cursor: pointer;
+    text-decoration: none; /* 移除超連結底線 */
+    transition: background-color 0.3s;
     display: inline-block; 
     margin-left: 0; 
 }
+.start-button:hover {
+    background-color: #e55337; /* 懸停變深 */
+}
+
 
 /* 針對小螢幕的調整 (圖片和文字垂直堆疊) */
 @media (max-width: 768px) {
     .intro-content-wrapper {
-        flex-direction: column; /* 小螢幕時垂直堆疊 */
-        text-align: center; /* 圖片和文字都居中 */
+        flex-direction: column; 
+        text-align: center; 
     }
     .intro-image-area {
-        padding-right: 0; /* 移除圖片右側間距 */
-        margin-bottom: 20px; /* 圖片下方間距 */
+        margin-bottom: 20px; 
     }
     .intro-text-area {
-        text-align: center; /* 文字居中 */
+        text-align: center; 
     }
     .intro-container h1 {
-        font-size: 2em; /* 小螢幕標題字體縮小 */
+        font-size: 2em; 
     }
     .start-button {
-        margin-left: auto; /* 按鈕居中 */
+        margin-left: auto; 
         margin-right: auto;
     }
 }

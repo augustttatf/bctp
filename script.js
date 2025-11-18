@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 檢查目前是否在 query.html 頁面，因為 script.js 僅服務此頁面
+    // 檢查是否有查詢按鈕，確保程式碼只在 query.html 執行
     if (document.getElementById('search-button')) {
         const searchButton = document.getElementById('search-button');
         const checkboxes = document.querySelectorAll('input[name="action"]');
@@ -26,6 +26,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 statuteSummary: '意圖為自己或第三人不法之所有，以恐嚇危害安全之方法，得財產者，處六月以上五年以下有期徒刑。',
                 caseSummary: '真實判例摘要：某學生團體長期威脅低年級同學交出零用錢，經家長報案後，少年法庭裁定保護管束。',
                 compensation: '民事判賠金額：新臺幣 12 萬元整。'
+            },
+            'cyber-harassment': {
+                statute: '民法第 184 條 侵權行為 及 少年事件處理法',
+                statuteSummary: '持續性網路騷擾已構成侵害他人隱私與精神損害，家長需負擔連帶賠償責任，學生則依少事法處置。',
+                caseSummary: '真實判例摘要：某國中生長期以訊息騷擾同學，導致同學憂鬱，法院判決父母賠償並要求學生接受輔導。',
+                compensation: '民事判賠金額：新臺幣 7 萬元整。'
             }
         };
 
@@ -35,10 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
             statuteResult.classList.add('hidden');
             caseResult.classList.add('hidden');
 
-            // 檢查被勾選的選項
             let selectedAction = null;
             checkboxes.forEach(checkbox => {
-                // 由於這是原型，我們只取第一個被勾選的選項來展示結果
                 if (checkbox.checked && !selectedAction) {
                     selectedAction = checkbox.value;
                 }
@@ -58,9 +62,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 caseResult.classList.remove('hidden');
 
             } else {
-                // 如果沒有勾選，或勾選的項目沒有模擬資料
+                // 如果沒有勾選
                 initialMessage.classList.remove('hidden');
-                initialMessage.querySelector('p').textContent = '請至少勾選一個行為來查看後果警示，或您勾選的行為暫無模擬數據。';
+                initialMessage.querySelector('p').textContent = '請至少勾選一個行為來查看後果警示。';
             }
         });
     }

@@ -43,13 +43,14 @@
                 <p>請在左側勾選行為標籤，結果將即時顯示相關法律條文與判例。</p>
 
                 <div id="results-area">
-                    <div class="alert-info">
-                        請在左側勾選一項或多項行為，結果將會即時呈現。
-                    </div>
-                    </div>
+                    <div id="statute-results"></div>
+                    <div id="case-results"></div>
+                </div>
             </div>
             
-        </div> <div class="button-footer">
+        </div> 
+
+        <div class="button-footer">
             <a href="form.html" class="submit-button">下一步：反思與通報表單 &rarr;</a>
         </div>
     </main>
@@ -61,7 +62,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const filterContainer = document.getElementById('behavior-filters');
-            const resultsArea = document.getElementById('results-area');
+            const statuteResults = document.getElementById('statute-results'); // 新增：條文區 DOM
+            const caseResults = document.getElementById('case-results');       // 新增：判例區 DOM
             const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
 
             // 預設的結果數據庫 (用來模擬資料庫查詢結果)
@@ -69,35 +71,42 @@
                 'physical-injury': {
                     title: '法律條文卡片 (傷害罪)',
                     statute: '刑法第 277 條：傷害人之身體或健康者，處五年以下有期徒刑、拘役或五十萬元以下罰金。',
-                    case: '真實判例卡片 (民事賠償)：臺北地方法院判決，因肢體衝突造成受害者輕微腦震盪，判賠新臺幣 35 萬元。'
+                    caseTitle: '真實判例卡片 (民事賠償)：臺北地方法院判決，',
+                    caseContent: '因肢體衝突造成受害者輕微腦震盪，判賠新臺幣 35 萬元。'
                 },
                 'online-slander': {
                     title: '法律條文卡片 (誹謗罪)',
                     statute: '刑法第 310 條：意圖散布於眾，而指摘或傳述足以損害他人名譽之事者，處二年以下有期徒刑、拘役或一萬元以下罰金。',
-                    case: '真實判例卡片 (民事賠償)：於社交平台發布不實言論，經法院認定侵害名譽，判賠新臺幣 15 萬元並須刊登道歉啟事。'
+                    caseTitle: '真實判例卡片 (民事賠償)：',
+                    caseContent: '於社交平台發布不實言論，經法院認定侵害名譽，判賠新臺幣 15 萬元並須刊登道歉啟事。'
                 },
                 'money-extortion': {
                     title: '法律條文卡片 (恐嚇取財罪)',
                     statute: '刑法第 346 條：意圖為自己或第三人不法之所有，以恐嚇危害安全之方法取得他人財物者，處六月以上五年以下有期徒刑。',
-                    case: '真實判例卡片 (刑事處分)：少年甲脅迫同學交出虛擬寶物，經少年法庭裁定交付保護管束並輔導。'
+                    caseTitle: '真實判例卡片 (刑事處分)：',
+                    caseContent: '少年甲脅迫同學交出虛擬寶物，經少年法庭裁定交付保護管束並輔導。'
                 },
                 'psychological-damage': {
                     title: '法律條文卡片 (強制罪/精神損害)',
                     statute: '民法第 184 條：因故意或過失，不法侵害他人之權利者，負損害賠償責任。 (含精神損害賠償)',
-                    case: '真實判例卡片 (精神慰撫金)：長期密集以言語和訊息騷擾同學，造成被害人嚴重焦慮及就醫紀錄，判處支付精神慰撫金新臺幣 8 萬元。'
+                    caseTitle: '真實判例卡片 (精神慰撫金)：',
+                    caseContent: '長期密集以言語和訊息騷擾同學，造成被害人嚴重焦慮及就醫紀錄，判處支付精神慰撫金新臺幣 8 萬元。'
                 }
             };
 
             // 核心功能：即時更新結果
             function updateResults() {
+                // 找出所有被勾選的項目
                 const checkedValues = Array.from(checkboxes)
                     .filter(cb => cb.checked)
                     .map(cb => cb.value);
 
-                resultsArea.innerHTML = ''; 
+                statuteResults.innerHTML = ''; // 清空條文區
+                caseResults.innerHTML = '';    // 清空判例區
 
                 if (checkedValues.length === 0) {
-                    resultsArea.innerHTML = `
+                    // 如果沒有勾選任何項目，顯示初始提示
+                    statuteResults.innerHTML = `
                         <div class="alert-info">
                             請在左側勾選一項或多項行為，結果將會即時呈現。
                         </div>
@@ -105,20 +114,33 @@
                     return;
                 }
 
+                // 創建分隔線標題
+                if (checkedValues.length > 0) {
+                    caseResults.innerHTML = '<h3>真實判例警示</h3>';
+                }
+
+                // 根據勾選的項目分別生成條文卡片和判例卡片
                 checkedValues.forEach(value => {
                     const data = mockData[value];
                     if (data) {
-                        const cardHtml = `
+                        // 1. 條文卡片 (追加到 statuteResults)
+                        const statuteHtml = `
                             <div class="result-card statute-card">
                                 <h3>${data.title}</h3>
                                 <p>${data.statute}</p>
                             </div>
+                        `;
+                        statuteResults.innerHTML += statuteHtml;
+                        
+                        // 2. 判例卡片 (追加到 caseResults)
+                        const caseHtml = `
                             <div class="result-card case-card">
-                                <h3>${data.case}</h3>
+                                <h3>${data.caseTitle}</h3>
+                                <p>${data.caseContent}</p>
                                 <p>點擊查看 <a href="https://law.judicial.gov.tw/FINT/default.aspx" target="_blank">司法院法學資料檢索系統 &rarr;</a></p>
                             </div>
                         `;
-                        resultsArea.innerHTML += cardHtml;
+                        caseResults.innerHTML += caseHtml;
                     }
                 });
             }
@@ -128,7 +150,7 @@
                 checkbox.addEventListener('change', updateResults);
             });
 
-            // 首次載入時執行一次
+            // 首次載入時執行一次，確保初始狀態正確
             updateResults();
         });
     </script>

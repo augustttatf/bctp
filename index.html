@@ -5,6 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BCTP - 霸凌行為後果透明化資訊平台</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* 專門為首頁設計的樣式 */
+        .intro-container {
+            text-align: center;
+            padding: 80px 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 80px auto;
+        }
+        .intro-container h1 {
+            color: #004080;
+            font-size: 3em;
+        }
+        .intro-container p {
+            font-size: 1.2em;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+        .start-button {
+            padding: 15px 30px;
+            background-color: #ff6347; /* 威懾色 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.5em;
+            cursor: pointer;
+            text-decoration: none; /* 移除超連結底線 */
+            transition: background-color 0.3s;
+        }
+        .start-button:hover {
+            background-color: #e55337;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -14,49 +50,20 @@
         </div>
     </header>
 
-    <main class="container">
-        <div class="main-layout">
-            
-            <aside class="filter-panel">
-                <h2>步驟一：行為勾選</h2>
-                <p class="instruction">請勾選發生的行為，查看對應的法律後果。</p>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" name="action" value="physical-minor"> 肢體推打 / 造成輕傷</label>
-                    <label><input type="checkbox" name="action" value="verbal-reputation"> 網路散布謠言 / 損害名譽</label>
-                    <label><input type="checkbox" name="action" value="extortion"> 威脅取財 / 強迫交付金錢</label>
-                    <label><input type="checkbox" name="action" value="cyber-harassment"> 密集訊息騷擾 / 造成精神壓力</label>
-                </div>
-                <button id="search-button">查詢後果</button>
-            </aside>
-
-            <section class="results-panel">
-                <h2>步驟二：後果警示</h2>
-                
-                <div id="initial-message" class="alert-info">
-                    <p>請在左側勾選行為並點擊「查詢後果」，即可顯示相關法律條文與判例。</p>
-                </div>
-
-                <div id="statute-result" class="result-card statute-card hidden">
-                    <h3>法律條文卡片 (刑法/民法/少事法)</h3>
-                    <p class="statute-title"></p>
-                    <p class="statute-summary"></p>
-                    <a href="https://law.moj.gov.tw/Default.aspx" target="_blank">查看全國法規資料庫完整條文 &rarr;</a>
-                </div>
-
-                <div id="case-result" class="result-card case-card hidden">
-                    <h3>真實判例卡片 (威懾力)</h3>
-                    <p class="case-summary"></p>
-                    <p class="case-compensation"></p>
-                    <a href="https://law.judicial.gov.tw/" target="_blank">查看司法院法學資料檢索系統 &rarr;</a>
-                </div>
-            </section>
+    <main>
+        <div class="intro-container">
+            <h1>法律認知的斷層，不該成為犯行的藉口。</h1>
+            <p>
+                [cite_start]本平台透過資訊科技，將隱藏在判決書中的法律代價透明化 [cite: 8]。
+                [cite_start]我們的作用是讓使用者可以直接看到 **「行為」與「後果」** 的連結 [cite: 34]，
+                [cite_start]提供一個低門檻、高威懾的法律風險教育平台 [cite: 37]。
+            </p>
+            <a href="query.html" class="start-button">開始查詢：查看行為後果 &rarr;</a>
         </div>
     </main>
     
     <footer>
-        <p>&copy; 2024 BCTP 霸凌行為後果透明化資訊平台 | 專題範例</p>
+        <p>&copy; 2024 BCTP 專題範例</p>
     </footer>
-
-    <script src="script.js"></script>
 </body>
 </html>

@@ -3,25 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的三要素網頁</title>
+    <title>BCTP - 霸凌行為後果透明化資訊平台</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>歡迎來到我的 GitHub Pages！</h1>
+        <div class="container">
+            <h1>BCTP</h1>
+            <p>霸凌行為後果透明化資訊平台</p>
+        </div>
     </header>
 
-    <section class="content-box">
-        <h2>網頁三要素展示</h2>
-        <p>這是一個包含結構 (HTML)、樣式 (CSS) 和互動 (JavaScript) 的網頁範例。</p>
-        
-        <button id="color-button">點我改變文字顏色</button>
-        
-        <p id="demo-text">現在試試看點擊上面的按鈕。</p>
-    </section>
+    <main class="container">
+        <div class="main-layout">
+            
+            <aside class="filter-panel">
+                <h2>步驟一：行為勾選</h2>
+                <p class="instruction">請勾選發生的行為，查看對應的法律後果。</p>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="action" value="physical-minor"> 肢體推打 / 造成輕傷</label>
+                    <label><input type="checkbox" name="action" value="verbal-reputation"> 網路散布謠言 / 損害名譽</label>
+                    <label><input type="checkbox" name="action" value="extortion"> 威脅取財 / 強迫交付金錢</label>
+                    <label><input type="checkbox" name="action" value="cyber-harassment"> 密集訊息騷擾 / 造成精神壓力</label>
+                </div>
+                <button id="search-button">查詢後果</button>
+            </aside>
 
+            <section class="results-panel">
+                <h2>步驟二：後果警示</h2>
+                
+                <div id="initial-message" class="alert-info">
+                    <p>請在左側勾選行為並點擊「查詢後果」，即可顯示相關法律條文與判例。</p>
+                </div>
+
+                <div id="statute-result" class="result-card statute-card hidden">
+                    <h3>法律條文卡片 (刑法/民法/少事法)</h3>
+                    <p class="statute-title"></p>
+                    <p class="statute-summary"></p>
+                    <a href="#" target="_blank">查看全國法規資料庫完整條文 &rarr;</a>
+                </div>
+
+                <div id="case-result" class="result-card case-card hidden">
+                    <h3>真實判例卡片 (威懾力)</h3>
+                    <p class="case-summary"></p>
+                    <p class="case-compensation"></p>
+                    <a href="#" target="_blank">查看司法院法學資料檢索系統 &rarr;</a>
+                </div>
+            </section>
+        </div>
+    </main>
+    
     <footer>
-        <p>© 2025 GitHub Pages 範例</p>
+        <p>&copy; 2024 BCTP 霸凌行為後果透明化資訊平台 | 專題範例</p>
     </footer>
 
     <script src="script.js"></script>

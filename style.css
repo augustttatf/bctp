@@ -199,10 +199,10 @@ footer {
 
 /* 圖片樣式 */
 .intro-logo {
-    max-width: 250px; /* 控制圖片大小，您可以調整 */
+    max-width: 350px; /* <--- 請將這裡改為 350px (或您想要的更大數值) */
     height: auto;
-    display: block; /* 讓圖片可以應用 margin: auto 居中 */
-    margin: 0 auto; /* 在 intro-image-area 中居中 */
+    display: block; 
+    margin: 0 auto; 
 }
 
 .intro-container h1 {

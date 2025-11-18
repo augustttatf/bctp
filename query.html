@@ -35,9 +35,8 @@
                     <label>
                         <input type="checkbox" name="behavior" value="psychological-damage"> 密集訊息騷擾 / 造成精神壓力
                     </label>
-                    </div>
-                
                 </div>
+            </div>
 
             <div class="results-panel">
                 <h2>步驟二：後果警示 (即時互動)</h2>
@@ -48,12 +47,10 @@
                         請在左側勾選一項或多項行為，結果將會即時呈現。
                     </div>
                     </div>
-                
-                <div class="button-footer">
-                    <a href="form.html" class="submit-button">下一步：反思與通報表單 &rarr;</a>
-                </div>
             </div>
             
+        </div> <div class="button-footer">
+            <a href="form.html" class="submit-button">下一步：反思與通報表單 &rarr;</a>
         </div>
     </main>
     
@@ -93,15 +90,13 @@
 
             // 核心功能：即時更新結果
             function updateResults() {
-                // 找出所有被勾選的項目
                 const checkedValues = Array.from(checkboxes)
                     .filter(cb => cb.checked)
                     .map(cb => cb.value);
 
-                resultsArea.innerHTML = ''; // 清空結果區
+                resultsArea.innerHTML = ''; 
 
                 if (checkedValues.length === 0) {
-                    // 如果沒有勾選任何項目，顯示初始提示
                     resultsArea.innerHTML = `
                         <div class="alert-info">
                             請在左側勾選一項或多項行為，結果將會即時呈現。
@@ -110,7 +105,6 @@
                     return;
                 }
 
-                // 根據勾選的項目生成結果卡片
                 checkedValues.forEach(value => {
                     const data = mockData[value];
                     if (data) {
@@ -134,7 +128,7 @@
                 checkbox.addEventListener('change', updateResults);
             });
 
-            // 首次載入時執行一次，確保初始狀態正確
+            // 首次載入時執行一次
             updateResults();
         });
     </script>

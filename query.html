@@ -62,8 +62,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const filterContainer = document.getElementById('behavior-filters');
-            const statuteResults = document.getElementById('statute-results'); // 新增：條文區 DOM
-            const caseResults = document.getElementById('case-results');       // 新增：判例區 DOM
+            const statuteResults = document.getElementById('statute-results'); 
+            const caseResults = document.getElementById('case-results');       
             const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
 
             // 預設的結果數據庫 (用來模擬資料庫查詢結果)
@@ -114,10 +114,11 @@
                     return;
                 }
 
-                // 創建分隔線標題
-                if (checkedValues.length > 0) {
-                    caseResults.innerHTML = '<h3>真實判例警示</h3>';
-                }
+                // *** 關鍵修正：新增法律條文區的總標題 ***
+                statuteResults.innerHTML = '<h3>相關法律條文</h3>';
+                // *** 判例區的總標題 ***
+                caseResults.innerHTML = '<h3>真實判例警示</h3>';
+                
 
                 // 根據勾選的項目分別生成條文卡片和判例卡片
                 checkedValues.forEach(value => {

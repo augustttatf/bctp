@@ -18,7 +18,8 @@
         }
         .intro-container h1 {
             color: #004080;
-            font-size: 3em;
+            font-size: 2.5em; /* 修正換行問題：字體調小 */
+            padding: 0 10px; 
         }
         .intro-container p {
             font-size: 1.2em;
@@ -28,13 +29,13 @@
         }
         .start-button {
             padding: 15px 30px;
-            background-color: #ff6347; /* 威懾色 */
+            background-color: #ff6347;
             color: white;
             border: none;
             border-radius: 5px;
             font-size: 1.5em;
             cursor: pointer;
-            text-decoration: none; /* 移除超連結底線 */
+            text-decoration: none;
             transition: background-color 0.3s;
         }
         .start-button:hover {
@@ -52,10 +53,10 @@
 
     <main>
         <div class="intro-container">
-            <h2>法律認知的斷層，不該成為犯行的藉口。</h2>
+            <h1>法律認知的斷層，不該成為犯行的藉口。</h1>
             <p>
                 本平台透過資訊科技，將隱藏在判決書中的法律代價透明化、可查詢。
-                我們的作用是讓使用者可以直接看到「行為」與「後果」的連結，
+                我們的作用是讓使用者可以直接看到 **「行為」與「後果」** 的連結，
                 提供一個低門檻、高威懾的法律風險教育平台。
             </p>
             <a href="query.html" class="start-button">開始查詢：查看行為後果 &rarr;</a>

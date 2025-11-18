@@ -1,9 +1,9 @@
 /* --- 基礎設定與字體 --- */
 body {
-    font-family: 'Noto Sans TC', 'Microsoft YaHei', sans-serif; /* 使用清晰的中文無襯線字體 */
+    font-family: 'Noto Sans TC', 'Microsoft YaHei', sans-serif; 
     margin: 0;
     padding: 0;
-    background-color: #f4f6f8; /* 淺灰藍色背景 */
+    background-color: #f4f6f8; 
     color: #333;
 }
 .container {
@@ -15,7 +15,7 @@ body {
 
 /* --- 頂部導航列 --- */
 header {
-    background-color: #004080; /* 深藍色，代表權威 */
+    background-color: #004080; 
     color: white;
     padding: 20px 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -33,24 +33,21 @@ header p {
 }
 
 /* --- 主要內容佈局 (Flexbox: 解決左右分欄問題) --- */
-/* 此 class 僅在 query.html 中使用 */
 .main-layout {
     display: flex; /* 關鍵：啟用 Flexbox 左右分欄 */
     gap: 30px; 
     padding: 40px 0;
-    /* 確保在電腦螢幕上內容從左側開始排版 */
     text-align: left; 
 }
-/* 在手機/小螢幕上將兩欄垂直堆疊 */
 @media (max-width: 900px) {
     .main-layout {
-        flex-direction: column;
+        flex-direction: column; /* 小螢幕垂直堆疊 */
     }
 }
 
 /* --- 篩選器面板 (左側) --- */
 .filter-panel {
-    flex: 1; /* 佔用 1 單位空間 */
+    flex: 1; 
     background-color: #ffffff;
     padding: 30px;
     border-radius: 8px;
@@ -81,7 +78,7 @@ header p {
     width: 100%;
     padding: 15px;
     margin-top: 20px;
-    background-color: #ff6347; /* 警示色：番茄紅 */
+    background-color: #ff6347; 
     color: white;
     border: none;
     border-radius: 5px;
@@ -95,7 +92,7 @@ header p {
 
 /* --- 結果面板 (右側) --- */
 .results-panel {
-    flex: 2; /* 佔用 2 單位空間 */
+    flex: 2; 
 }
 .results-panel h2 {
     color: #444;
@@ -118,10 +115,10 @@ header p {
 }
 
 .statute-card {
-    border-left: 5px solid #007bff; /* 法律條文使用藍色邊框 */
+    border-left: 5px solid #007bff; 
 }
 .case-card {
-    border-left: 5px solid #dc3545; /* 判例使用紅色邊框強調警示 */
+    border-left: 5px solid #dc3545; 
 }
 
 .result-card h3 {
@@ -150,7 +147,7 @@ header p {
 }
 .submit-button {
     padding: 15px 30px;
-    background-color: #28a745; /* 綠色，完成/提交色 */
+    background-color: #28a745; 
     color: white;
     border: none;
     border-radius: 5px;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BCTP - 法規與案例查詢</title>
+    <title>BCTP - 行為後果查詢</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 </head>
@@ -11,50 +11,49 @@
     <header>
         <div class="container">
             <h1>BCTP</h1>
-            <p>法規與案例查詢系統</p>
+            <p>霸凌行為後果透明化資訊平台</p>
         </div>
     </header>
 
-    <main class="container">
-        <div class="main-layout">
+    <main>
+        <div class="container main-layout">
             
-            <aside class="filter-panel">
+            <div class="filter-panel">
                 <h2>步驟一：行為勾選</h2>
-                <p class="instruction">請勾選發生的行為，查看對應的法律後果。</p>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" name="action" value="physical-minor"> 肢體推打 / 造成輕傷</label>
-                    <label><input type="checkbox" name="action" value="verbal-reputation"> 網路散布謠言 / 損害名譽</label>
-                    <label><input type="checkbox" name="action" value="extortion"> 威脅取財 / 強迫交付金錢</label>
-                    <label><input type="checkbox" name="action" value="cyber-harassment"> 密集訊息騷擾 / 造成精神壓力</label>
-                </div>
-                <button id="search-button">查詢後果</button>
-            </aside>
+                <p>勾選觸發法律後果的行為，查看對應的法律後果。</p>
 
-            <section class="results-panel">
-                <h2>步驟二：後果警示</h2>
+                <div class="checkbox-group" id="behavior-filters">
+                    <label>
+                        <input type="checkbox" name="behavior" value="physical-injury"> 肢體推打 / 造成輕傷
+                    </label>
+                    <label>
+                        <input type="checkbox" name="behavior" value="online-slander"> 網路散布謠言 / 損害名譽
+                    </label>
+                    <label>
+                        <input type="checkbox" name="behavior" value="money-extortion"> 威脅取財 / 損毀支付金錢
+                    </label>
+                    <label>
+                        <input type="checkbox" name="behavior" value="psychological-damage"> 密集訊息騷擾 / 造成精神壓力
+                    </label>
+                    </div>
                 
-                <div id="initial-message" class="alert-info">
-                    <p>請在左側勾選行為並點擊「查詢後果」，即可顯示相關法律條文與判例。</p>
                 </div>
 
-                <div id="statute-result" class="result-card statute-card hidden">
-                    <h3>法律條文卡片 (刑法/民法/少事法)</h3>
-                    <p class="statute-title"></p>
-                    <p class="statute-summary"></p>
-                    <a href="https://law.moj.gov.tw/Default.aspx" target="_blank">查看全國法規資料庫完整條文 &rarr;</a>
-                </div>
+            <div class="results-panel">
+                <h2>步驟二：後果警示 (即時互動)</h2>
+                <p>請在左側勾選行為標籤，結果將即時顯示相關法律條文與判例。</p>
 
-                <div id="case-result" class="result-card case-card hidden">
-                    <h3>真實判例卡片 (威懾力)</h3>
-                    <p class="case-summary"></p>
-                    <p class="case-compensation"></p>
-                    <a href="https://law.judicial.gov.tw/" target="_blank">查看司法院法學資料檢索系統 &rarr;</a>
+                <div id="results-area">
+                    <div class="alert-info">
+                        請在左側勾選一項或多項行為，結果將會即時呈現。
+                    </div>
+                    </div>
+                
+                <div class="button-footer">
+                    <a href="form.html" class="submit-button">下一步：反思與通報表單 &rarr;</a>
                 </div>
-            </section>
-        </div>
-
-        <div class="button-footer">
-            <a href="form.html" class="submit-button">完成觀看：填寫反省表單 (繳回教育部) &rarr;</a>
+            </div>
+            
         </div>
     </main>
     
@@ -62,6 +61,82 @@
         <p>BCTP (Bullying Consequence Transparency Platform)</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterContainer = document.getElementById('behavior-filters');
+            const resultsArea = document.getElementById('results-area');
+            const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
+
+            // 預設的結果數據庫 (用來模擬資料庫查詢結果)
+            const mockData = {
+                'physical-injury': {
+                    title: '法律條文卡片 (傷害罪)',
+                    statute: '刑法第 277 條：傷害人之身體或健康者，處五年以下有期徒刑、拘役或五十萬元以下罰金。',
+                    case: '真實判例卡片 (民事賠償)：臺北地方法院判決，因肢體衝突造成受害者輕微腦震盪，判賠新臺幣 35 萬元。'
+                },
+                'online-slander': {
+                    title: '法律條文卡片 (誹謗罪)',
+                    statute: '刑法第 310 條：意圖散布於眾，而指摘或傳述足以損害他人名譽之事者，處二年以下有期徒刑、拘役或一萬元以下罰金。',
+                    case: '真實判例卡片 (民事賠償)：於社交平台發布不實言論，經法院認定侵害名譽，判賠新臺幣 15 萬元並須刊登道歉啟事。'
+                },
+                'money-extortion': {
+                    title: '法律條文卡片 (恐嚇取財罪)',
+                    statute: '刑法第 346 條：意圖為自己或第三人不法之所有，以恐嚇危害安全之方法取得他人財物者，處六月以上五年以下有期徒刑。',
+                    case: '真實判例卡片 (刑事處分)：少年甲脅迫同學交出虛擬寶物，經少年法庭裁定交付保護管束並輔導。'
+                },
+                'psychological-damage': {
+                    title: '法律條文卡片 (強制罪/精神損害)',
+                    statute: '民法第 184 條：因故意或過失，不法侵害他人之權利者，負損害賠償責任。 (含精神損害賠償)',
+                    case: '真實判例卡片 (精神慰撫金)：長期密集以言語和訊息騷擾同學，造成被害人嚴重焦慮及就醫紀錄，判處支付精神慰撫金新臺幣 8 萬元。'
+                }
+            };
+
+            // 核心功能：即時更新結果
+            function updateResults() {
+                // 找出所有被勾選的項目
+                const checkedValues = Array.from(checkboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                resultsArea.innerHTML = ''; // 清空結果區
+
+                if (checkedValues.length === 0) {
+                    // 如果沒有勾選任何項目，顯示初始提示
+                    resultsArea.innerHTML = `
+                        <div class="alert-info">
+                            請在左側勾選一項或多項行為，結果將會即時呈現。
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 根據勾選的項目生成結果卡片
+                checkedValues.forEach(value => {
+                    const data = mockData[value];
+                    if (data) {
+                        const cardHtml = `
+                            <div class="result-card statute-card">
+                                <h3>${data.title}</h3>
+                                <p>${data.statute}</p>
+                            </div>
+                            <div class="result-card case-card">
+                                <h3>${data.case}</h3>
+                                <p>點擊查看 <a href="https://law.judicial.gov.tw/FINT/default.aspx" target="_blank">司法院法學資料檢索系統 &rarr;</a></p>
+                            </div>
+                        `;
+                        resultsArea.innerHTML += cardHtml;
+                    }
+                });
+            }
+
+            // 監聽所有勾選框的狀態變化
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateResults);
+            });
+
+            // 首次載入時執行一次，確保初始狀態正確
+            updateResults();
+        });
+    </script>
 </body>
 </html>

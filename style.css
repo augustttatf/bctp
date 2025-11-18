@@ -19,7 +19,6 @@ header {
     color: white;
     padding: 20px 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    /* 移除 text-align: center; */
 }
 header h1 {
     margin: 0;
@@ -164,7 +163,7 @@ header p {
 footer {
     background-color: #333;
     color: #bbb;
-    /* 移除 text-align: center; 讓內容靠左 */
+    text-align: left; /* 讓頁腳也靠左 */
     padding: 15px 0;
     font-size: 0.9em;
 }
@@ -174,25 +173,72 @@ footer {
 /* ====== INDEX.HTML 專用樣式調整 ====== */
 /* ======================================= */
 
-/* 將 intro-container 內容強制靠左 */
 .intro-container {
-    text-align: left !important; /* 使用 !important 確保覆蓋任何全域置中樣式 */
+    padding: 40px 20px; /* 調整內邊距 */
+    text-align: left; /* 容器內容靠左 */
 }
+
+/* 新增：圖片與文字的左右並排容器 */
+.intro-content-wrapper {
+    display: flex; /* 啟用 Flexbox */
+    align-items: center; /* 垂直居中對齊圖片和文字 */
+    gap: 40px; /* 圖片和文字之間的間距 */
+    margin-bottom: 40px; /* 整個區塊與下方按鈕的間距 */
+    flex-wrap: wrap; /* 小螢幕時允許換行 */
+}
+
+.intro-image-area {
+    flex: 0 0 auto; /* 圖片區域不縮放 */
+    padding-right: 20px; /* 圖片右側的額外間距 */
+    text-align: center; /* 圖片在自己的區域中居中 */
+}
+.intro-text-area {
+    flex: 1; /* 文字區域佔用剩餘空間 */
+    min-width: 300px; /* 確保文字區域在縮小屏幕時有最小寬度 */
+}
+
+/* 圖片樣式 */
+.intro-logo {
+    max-width: 250px; /* 控制圖片大小，您可以調整 */
+    height: auto;
+    display: block; /* 讓圖片可以應用 margin: auto 居中 */
+    margin: 0 auto; /* 在 intro-image-area 中居中 */
+}
+
 .intro-container h1 {
     font-size: 2.5em;
     padding: 0;
+    margin-top: 0;
+    margin-bottom: 15px; /* 標題下方間距 */
 }
-/* 讓按鈕靠左 */
+.intro-container p {
+    margin-bottom: 25px; /* 段落下方間距 */
+}
+
+/* 按鈕樣式 (不需要修改，因為在 .intro-text-area 內部) */
 .start-button {
     display: inline-block; 
     margin-left: 0; 
 }
-/* 圖片放大並靠左的樣式 */
-.intro-logo {
-    max-width: 250px !important; /* 確保放大樣式生效 */
-    height: auto;
-    margin-bottom: 30px; 
-    display: block; 
-    margin-left: 0 !important; /* 確保靠左樣式生效 */
-    margin-right: auto; 
+
+/* 針對小螢幕的調整 (圖片和文字垂直堆疊) */
+@media (max-width: 768px) {
+    .intro-content-wrapper {
+        flex-direction: column; /* 小螢幕時垂直堆疊 */
+        text-align: center; /* 圖片和文字都居中 */
+    }
+    .intro-image-area {
+        padding-right: 0; /* 移除圖片右側間距 */
+        margin-bottom: 20px; /* 圖片下方間距 */
+    }
+    .intro-text-area {
+        text-align: center; /* 文字居中 */
+    }
+    .intro-container h1 {
+        font-size: 2em; /* 小螢幕標題字體縮小 */
+    }
+    .start-button {
+        margin-left: auto; /* 按鈕居中 */
+        margin-right: auto;
+    }
 }

@@ -159,11 +159,11 @@ header p {
     background-color: #1e7e34;
 }
 
-/* --- 頁腳 --- */
+/* --- 頁腳 (已修正為置中) --- */
 footer {
     background-color: #333;
     color: #bbb;
-    text-align: left; 
+    text-align: center; /* 頁腳文字置中 */
     padding: 15px 0;
     font-size: 0.9em;
 }
@@ -198,9 +198,9 @@ footer {
     min-width: 300px; 
 }
 
-/* 1. 圖片放大樣式 */
+/* 圖片放大樣式 */
 .intro-logo {
-    max-width: 350px; /* 放大圖片尺寸 */
+    max-width: 350px; /* 圖片寬度 */
     height: auto;
     display: block; 
     margin: 0 auto; 
@@ -216,22 +216,22 @@ footer {
     margin-bottom: 25px; 
 }
 
-/* 2. 按鈕化超連結樣式 */
+/* 按鈕化超連結樣式 */
 .start-button {
     padding: 15px 30px;
-    background-color: #ff6347; /* 橘色背景 */
-    color: white; /* 白色文字 */
+    background-color: #ff6347; 
+    color: white; 
     border: none;
     border-radius: 5px;
     font-size: 1.5em;
     cursor: pointer;
-    text-decoration: none; /* 移除超連結底線 */
+    text-decoration: none; 
     transition: background-color 0.3s;
     display: inline-block; 
     margin-left: 0; 
 }
 .start-button:hover {
-    background-color: #e55337; /* 懸停變深 */
+    background-color: #e55337; 
 }
 
 

@@ -1,9 +1,9 @@
 /* --- 基礎設定與字體 --- */
 body {
-    font-family: 'Noto Sans TC', 'Microsoft YaHei', sans-serif;
+    font-family: 'Noto Sans TC', 'Microsoft YaHei', sans-serif; /* 使用清晰的中文無襯線字體 */
     margin: 0;
     padding: 0;
-    background-color: #f4f6f8; 
+    background-color: #f4f6f8; /* 淺灰藍色背景 */
     color: #333;
 }
 .container {
@@ -15,7 +15,7 @@ body {
 
 /* --- 頂部導航列 --- */
 header {
-    background-color: #004080; 
+    background-color: #004080; /* 深藍色，代表權威 */
     color: white;
     padding: 20px 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -33,11 +33,12 @@ header p {
 }
 
 /* --- 主要內容佈局 (Flexbox: 解決左右分欄問題) --- */
+/* 此 class 僅在 query.html 中使用 */
 .main-layout {
     display: flex; /* 關鍵：啟用 Flexbox 左右分欄 */
     gap: 30px; 
     padding: 40px 0;
-    /* 確保在電腦螢幕上內容不會居中，而是從左側開始排版 */
+    /* 確保在電腦螢幕上內容從左側開始排版 */
     text-align: left; 
 }
 /* 在手機/小螢幕上將兩欄垂直堆疊 */
@@ -54,7 +55,7 @@ header p {
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-    min-width: 250px; /* 確保最小寬度，看起來像側邊欄 */
+    min-width: 250px; 
 }
 .filter-panel h2 {
     color: #0056b3;
@@ -80,7 +81,7 @@ header p {
     width: 100%;
     padding: 15px;
     margin-top: 20px;
-    background-color: #ff6347; 
+    background-color: #ff6347; /* 警示色：番茄紅 */
     color: white;
     border: none;
     border-radius: 5px;
@@ -94,7 +95,7 @@ header p {
 
 /* --- 結果面板 (右側) --- */
 .results-panel {
-    flex: 2; /* 佔用 2 單位空間，讓結果區更大 */
+    flex: 2; /* 佔用 2 單位空間 */
 }
 .results-panel h2 {
     color: #444;
@@ -117,10 +118,10 @@ header p {
 }
 
 .statute-card {
-    border-left: 5px solid #007bff; 
+    border-left: 5px solid #007bff; /* 法律條文使用藍色邊框 */
 }
 .case-card {
-    border-left: 5px solid #dc3545; /* 強調威懾力 [cite: 14] */
+    border-left: 5px solid #dc3545; /* 判例使用紅色邊框強調警示 */
 }
 
 .result-card h3 {
@@ -140,6 +141,26 @@ header p {
 
 .hidden {
     display: none !important;
+}
+
+/* --- 底部填寫表單按鈕 (query.html) --- */
+.button-footer {
+    text-align: center;
+    padding: 30px 0;
+}
+.submit-button {
+    padding: 15px 30px;
+    background-color: #28a745; /* 綠色，完成/提交色 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+.submit-button:hover {
+    background-color: #1e7e34;
 }
 
 /* --- 頁腳 --- */

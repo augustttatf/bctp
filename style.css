@@ -13,13 +13,13 @@ body {
     padding: 0 15px;
 }
 
-/* --- 頂部導航列 --- */
+/* --- 頂部導航列 (移除置中設定) --- */
 header {
     background-color: #004080; 
     color: white;
     padding: 20px 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    /* 移除 text-align: center; */
 }
 header h1 {
     margin: 0;
@@ -164,18 +164,19 @@ header p {
 footer {
     background-color: #333;
     color: #bbb;
-    text-align: center;
+    /* 移除 text-align: center; 讓內容靠左 */
     padding: 15px 0;
     font-size: 0.9em;
 }
+
 
 /* ======================================= */
 /* ====== INDEX.HTML 專用樣式調整 ====== */
 /* ======================================= */
 
-/* 讓 intro-container 內的內容全部靠左對齊 */
+/* 將 intro-container 內容強制靠左 */
 .intro-container {
-    text-align: left; 
+    text-align: left !important; /* 使用 !important 確保覆蓋任何全域置中樣式 */
 }
 .intro-container h1 {
     font-size: 2.5em;
@@ -188,10 +189,10 @@ footer {
 }
 /* 圖片放大並靠左的樣式 */
 .intro-logo {
-    max-width: 250px; /* 放大圖片 */
+    max-width: 250px !important; /* 確保放大樣式生效 */
     height: auto;
     margin-bottom: 30px; 
     display: block; 
-    margin-left: 0; /* 靠左 */
+    margin-left: 0 !important; /* 確保靠左樣式生效 */
     margin-right: auto; 
 }

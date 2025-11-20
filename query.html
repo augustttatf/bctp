@@ -6,8 +6,7 @@
     <title>BCTP - 行為後果查詢</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
-</head>
-<body>
+</head><body>
     <header>
         <div class="container">
             <h1>BCTP</h1>
@@ -16,33 +15,35 @@
     </header>
 
     <main>
-        <div class="container main-layout">
-            
-            <div class="filter-panel">
-                <h2>步驟一：行為勾選</h2>
-                <p>勾選觸發法律後果的行為，查看對應的法律後果。</p>
+        <div class="container">
+            <div class="main-layout">
+                
+                <div class="filter-panel">
+                    <h2>步驟一：行為勾選</h2>
+                    <p>勾選觸發法律後果的行為，查看對應的法律後果。</p>
 
-                <div class="checkbox-group" id="behavior-filters">
-                    <label><input type="checkbox" name="behavior" value="physical-injury" data-type="1" data-name="肢體推打 / 造成輕傷"> 肢體推打 / 造成輕傷</label>
-                    <label><input type="checkbox" name="behavior" value="online-slander" data-type="2" data-name="網路散布謠言 / 損害名譽"> 網路散布謠言 / 損害名譽</label>
-                    <label><input type="checkbox" name="behavior" value="money-extortion" data-type="3" data-name="威脅取財 / 損毀支付金錢"> 威脅取財 / 損毀支付金錢</label>
-                    <label><input type="checkbox" name="behavior" value="psychological-damage" data-type="4" data-name="密集訊息騷擾 / 造成精神壓力"> 密集訊息騷擾 / 造成精神壓力</label>
-                </div>
-            </div>
-
-            <div class="results-panel">
-                <h2>步驟二：後果警示 (即時互動)</h2>
-                <p>請在左側勾選行為標籤，結果將即時顯示相關法律條文與判例。</p>
-
-                <div id="results-area">
-                    <p id="loading-message">載入法律資料中...</p>
+                    <div class="checkbox-group" id="behavior-filters">
+                        <label><input type="checkbox" name="behavior" value="physical-injury" data-type="1" data-name="肢體推打 / 造成輕傷"> 肢體推打 / 造成輕傷</label>
+                        <label><input type="checkbox" name="behavior" value="online-slander" data-type="2" data-name="網路散布謠言 / 損害名譽"> 網路散布謠言 / 損害名譽</label>
+                        <label><input type="checkbox" name="behavior" value="money-extortion" data-type="3" data-name="威脅取財 / 損毀支付金錢"> 威脅取財 / 損毀支付金錢</label>
+                        <label><input type="checkbox" name="behavior" value="psychological-damage" data-type="4" data-name="密集訊息騷擾 / 造成精神壓力"> 密集訊息騷擾 / 造成精神壓力</label>
                     </div>
-            </div>
-            
-        </div> 
+                </div>
 
-        <div class="button-footer">
-            <a href="form.html" id="next-form-button" class="submit-button">下一步：反思表單 &rarr;</a>
+                <div class="results-panel">
+                    <h2>步驟二：後果警示 (即時互動)</h2>
+                    <p>請在左側勾選行為標籤，結果將即時顯示相關法律條文與判例。</p>
+
+                    <div id="results-area">
+                        <p id="loading-message">載入法律資料中...</p>
+                    </div>
+                </div>
+                
+            </div> 
+
+            <div class="button-footer">
+                <a href="form.html" id="next-form-button" class="submit-button">下一步：反思表單 &rarr;</a>
+            </div>
         </div>
     </main>
     
@@ -52,7 +53,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // *** 🚨 已替換為您提供的 GitHub Raw JSON 連結 ***
+            // *** 您的 GitHub Raw JSON 連結已在此處設定 ***
             const JSON_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/meowmeowmeow.json'; 
             
             const filterContainer = document.getElementById('behavior-filters');
@@ -65,7 +66,6 @@
 
             localStorage.removeItem('selectedBehaviors');
 
-            // --- 載入 JSON 數據 ---
             async function loadLawData() {
                 try {
                     const response = await fetch(JSON_URL);
@@ -74,13 +74,10 @@
                     }
                     const fullData = await response.json();
                     lawData = fullData;
-
-                    // 分離出 LawType = 0 的通用法條
                     generalLaws = lawData.related_statutes_segmented.filter(law => law.LawType === 0);
                     
                     loadingMessage.textContent = '載入完成，請勾選左側行為。';
                     loadingMessage.style.color = '#28a745';
-                    
                     updateResults(); 
 
                 } catch (error) {
@@ -90,7 +87,6 @@
                 }
             }
 
-            // --- 數據查找與顯示邏輯 ---
             function updateResults() {
                 resultsArea.innerHTML = ''; 
                 const selectedLawTypes = new Set(); 
@@ -109,19 +105,19 @@
                     const type = parseInt(cb.getAttribute('data-type'));
                     const name = cb.getAttribute('data-name');
                     selectedLawTypes.add(type);
-                    checkedBehaviorNames.push(name);
+                    checkedBehaviorNames.push(`* ${name}`); // 使用星號作為條列符號
                 });
                 
-                // --- 關鍵步驟：將勾選的行為名稱儲存到 Local Storage ---
-                const selectedBehaviors = checkedBehaviorNames.join('; '); 
+                // 關鍵修正：使用換行符號 (\n) 連接，實現條列式顯示
+                const selectedBehaviors = checkedBehaviorNames.join('\n'); 
                 localStorage.setItem('selectedBehaviors', selectedBehaviors);
 
                 if (loadingMessage) loadingMessage.remove(); 
                 
+                // ... (法律卡片顯示邏輯與先前版本一致) ...
                 let displayedLawIdentifiers = new Set(); 
                 let foundLaws = []; 
 
-                // 1. 查找所有與勾選類型相關的法條
                 lawData.related_statutes_segmented.forEach(law => {
                     if (selectedLawTypes.has(law.LawType) && law.LawType !== 0) {
                         const lawIdentifier = `${law.LawType}-${law.LawNum}`;
@@ -132,7 +128,6 @@
                     }
                 });
 
-                // 2. 加入 LawType=0 的通用法條
                 generalLaws.forEach(law => {
                     const lawIdentifier = `${law.LawType}-${law.LawNum}`;
                     if (!displayedLawIdentifiers.has(lawIdentifier)) {
@@ -141,8 +136,6 @@
                     }
                 });
 
-
-                // 3. 渲染結果
                 if (foundLaws.length === 0) {
                      resultsArea.innerHTML = `<p style="color: red;">抱歉，目前資料庫中未找到與您勾選行為相關的法律條文。</p>`;
                      return;
@@ -151,17 +144,14 @@
                 foundLaws.forEach(law => {
                     const card = document.createElement('div');
                     card.className = 'law-card'; 
-                    
                     let lawTypeLabel = law.LawType === 0 ? '少年事件處理法 (通用處分)' : lawData.LawType_Mapping[law.LawType.toString()] || '相關法條';
-                    
                     let html = `<h3>${lawTypeLabel} - ${law.LawNum || '無條款號'}</h3>`;
                     html += `<p><strong>條文詳情：</strong> ${law.LawDetails || '無詳情'}</p>`;
                     html += `<p class="note"><strong>(相關說明)</strong> ${law.RelevanceNote || '無相關性說明'}</p>`;
-                    
                     card.innerHTML = html;
                     resultsArea.appendChild(card);
                 });
-                
+                // ...
             }
 
             checkboxes.forEach(checkbox => {

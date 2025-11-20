@@ -10,25 +10,40 @@
     <style>
         /* 確保 Label 和 Input 垂直排列 */
         .form-group label {
-            display: block; /* 讓標籤佔滿一行 */
-            margin-bottom: 8px; /* 增加標籤與輸入框的間距 */
-            font-weight: bold; /* 強調欄位名稱 */
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: bold; 
         }
         /* 確保輸入框佔滿父容器寬度 */
         .form-group input[type="text"],
         .form-group textarea {
             width: 100%; 
             padding: 12px;
-            box-sizing: border-box; /* 保持內邊距不撐大寬度 */
+            box-sizing: border-box; 
             border: 1px solid #ccc;
             border-radius: 6px;
         }
 
+        /* 專門為核取方塊設計的樣式調整 */
+        .checkbox-group label {
+            display: flex; /* 使用 Flexbox 讓核取方塊和文字對齊 */
+            align-items: center; 
+            font-weight: normal; 
+            margin-top: 15px; 
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto; /* 重設寬度 */
+            margin-right: 10px;
+            /* 讓核取方塊本身大一點，容易點擊 */
+            transform: scale(1.3); 
+        }
+
+
         /* 按鈕區塊修正：實現按鈕等寬、對齊 */
         .button-footer {
             display: flex;
-            justify-content: flex-end; /* 將按鈕靠右對齊 */
-            gap: 15px; /* 按鈕間的間距 */
+            justify-content: flex-end; 
+            gap: 15px; 
             margin-top: 30px;
         }
 
@@ -40,18 +55,18 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            min-width: 150px; /* 確保兩個按鈕有相同的最小寬度 */
+            min-width: 150px; 
         }
 
         /* 提交按鈕樣式 */
         .submit-button {
-            background-color: #28a745; /* 綠色 */
+            background-color: #28a745; 
             color: white;
         }
         
         /* 返回按鈕樣式（輔助按鈕） */
         .back-button {
-            background-color: #6c757d; /* 灰色 */
+            background-color: #6c757d; 
             color: white;
         }
 
@@ -88,6 +103,14 @@
                     <textarea id="reflection-text" required rows="8" 
                         placeholder="請寫下您對於可能面臨的法律責任、賠償的看法與深入的反省..."></textarea>
                 </div>
+                
+                <div class="form-group checkbox-group">
+                    <label for="confirmation-checkbox">
+                        <input type="checkbox" id="confirmation-checkbox" name="confirmation" required>
+                        我已確認上述填寫的資料皆無錯誤，並瞭解提交後的法律後果。
+                    </label>
+                </div>
+
 
                 <div class="button-footer">
                     <button type="button" class="back-button" onclick="window.location.href='query.html'">返回查詢頁面</button>
@@ -104,12 +127,22 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // *** 🚨 替換點：請將此處替換為您部署的 Google Apps Script Web App URL ***
-            const GAS_URL = 'https://script.google.com/macros/s/AKfycbw4qpHBbdHgLZ62YuDUp1rUg0eeUr__py3PhsfiydmrAQd-t9I9qAEuUl_25sxnwNqghQ/exec'; 
+            const GAS_URL = '貼上您部署的 Web App URL (以 /exec 結尾)'; 
             
             const form = document.getElementById('reflection-form');
             const submitButton = document.getElementById('submit-button');
+            const confirmationCheckbox = document.getElementById('confirmation-checkbox');
+
 
             form.addEventListener('submit', function(e) {
+                // 原生的 required 屬性會處理未勾選時的瀏覽器提示
+                // 但為了更強大的檢查，我們在這裡也做一次額外檢查
+                if (!confirmationCheckbox.checked) {
+                    alert('請先勾選「我已確認資料無誤」才能提交表單。');
+                    e.preventDefault(); // 阻止表單提交
+                    return;
+                }
+                
                 e.preventDefault(); 
                 
                 if (!submitButton) return;
@@ -121,10 +154,10 @@
                 const studentName = document.getElementById('student-name').value;
                 const reflection = document.getElementById('reflection-text').value;
                 
-                // 2. 從 Local Storage 讀取上一頁的行為數據 (確保數據回傳)
+                // 2. 從 Local Storage 讀取上一頁的行為數據
                 const selectedBehaviors = localStorage.getItem('selectedBehaviors') || '無紀錄';
 
-                // 3. 準備 JSON 格式的數據 (欄位名稱與 GAS 腳本中的 data.xxx 完全一致)
+                // 3. 準備 JSON 格式的數據 
                 const formData = {
                     school: school,
                     studentName: studentName,
@@ -147,6 +180,8 @@
                     form.reset();
                     submitButton.textContent = '✅ 已完成提交';
                     submitButton.disabled = true;
+                    // 清除 Local Storage 以便下次使用
+                    localStorage.removeItem('selectedBehaviors'); 
                 })
                 .catch(error => {
                     console.error('發送數據時發生錯誤:', error);

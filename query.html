@@ -56,7 +56,7 @@
             const filterContainer = document.getElementById('behavior-filters');
             const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
 
-            // 確保每次加載頁面時，清除 Local Storage 以防止殘留數據，直到用戶勾選
+            // 確保每次加載頁面時，清除 Local Storage 以防止殘留數據
             localStorage.removeItem('selectedBehaviors');
 
             function updateResults() {
@@ -66,21 +66,19 @@
 
                 if (checkedValues.length === 0) {
                     localStorage.removeItem('selectedBehaviors'); 
-                    // 這裡應放置您顯示「請勾選行為」的邏輯
                     return;
                 }
                 
                 let behaviorNames = [];
                 checkedValues.forEach(value => {
                     const labelElement = filterContainer.querySelector(`input[value="${value}"]`).parentElement;
+                    // 將勾選的行為名稱收集起來
                     behaviorNames.push(labelElement ? labelElement.textContent.trim() : value);
                 });
                 
                 // --- 關鍵步驟：將勾選的行為名稱儲存到 Local Storage ---
                 const selectedBehaviors = behaviorNames.join('; '); 
                 localStorage.setItem('selectedBehaviors', selectedBehaviors);
-                
-                // 這裡應放置您顯示法律結果和判例的邏輯
             }
 
             checkboxes.forEach(checkbox => {

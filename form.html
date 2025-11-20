@@ -22,23 +22,23 @@
                 <p>請您針對先前選擇的行為，認真寫下反思內容。您的反思將被記錄以供輔導參考。</p>
                 
                 <div id="selected-behaviors-display" style="margin-bottom: 20px; padding: 15px; background-color: #eef; border-radius: 4px; border-left: 5px solid #007bff;">
-                    <strong>您勾選的行為：</strong> <span id="behaviors-text">（正在載入...）</span>
+                    <strong>您勾選的行為：</strong> <pre id="behaviors-text" style="margin: 0; white-space: pre-wrap;"></pre>
                 </div>
 
                 <form id="reflection-form">
                     <div class="form-group">
-                        <label for="school">學校名稱：</label>
-                        <input type="text" id="school" name="school" required placeholder="請輸入您的學校名稱">
+                        <label for="school">學校名稱 (必填)：</label>
+                        <input type="text" id="school" name="school" required placeholder="例如：某某高職 / 某某國中">
                     </div>
 
                     <div class="form-group">
-                        <label for="studentName">姓名 (或代號)：</label>
-                        <input type="text" id="studentName" name="studentName" required placeholder="請輸入您的姓名或輔導代號">
+                        <label for="studentName">姓名 (必填)：</label>
+                        <input type="text" id="studentName" name="studentName" required placeholder="請輸入您的真實姓名或輔導代號">
                     </div>
 
                     <div class="form-group">
-                        <label for="reflection">反省內容 (請至少填寫 50 字)：</label>
-                        <textarea id="reflection" name="reflection" rows="8" required placeholder="請寫下您對所選行為的深刻反思、對受害者的歉意，以及未來如何改進的計劃。"></textarea>
+                        <label for="reflection">反省內容 (必填)：</label>
+                        <textarea id="reflection" name="reflection" rows="8" required placeholder="請寫下您對可能面臨的法律責任和賠償的看法與反省..."></textarea>
                     </div>
 
                     <div class="button-footer">
@@ -64,6 +64,7 @@
             const selectedBehaviors = localStorage.getItem('selectedBehaviors');
 
             if (selectedBehaviors) {
+                // 顯示條列式數據
                 behaviorsText.textContent = selectedBehaviors;
             } else {
                 behaviorsText.textContent = '未勾選任何行為。請返回查詢頁面。';
@@ -71,6 +72,7 @@
             }
 
 
+            // 2. 表單提交處理
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
@@ -78,14 +80,12 @@
                     school: document.getElementById('school').value,
                     studentName: document.getElementById('studentName').value,
                     reflection: document.getElementById('reflection').value,
-                    behaviors: selectedBehaviors || '未勾選行為'
+                    // 將換行符號替換成 GAS 友善的分隔符號 (例如：分號 + 空格)
+                    behaviors: selectedBehaviors ? selectedBehaviors.replace(/\n/g, '; ') : '未勾選行為'
                 };
-
-                if (formData.reflection.length < 50) {
-                    alert('反思內容至少需要 50 個字！');
-                    return;
-                }
                 
+                // *** 移除字數限制驗證 ***
+
                 const submitButton = form.querySelector('.submit-button');
                 submitButton.textContent = '提交中...';
                 submitButton.disabled = true;

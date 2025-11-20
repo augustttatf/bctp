@@ -23,10 +23,10 @@
                 <p>勾選觸發法律後果的行為，查看對應的法律後果。</p>
 
                 <div class="checkbox-group" id="behavior-filters">
-                    <label><input type="checkbox" name="behavior" value="physical-injury"> 肢體推打 / 造成輕傷</label>
-                    <label><input type="checkbox" name="behavior" value="online-slander"> 網路散布謠言 / 損害名譽</label>
-                    <label><input type="checkbox" name="behavior" value="money-extortion"> 威脅取財 / 損毀支付金錢</label>
-                    <label><input type="checkbox" name="behavior" value="psychological-damage"> 密集訊息騷擾 / 造成精神壓力</label>
+                    <label><input type="checkbox" name="behavior" value="physical-injury" data-type="1" data-name="肢體推打 / 造成輕傷"> 肢體推打 / 造成輕傷</label>
+                    <label><input type="checkbox" name="behavior" value="online-slander" data-type="2" data-name="網路散布謠言 / 損害名譽"> 網路散布謠言 / 損害名譽</label>
+                    <label><input type="checkbox" name="behavior" value="money-extortion" data-type="3" data-name="威脅取財 / 損毀支付金錢"> 威脅取財 / 損毀支付金錢</label>
+                    <label><input type="checkbox" name="behavior" value="psychological-damage" data-type="4" data-name="密集訊息騷擾 / 造成精神壓力"> 密集訊息騷擾 / 造成精神壓力</label>
                 </div>
             </div>
 
@@ -35,15 +35,14 @@
                 <p>請在左側勾選行為標籤，結果將即時顯示相關法律條文與判例。</p>
 
                 <div id="results-area">
-                    <div id="statute-results"></div>
-                    <div id="case-results"></div>
-                </div>
+                    <p id="loading-message">載入法律資料中...</p>
+                    </div>
             </div>
             
         </div> 
 
         <div class="button-footer">
-            <a href="form.html" class="submit-button">下一步：反思表單 &rarr;</a>
+            <a href="form.html" id="next-form-button" class="submit-button">下一步：反思表單 &rarr;</a>
         </div>
     </main>
     
@@ -53,38 +52,125 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // *** 🚨 替換點：請將此處替換為您的 GitHub meowmeowmeow.json 原始檔案連結 ***
+            const JSON_URL = '貼上您的 GitHub meowmeowmeow.json 原始檔案連結'; 
+            
             const filterContainer = document.getElementById('behavior-filters');
+            const resultsArea = document.getElementById('results-area');
+            const loadingMessage = document.getElementById('loading-message');
             const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
+            
+            let lawData = { related_statutes_segmented: [], LawType_Mapping: {} }; // 儲存載入的 JSON 數據
+            let generalLaws = []; // 儲存 LawType=0 的通用法條
 
-            // 確保每次加載頁面時，清除 Local Storage 以防止殘留數據
             localStorage.removeItem('selectedBehaviors');
 
-            function updateResults() {
-                const checkedValues = Array.from(checkboxes)
-                    .filter(cb => cb.checked)
-                    .map(cb => cb.value);
+            // --- 載入 JSON 數據 ---
+            async function loadLawData() {
+                try {
+                    const response = await fetch(JSON_URL);
+                    if (!response.ok) {
+                        throw new Error(`HTTP 錯誤! 狀態碼: ${response.status}`);
+                    }
+                    const fullData = await response.json();
+                    lawData = fullData;
 
-                if (checkedValues.length === 0) {
+                    // 分離出 LawType = 0 的通用法條
+                    generalLaws = lawData.related_statutes_segmented.filter(law => law.LawType === 0);
+                    
+                    loadingMessage.textContent = '載入完成，請勾選左側行為。';
+                    loadingMessage.style.color = '#28a745';
+                    
+                    updateResults(); // 數據載入後立即更新結果
+
+                } catch (error) {
+                    console.error('載入法律資料失敗:', error);
+                    loadingMessage.textContent = '❌ 載入法律資料失敗，請檢查 JSON 網址或格式。';
+                    loadingMessage.style.color = 'red';
+                }
+            }
+
+            // --- 數據查找與顯示邏輯 ---
+            function updateResults() {
+                resultsArea.innerHTML = ''; // 清空結果區
+                const selectedLawTypes = new Set(); // 儲存所有勾選的 LawType
+                let checkedBehaviorNames = []; // 儲存勾選的行為名稱，用於 Local Storage
+
+                const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+                
+                if (checkedBoxes.length === 0) {
+                    // 若沒有勾選任何行為
+                    resultsArea.appendChild(loadingMessage);
+                    loadingMessage.textContent = '請勾選左側行為以查看對應法律後果。';
                     localStorage.removeItem('selectedBehaviors'); 
                     return;
                 }
                 
-                let behaviorNames = [];
-                checkedValues.forEach(value => {
-                    const labelElement = filterContainer.querySelector(`input[value="${value}"]`).parentElement;
-                    // 將勾選的行為名稱收集起來
-                    behaviorNames.push(labelElement ? labelElement.textContent.trim() : value);
+                checkedBoxes.forEach(cb => {
+                    const type = parseInt(cb.getAttribute('data-type'));
+                    const name = cb.getAttribute('data-name');
+                    selectedLawTypes.add(type);
+                    checkedBehaviorNames.push(name);
                 });
                 
                 // --- 關鍵步驟：將勾選的行為名稱儲存到 Local Storage ---
-                const selectedBehaviors = behaviorNames.join('; '); 
+                const selectedBehaviors = checkedBehaviorNames.join('; '); 
                 localStorage.setItem('selectedBehaviors', selectedBehaviors);
+
+                // 移除載入訊息 (如果存在)
+                if (loadingMessage) loadingMessage.remove(); 
+                
+                let displayedLawIdentifiers = new Set(); // 追蹤已顯示的法條號（LawType + LawNum），避免重複顯示
+                let foundLaws = []; // 收集所有相關法條
+
+                // 1. 查找所有與勾選類型相關的法條
+                lawData.related_statutes_segmented.forEach(law => {
+                    if (selectedLawTypes.has(law.LawType) && law.LawType !== 0) {
+                        const lawIdentifier = `${law.LawType}-${law.LawNum}`;
+                        if (!displayedLawIdentifiers.has(lawIdentifier)) {
+                            foundLaws.push(law);
+                            displayedLawIdentifiers.add(lawIdentifier);
+                        }
+                    }
+                });
+
+                // 2. 加入 LawType=0 的通用法條
+                generalLaws.forEach(law => {
+                    const lawIdentifier = `${law.LawType}-${law.LawNum}`;
+                    if (!displayedLawIdentifiers.has(lawIdentifier)) {
+                        foundLaws.push(law);
+                        displayedLawIdentifiers.add(lawIdentifier);
+                    }
+                });
+
+
+                // 3. 渲染結果
+                if (foundLaws.length === 0) {
+                     resultsArea.innerHTML = `<p style="color: red;">抱歉，目前資料庫中未找到與您勾選行為相關的法律條文。</p>`;
+                     return;
+                }
+                
+                foundLaws.forEach(law => {
+                    const card = document.createElement('div');
+                    card.className = 'law-card'; 
+                    
+                    let lawTypeLabel = law.LawType === 0 ? '少年事件處理法 (通用處分)' : lawData.LawType_Mapping[law.LawType.toString()] || '相關法條';
+                    
+                    let html = `<h3>${lawTypeLabel} - ${law.LawNum || '無條款號'}</h3>`;
+                    html += `<p><strong>條文詳情：</strong> ${law.LawDetails || '無詳情'}</p>`;
+                    html += `<p class="note"><strong>(相關說明)</strong> ${law.RelevanceNote || '無相關性說明'}</p>`;
+                    
+                    card.innerHTML = html;
+                    resultsArea.appendChild(card);
+                });
+                
             }
 
             checkboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', updateResults);
             });
-            updateResults();
+            
+            loadLawData();
         });
     </script>
 </body>

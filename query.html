@@ -66,93 +66,112 @@
             const caseResults = document.getElementById('case-results');       
             const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
 
-            // 預設的結果數據庫 (用來模擬資料庫查詢結果)
-            const mockData = {
-                'physical-injury': {
-                    title: '法律條文卡片 (傷害罪)',
-                    statute: '刑法第 277 條：傷害人之身體或健康者，處五年以下有期徒刑、拘役或五十萬元以下罰金。',
-                    caseTitle: '真實判例卡片 (民事賠償)：臺北地方法院判決，',
-                    caseContent: '因肢體衝突造成受害者輕微腦震盪，判賠新臺幣 35 萬元。'
-                },
-                'online-slander': {
-                    title: '法律條文卡片 (誹謗罪)',
-                    statute: '刑法第 310 條：意圖散布於眾，而指摘或傳述足以損害他人名譽之事者，處二年以下有期徒刑、拘役或一萬元以下罰金。',
-                    caseTitle: '真實判例卡片 (民事賠償)：',
-                    caseContent: '於社交平台發布不實言論，經法院認定侵害名譽，判賠新臺幣 15 萬元並須刊登道歉啟事。'
-                },
-                'money-extortion': {
-                    title: '法律條文卡片 (恐嚇取財罪)',
-                    statute: '刑法第 346 條：意圖為自己或第三人不法之所有，以恐嚇危害安全之方法取得他人財物者，處六月以上五年以下有期徒刑。',
-                    caseTitle: '真實判例卡片 (刑事處分)：',
-                    caseContent: '少年甲脅迫同學交出虛擬寶物，經少年法庭裁定交付保護管束並輔導。'
-                },
-                'psychological-damage': {
-                    title: '法律條文卡片 (強制罪/精神損害)',
-                    statute: '民法第 184 條：因故意或過失，不法侵害他人之權利者，負損害賠償責任。 (含精神損害賠償)',
-                    caseTitle: '真實判例卡片 (精神慰撫金)：',
-                    caseContent: '長期密集以言語和訊息騷擾同學，造成被害人嚴重焦慮及就醫紀錄，判處支付精神慰撫金新臺幣 8 萬元。'
-                }
-            };
+            let lawKeywords = {}; 
 
-            // 核心功能：即時更新結果
-            function updateResults() {
-                // 找出所有被勾選的項目
-                const checkedValues = Array.from(checkboxes)
-                    .filter(cb => cb.checked)
-                    .map(cb => cb.value);
+            /**
+             * 步驟 1: 異步讀取 data.json 檔案
+             */
+            async function loadData() {
+                // 顯示載入提示
+                statuteResults.innerHTML = '<div class="alert-info">正在加載法律數據...</div>';
 
-                statuteResults.innerHTML = ''; // 清空條文區
-                caseResults.innerHTML = '';    // 清空判例區
-
-                if (checkedValues.length === 0) {
-                    // 如果沒有勾選任何項目，顯示初始提示
+                try {
+                    const response = await fetch('data.json');
+                    if (!response.ok) {
+                        throw new Error(`HTTP 錯誤! 狀態: ${response.status}`);
+                    }
+                    lawKeywords = await response.json();
+                    
+                    // 數據加載成功後，初始化頁面邏輯
+                    initializePage();
+                } catch (error) {
+                    console.error('無法讀取 data.json 檔案:', error);
+                    // 如果加載失敗，顯示錯誤訊息
                     statuteResults.innerHTML = `
-                        <div class="alert-info">
-                            請在左側勾選一項或多項行為，結果將會即時呈現。
+                        <div class="alert-error">
+                            錯誤：無法加載法律數據檔案 (data.json)。請確認檔案是否存在於根目錄。
                         </div>
                     `;
-                    return;
+                }
+            }
+            
+            /**
+             * 步驟 2: 初始化頁面功能（在數據加載成功後執行）
+             */
+            function initializePage() {
+                // 核心功能：即時更新結果
+                function updateResults() {
+                    const checkedValues = Array.from(checkboxes)
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+
+                    statuteResults.innerHTML = ''; 
+                    caseResults.innerHTML = '';    
+
+                    if (checkedValues.length === 0) {
+                        statuteResults.innerHTML = `
+                            <div class="alert-info">
+                                請在左側勾選一項或多項行為，結果將會即時呈現。
+                            </div>
+                        `;
+                        // 確保未選擇時清除 Local Storage 數據
+                        localStorage.removeItem('selectedBehaviors');
+                        return;
+                    }
+
+                    // 添加標題
+                    statuteResults.innerHTML = '<h3>相關法律條文</h3>';
+                    caseResults.innerHTML = '<h3>真實判例警示</h3>';
+                    
+
+                    let behaviorNames = [];
+
+                    // 根據勾選的項目分別生成條文卡片和判例卡片
+                    checkedValues.forEach(value => {
+                        const data = lawKeywords[value];
+                        if (data) {
+                            // 收集行為名稱
+                            const labelElement = filterContainer.querySelector(`input[value="${value}"]`).parentElement;
+                            behaviorNames.push(labelElement ? labelElement.textContent.trim() : value);
+
+                            // 1. 條文卡片
+                            const statuteHtml = `
+                                <div class="result-card statute-card">
+                                    <h3>${data.lawName}</h3>
+                                    <p><strong>第 ${data.articleNo} 條：</strong> ${data.statuteContent}</p>
+                                    <p>點擊查看 <a href="${data.statuteLink}" target="_blank">前往全國法規資料庫 &rarr;</a></p>
+                                </div>
+                            `;
+                            statuteResults.innerHTML += statuteHtml;
+                            
+                            // 2. 判例卡片
+                            const caseHtml = `
+                                <div class="result-card case-card">
+                                    <h3>${data.caseTitle}</h3>
+                                    <p>${data.caseContent}</p>
+                                    <p>點擊查看 <a href="${data.caseLink}" target="_blank">司法院法學資料檢索系統 &rarr;</a></p>
+                                </div>
+                            `;
+                            caseResults.innerHTML += caseHtml;
+                        }
+                    });
+                    
+                    // --- 將勾選的行為名稱儲存到 Local Storage ---
+                    const selectedBehaviors = behaviorNames.join('; '); // 使用分號分隔，讓試算表易讀
+                    localStorage.setItem('selectedBehaviors', selectedBehaviors);
                 }
 
-                // *** 關鍵修正：新增法律條文區的總標題 ***
-                statuteResults.innerHTML = '<h3>相關法律條文</h3>';
-                // *** 判例區的總標題 ***
-                caseResults.innerHTML = '<h3>真實判例警示</h3>';
-                
-
-                // 根據勾選的項目分別生成條文卡片和判例卡片
-                checkedValues.forEach(value => {
-                    const data = mockData[value];
-                    if (data) {
-                        // 1. 條文卡片 (追加到 statuteResults)
-                        const statuteHtml = `
-                            <div class="result-card statute-card">
-                                <h3>${data.title}</h3>
-                                <p>${data.statute}</p>
-                            </div>
-                        `;
-                        statuteResults.innerHTML += statuteHtml;
-                        
-                        // 2. 判例卡片 (追加到 caseResults)
-                        const caseHtml = `
-                            <div class="result-card case-card">
-                                <h3>${data.caseTitle}</h3>
-                                <p>${data.caseContent}</p>
-                                <p>點擊查看 <a href="https://law.judicial.gov.tw/FINT/default.aspx" target="_blank">司法院法學資料檢索系統 &rarr;</a></p>
-                            </div>
-                        `;
-                        caseResults.innerHTML += caseHtml;
-                    }
+                // 監聽所有勾選框的狀態變化
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateResults);
                 });
+
+                // 首次載入時執行一次，確保初始狀態正確
+                updateResults();
             }
 
-            // 監聽所有勾選框的狀態變化
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', updateResults);
-            });
-
-            // 首次載入時執行一次，確保初始狀態正確
-            updateResults();
+            // 啟動：首先載入數據
+            loadData();
         });
     </script>
 </body>

@@ -1,17 +1,17 @@
-/* style.css - 終極排版修正版 (2025-11-20) */
+/* style.css - 終極修復版 (確保基礎功能與樣式載入) */
 
-/* --- 基礎設定與字體重置 --- */
+/* --- 全局設定 --- */
 html, body {
-    height: 100%; /* 確保頁面高度佔滿視窗 */
     margin: 0;
     padding: 0;
     font-family: '微軟正黑體', 'Microsoft JhengHei', Arial, sans-serif;
     line-height: 1.6;
     color: #333;
-    background-color: #f8f9fa; /* 統一淺灰背景 */
+    background-color: #f8f9fa; /* 淺灰背景 */
+    height: 100%; /* 確保頁面高度 */
 }
 
-/* 確保容器居中並有最大寬度 */
+/* --- 容器樣式 --- */
 .container {
     width: 90%;
     max-width: 1200px;
@@ -23,88 +23,80 @@ html, body {
 header {
     background-color: #007bff; /* 品牌藍色 */
     color: white;
-    padding: 25px 0;
+    padding: 20px 0;
     text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 header h1 {
     margin: 0;
-    font-size: 2.5em;
-    letter-spacing: 1px;
+    font-size: 2.2em;
 }
 
 header p {
     margin: 5px 0 0;
-    font-size: 1em;
+    font-size: 0.9em;
     opacity: 0.9;
 }
 
 /* --- 主要內容區 (Main) --- */
 main {
     padding: 40px 0;
-    min-height: calc(100vh - 180px); /* 確保內容區至少佔滿視窗高度，扣除 header/footer */
-    display: flex; /* 讓內容垂直居中（如果需要）*/
+    flex-grow: 1; /* 讓 main 區域佔據剩餘空間 */
+    display: flex;
     flex-direction: column;
-    align-items: center; /* 水平居中 */
-}
-
-/* --- 標題樣式 --- */
-h2 {
-    color: #34495e; /* 深灰色 */
-    border-bottom: 2px solid #e9ecef;
-    padding-bottom: 10px;
-    margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 1.6em;
-    text-align: center; /* 標題居中 */
+    align-items: center; /* 水平居中內容 */
+    justify-content: flex-start; /* 內容從上方開始排 */
 }
 
 /* --- 首頁 (index.html) 專用樣式 --- */
 .hero-section {
     text-align: center;
-    padding: 50px 0;
+    padding: 30px;
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     margin-bottom: 30px;
+    max-width: 800px; /* 限制首頁內容區塊寬度 */
+    width: 100%;
+    box-sizing: border-box; /* 確保 padding 不會增加寬度 */
 }
 
 .hero-section img {
-    max-width: 300px; /* 控制圖片最大寬度 */
+    max-width: 250px; /* 控制圖片最大寬度，適中大小 */
     height: auto;
-    display: block; /* 讓圖片可以自動水平居中 */
-    margin: 0 auto 30px auto; /* 圖片下方留白 */
-    border-radius: 50%; /* 如果圖片是方形，可變圓形 */
-    border: 5px solid #007bff; /* 增加邊框 */
+    display: block; /* 讓圖片能被 margin auto 居中 */
+    margin: 0 auto 30px auto; /* 自動水平居中，下方留白 */
+    border-radius: 8px; /* 輕微圓角 */
+    border: 3px solid #007bff; /* 品牌色邊框 */
 }
 
 .hero-section h2 {
-    font-size: 2em;
+    font-size: 1.8em;
     color: #007bff;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     border-bottom: none; /* 首頁 H2 不需底線 */
     padding-bottom: 0;
 }
 
 .hero-section p {
-    font-size: 1.1em;
+    font-size: 1em;
     color: #555;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
 .start-button {
     background-color: #28a745; /* 綠色 */
     color: white;
-    padding: 15px 30px;
-    font-size: 1.1em;
+    padding: 12px 25px;
+    font-size: 1.0em;
     font-weight: bold;
     border: none;
     border-radius: 5px;
     text-decoration: none;
     transition: background-color 0.3s ease;
     display: inline-block; /* 讓按鈕可以居中 */
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 .start-button:hover {
@@ -117,7 +109,8 @@ h2 {
     gap: 30px;
     align-items: flex-start; /* 讓左右兩欄頂部對齊 */
     width: 100%; /* 佔滿 container 寬度 */
-    max-width: 1200px;
+    max-width: 1200px; /* 與 container 相同 */
+    margin: 0 auto; /* 確保 query.html 的主內容區也能居中 */
 }
 
 /* 左右面板共用樣式 */
@@ -126,23 +119,23 @@ h2 {
     padding: 30px;
     border-radius: 8px;
     border: 1px solid #dee2e6; /* 輕微邊框 */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* 輕微陰影，讓區塊更明顯 */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* 輕微陰影 */
 }
 
 .filter-panel {
-    flex: 1; /* 佔據 1 份空間 */
+    flex: 1; 
     min-width: 280px;
 }
 
 .results-panel {
-    flex: 2; /* 佔據 2 份空間 */
+    flex: 2; 
 }
 
 /* --- 核取方塊群組樣式 (query.html) --- */
 .checkbox-group label {
     display: flex; 
     align-items: center;
-    padding: 12px 10px;
+    padding: 10px 0;
     cursor: pointer;
     border-bottom: 1px solid #f0f0f0;
     transition: background-color 0.2s;
@@ -150,12 +143,12 @@ h2 {
 }
 
 .checkbox-group label:hover {
-    background-color: #e9f0f6; /* 淺藍色hover效果 */
+    background-color: #eef5fb; 
 }
 
 .checkbox-group input[type="checkbox"] {
-    margin-right: 15px;
-    transform: scale(1.1);
+    margin-right: 12px;
+    transform: scale(1.05);
     cursor: pointer;
 }
 
@@ -193,7 +186,6 @@ h2 {
 .form-card {
     max-width: 800px; /* 限制表單最大寬度 */
     margin: 0 auto; /* 讓表單居中 */
-    padding: 30px;
 }
 
 .form-group label {
@@ -212,57 +204,56 @@ h2 {
     font-size: 1em;
 }
 .form-group.checkbox-group label {
-    padding: 0; /* 重置為預設，避免表單頁的核取方塊有過多的 padding */
+    padding: 0; 
     border-bottom: none;
     margin-bottom: 0;
+    display: flex; /* 確保核取方塊和文字對齊 */
+    align-items: center;
 }
 .form-group.checkbox-group input[type="checkbox"] {
     margin-bottom: 0;
+    margin-right: 10px;
 }
 
 
 /* --- 底部按鈕區 (通用樣式，包括置中) --- */
 .button-footer {
     display: flex;
-    justify-content: center; /* 讓按鈕水平居中 */
+    justify-content: center; /* 按鈕水平居中 */
     gap: 15px; 
     margin-top: 30px;
-    width: 100%; /* 確保佔滿父容器寬度，才能居中 */
+    width: 100%; 
 }
 
 .button-footer a,
 .button-footer button {
-    padding: 12px 25px;
-    font-size: 16px;
+    padding: 10px 20px;
+    font-size: 15px;
     font-weight: bold;
     border: none;
-    border-radius: 5px; /* 稍微圓潤 */
+    border-radius: 5px;
     cursor: pointer;
-    min-width: 150px; 
+    min-width: 120px; 
     text-decoration: none; 
     display: inline-block;
     text-align: center;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.3s ease;
 }
 
 .submit-button {
-    background-color: #28a745; /* 綠色 */
+    background-color: #28a745; 
     color: white;
 }
-
 .submit-button:hover {
     background-color: #218838;
-    transform: translateY(-2px); /* 輕微上浮效果 */
 }
 
 .back-button, .button-footer a[href="query.html"] {
-    background-color: #6c757d; /* 灰色 */
+    background-color: #6c757d; 
     color: white;
 }
-
 .back-button:hover, .button-footer a[href="query.html"]:hover {
     background-color: #5a6268;
-    transform: translateY(-2px);
 }
 
 /* --- 頁尾 (Footer) --- */
@@ -272,7 +263,7 @@ footer {
     background-color: #e9ecef;
     color: #6c757d;
     font-size: 0.85em;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* 頁尾輕微陰影 */
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
 }
 
 /* --- RWD 響應式設計 (針對行動裝置) --- */
@@ -281,21 +272,21 @@ footer {
         width: 95%;
     }
     header h1 {
-        font-size: 2em;
+        font-size: 1.8em;
     }
     .main-layout {
-        flex-direction: column; /* 堆疊佈局 */
+        flex-direction: column; 
         gap: 20px;
     }
     .filter-panel, .results-panel, .form-card {
         padding: 20px;
     }
     .hero-section img {
-        max-width: 200px; /* 手機上圖片更小 */
+        max-width: 180px; 
     }
     .start-button, .button-footer a, .button-footer button {
-        width: 100%; /* 按鈕佔滿寬度 */
-        min-width: unset; /* 取消最小寬度限制 */
+        width: 100%; 
+        min-width: unset; 
     }
     .button-footer {
         flex-direction: column;

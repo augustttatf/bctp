@@ -22,6 +22,7 @@
             box-sizing: border-box; 
             border: 1px solid #ccc;
             border-radius: 6px;
+            margin-bottom: 15px; /* 增加輸入框下方間距 */
         }
 
         /* 核取方塊樣式調整 */
@@ -38,15 +39,13 @@
             transform: scale(1.3); 
         }
 
-        /* 按鈕區塊修正：實現按鈕等寬、靠右對齊 */
+        /* 按鈕區塊修正：統一大小與樣式 */
         .button-footer {
             display: flex;
             justify-content: flex-end; 
             gap: 15px; 
             margin-top: 30px;
         }
-
-        /* 統一按鈕大小和樣式 */
         .button-footer button {
             padding: 12px 25px;
             font-size: 16px;
@@ -54,16 +53,12 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            min-width: 150px; /* 確保兩個按鈕有相同的最小寬度 */
+            min-width: 150px; 
         }
-
-        /* 提交按鈕樣式 */
         .submit-button {
             background-color: #28a745; 
             color: white;
         }
-        
-        /* 返回按鈕樣式（輔助按鈕） */
         .back-button {
             background-color: #6c757d; 
             color: white;
@@ -83,7 +78,7 @@
         <div class="container">
             <h2>個人反思與後果認知</h2>
             
-            <p>請針對您在上一頁查詢到的法律後果，填寫以下資訊，並提交給平台紀錄。123</p>
+            <p>請針對您在上一頁查詢到的法律後果，填寫以下資訊，並提交給平台紀錄。</p>
 
             <form id="reflection-form" class="form-card">
                 
@@ -106,7 +101,7 @@
                 <div class="form-group checkbox-group">
                     <label for="confirmation-checkbox">
                         <input type="checkbox" id="confirmation-checkbox" name="confirmation" required>
-                        我已確認上述填寫的資料皆無錯誤
+                        我已確認上述填寫的資料皆無錯誤，並瞭解提交後的法律後果。
                     </label>
                 </div>
 
@@ -135,9 +130,7 @@
 
             form.addEventListener('submit', function(e) {
                 
-                // 檢查確認方塊是否已勾選 (HTML required 屬性會處理大部分情況，這裡用於強健性)
                 if (!confirmationCheckbox.checked) {
-                    // 瀏覽器通常會自動處理 required 欄位，但這裡是額外保障
                     e.preventDefault(); 
                     return; 
                 }
@@ -153,10 +146,10 @@
                 const studentName = document.getElementById('student-name').value;
                 const reflection = document.getElementById('reflection-text').value;
                 
-                // 2. 從 Local Storage 讀取上一頁的行為數據 (確保行為數據回傳)
+                // 2. 從 Local Storage 讀取上一頁的行為數據 (關鍵)
                 const selectedBehaviors = localStorage.getItem('selectedBehaviors') || '無紀錄';
 
-                // 3. 準備 JSON 格式的數據 (欄位名稱與 GAS 腳本中的 data.xxx 完全一致)
+                // 3. 準備 JSON 格式的數據 (必須與 GAS 腳本中的 data.xxx 完全一致)
                 const formData = {
                     school: school,
                     studentName: studentName,
@@ -179,7 +172,6 @@
                     form.reset();
                     submitButton.textContent = '✅ 已完成提交';
                     submitButton.disabled = true;
-                    // 提交成功後清除 Local Storage
                     localStorage.removeItem('selectedBehaviors'); 
                 })
                 .catch(error => {

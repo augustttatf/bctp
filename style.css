@@ -63,12 +63,12 @@ main {
 }
 
 .hero-section img {
-    max-width: 250px; /* 控制圖片最大寬度，適中大小 */
+    max-width: 250px; /* 圖片最大寬度控制 */
     height: auto;
-    display: block; /* 讓圖片能被 margin auto 居中 */
-    margin: 0 auto 30px auto; /* 自動水平居中，下方留白 */
-    border-radius: 8px; /* 輕微圓角 */
-    border: 3px solid #007bff; /* 品牌色邊框 */
+    display: block; 
+    margin: 0 auto 30px auto; /* 圖片自動水平居中 */
+    border-radius: 50%; /* 圓形圖片效果 */
+    border: none; /* 關鍵：移除藍色邊框 */
 }
 
 .hero-section h2 {

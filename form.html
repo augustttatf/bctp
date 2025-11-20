@@ -24,22 +24,21 @@
             border-radius: 6px;
         }
 
-        /* 專門為核取方塊設計的樣式調整 */
+        /* 核取方塊樣式調整 */
         .checkbox-group label {
-            display: flex; /* 使用 Flexbox 讓核取方塊和文字對齊 */
+            display: flex;
             align-items: center; 
             font-weight: normal; 
             margin-top: 15px; 
+            cursor: pointer;
         }
         .checkbox-group input[type="checkbox"] {
-            width: auto; /* 重設寬度 */
+            width: auto; 
             margin-right: 10px;
-            /* 讓核取方塊本身大一點，容易點擊 */
             transform: scale(1.3); 
         }
 
-
-        /* 按鈕區塊修正：實現按鈕等寬、對齊 */
+        /* 按鈕區塊修正：實現按鈕等寬、靠右對齊 */
         .button-footer {
             display: flex;
             justify-content: flex-end; 
@@ -55,7 +54,7 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            min-width: 150px; 
+            min-width: 150px; /* 確保兩個按鈕有相同的最小寬度 */
         }
 
         /* 提交按鈕樣式 */
@@ -127,7 +126,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // *** 🚨 替換點：請將此處替換為您部署的 Google Apps Script Web App URL ***
-            const GAS_URL = 'https://script.google.com/macros/s/AKfycbw4qpHBbdHgLZ62YuDUp1rUg0eeUr__py3PhsfiydmrAQd-t9I9qAEuUl_25sxnwNqghQ/exec'; 
+            const GAS_URL = '貼上您部署的 Web App URL (以 /exec 結尾)'; 
             
             const form = document.getElementById('reflection-form');
             const submitButton = document.getElementById('submit-button');
@@ -135,12 +134,12 @@
 
 
             form.addEventListener('submit', function(e) {
-                // 原生的 required 屬性會處理未勾選時的瀏覽器提示
-                // 但為了更強大的檢查，我們在這裡也做一次額外檢查
+                
+                // 檢查確認方塊是否已勾選 (HTML required 屬性會處理大部分情況，這裡用於強健性)
                 if (!confirmationCheckbox.checked) {
-                    alert('請先勾選「我已確認資料無誤」才能提交表單。');
-                    e.preventDefault(); // 阻止表單提交
-                    return;
+                    // 瀏覽器通常會自動處理 required 欄位，但這裡是額外保障
+                    e.preventDefault(); 
+                    return; 
                 }
                 
                 e.preventDefault(); 
@@ -154,10 +153,10 @@
                 const studentName = document.getElementById('student-name').value;
                 const reflection = document.getElementById('reflection-text').value;
                 
-                // 2. 從 Local Storage 讀取上一頁的行為數據
+                // 2. 從 Local Storage 讀取上一頁的行為數據 (確保行為數據回傳)
                 const selectedBehaviors = localStorage.getItem('selectedBehaviors') || '無紀錄';
 
-                // 3. 準備 JSON 格式的數據 
+                // 3. 準備 JSON 格式的數據 (欄位名稱與 GAS 腳本中的 data.xxx 完全一致)
                 const formData = {
                     school: school,
                     studentName: studentName,
@@ -180,7 +179,7 @@
                     form.reset();
                     submitButton.textContent = '✅ 已完成提交';
                     submitButton.disabled = true;
-                    // 清除 Local Storage 以便下次使用
+                    // 提交成功後清除 Local Storage
                     localStorage.removeItem('selectedBehaviors'); 
                 })
                 .catch(error => {

@@ -52,16 +52,16 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // *** 🚨 替換點：請將此處替換為您的 GitHub meowmeowmeow.json 原始檔案連結 ***
-            const JSON_URL = '貼上您的 GitHub meowmeowmeow.json 原始檔案連結'; 
+            // *** 🚨 已替換為您提供的 GitHub Raw JSON 連結 ***
+            const JSON_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/meowmeowmeow.json'; 
             
             const filterContainer = document.getElementById('behavior-filters');
             const resultsArea = document.getElementById('results-area');
             const loadingMessage = document.getElementById('loading-message');
             const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
             
-            let lawData = { related_statutes_segmented: [], LawType_Mapping: {} }; // 儲存載入的 JSON 數據
-            let generalLaws = []; // 儲存 LawType=0 的通用法條
+            let lawData = { related_statutes_segmented: [], LawType_Mapping: {} }; 
+            let generalLaws = []; 
 
             localStorage.removeItem('selectedBehaviors');
 
@@ -81,7 +81,7 @@
                     loadingMessage.textContent = '載入完成，請勾選左側行為。';
                     loadingMessage.style.color = '#28a745';
                     
-                    updateResults(); // 數據載入後立即更新結果
+                    updateResults(); 
 
                 } catch (error) {
                     console.error('載入法律資料失敗:', error);
@@ -92,14 +92,13 @@
 
             // --- 數據查找與顯示邏輯 ---
             function updateResults() {
-                resultsArea.innerHTML = ''; // 清空結果區
-                const selectedLawTypes = new Set(); // 儲存所有勾選的 LawType
-                let checkedBehaviorNames = []; // 儲存勾選的行為名稱，用於 Local Storage
+                resultsArea.innerHTML = ''; 
+                const selectedLawTypes = new Set(); 
+                let checkedBehaviorNames = []; 
 
                 const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
                 
                 if (checkedBoxes.length === 0) {
-                    // 若沒有勾選任何行為
                     resultsArea.appendChild(loadingMessage);
                     loadingMessage.textContent = '請勾選左側行為以查看對應法律後果。';
                     localStorage.removeItem('selectedBehaviors'); 
@@ -117,11 +116,10 @@
                 const selectedBehaviors = checkedBehaviorNames.join('; '); 
                 localStorage.setItem('selectedBehaviors', selectedBehaviors);
 
-                // 移除載入訊息 (如果存在)
                 if (loadingMessage) loadingMessage.remove(); 
                 
-                let displayedLawIdentifiers = new Set(); // 追蹤已顯示的法條號（LawType + LawNum），避免重複顯示
-                let foundLaws = []; // 收集所有相關法條
+                let displayedLawIdentifiers = new Set(); 
+                let foundLaws = []; 
 
                 // 1. 查找所有與勾選類型相關的法條
                 lawData.related_statutes_segmented.forEach(law => {

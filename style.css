@@ -1,151 +1,145 @@
-/* style.css - BCTP 基礎樣式與版面配置 */
+/* style.css - 簡潔美化最終版 */
 
-/* --- 基礎重置與字體 --- */
+/* --- 基礎設定 --- */
 body {
     font-family: '微軟正黑體', 'Microsoft JhengHei', Arial, sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #f4f7f6; /* 淺灰色背景 */
+    background-color: #ffffff; /* 純白色背景 */
     color: #333;
 }
 
 .container {
     width: 90%;
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 20px 0;
 }
 
-/* --- 頂部導航欄/頁首 --- */
+/* --- 頁首 (Header) --- */
 header {
-    background-color: #007bff; /* 主題藍色 */
+    background-color: #2c3e50; /* 深色主題，更專業穩重 */
     color: white;
-    padding: 20px 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 25px 0;
+    text-align: center;
+    border-bottom: 5px solid #3498db; /* 主題藍線 */
 }
 
 header h1 {
     margin: 0 0 5px 0;
-    font-size: 2.5em;
+    font-size: 2.2em;
+    letter-spacing: 1px;
 }
 
 header p {
     margin: 0;
-    font-size: 1em;
-    opacity: 0.9;
+    font-size: 0.9em;
+    opacity: 0.8;
 }
 
-/* --- 主要內容區域 --- */
+/* --- 主要佈局 (Query.html) --- */
 main {
     padding: 40px 0;
 }
 
 h2 {
-    color: #007bff;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 5px;
+    color: #34495e; /* 深灰色標題 */
+    border-bottom: 2px solid #ecf0f1; /* 淺灰色底線 */
+    padding-bottom: 10px;
     margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.8em;
+    margin-bottom: 25px;
+    font-size: 1.6em;
 }
 
-/* --- query.html 特有佈局 --- */
 .main-layout {
     display: flex;
     gap: 30px;
 }
 
-/* 行為勾選面板 */
-.filter-panel {
-    flex: 1;
-    background: white;
+/* 左右面板 (簡潔的背景色) */
+.filter-panel, .results-panel, .form-card {
+    background: #fdfdfd; 
     padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+    border: 1px solid #e0e0e0; /* 輕微邊框 */
+    box-shadow: none; /* 移除陰影 */
 }
 
-/* 結果展示面板 */
+.filter-panel {
+    flex: 1;
+    min-width: 280px;
+}
+
 .results-panel {
     flex: 2;
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 /* --- 核取方塊群組樣式 --- */
 .checkbox-group label {
-    display: block;
-    padding: 10px 0;
+    display: flex; /* 確保內容對齊 */
+    align-items: center;
+    padding: 12px 0;
     cursor: pointer;
-    border-bottom: 1px dashed #e9ecef;
+    border-bottom: 1px solid #f4f4f4;
     transition: background-color 0.2s;
+    font-size: 1em;
 }
 
 .checkbox-group label:hover {
-    background-color: #f8f9fa;
+    background-color: #f9f9f9;
 }
 
 .checkbox-group input[type="checkbox"] {
-    margin-right: 10px;
+    margin-right: 15px;
     transform: scale(1.1);
+    cursor: pointer;
 }
+
 
 /* --- 法律條文卡片樣式 (results-area) --- */
 .law-card {
-    border-left: 5px solid #007bff; 
+    border-left: 4px solid #3498db; /* 主題藍色側邊條 */
     padding: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     background-color: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #dcdcdc;
+    border-radius: 4px;
+    box-shadow: none; /* 移除陰影 */
 }
 .law-card h3 {
-    color: #007bff;
+    color: #3498db;
     margin-top: 0;
     font-size: 1.1em;
-    border-bottom: 1px dashed #ced4da;
+    border-bottom: 1px solid #f0f0f0;
     padding-bottom: 5px;
 }
 .law-card p {
     font-size: 0.95em;
-    color: #495057;
+    color: #555;
     margin-top: 8px;
-}
-.law-card strong {
-    color: #333;
 }
 .law-card .note {
     font-style: italic;
-    color: #6c757d;
-    border-top: 1px solid #e9ecef;
+    color: #7f8c8d;
+    border-top: 1px solid #f0f0f0;
     padding-top: 5px;
     margin-top: 10px;
 }
 
 /* --- 表單樣式 (form.html 適用) --- */
-.form-card {
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
 .form-group label {
     display: block; 
     margin-bottom: 8px; 
     font-weight: bold; 
-    color: #333;
 }
 .form-group input[type="text"],
 .form-group textarea {
     width: 100%; 
     padding: 12px;
     box-sizing: border-box; 
-    border: 1px solid #ced4da;
-    border-radius: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     margin-bottom: 15px;
     font-size: 1em;
 }
@@ -164,52 +158,47 @@ h2 {
     font-size: 16px;
     font-weight: bold;
     border: none;
-    border-radius: 8px;
+    border-radius: 4px; /* 稍微尖銳的邊角，更現代 */
     cursor: pointer;
     min-width: 150px; 
-    text-decoration: none; /* 移除超連結的下劃線 */
+    text-decoration: none; 
     display: inline-block;
     text-align: center;
     transition: background-color 0.3s ease;
 }
 
 .submit-button {
-    background-color: #28a745; /* 綠色 */
+    background-color: #27ae60; /* 綠色 */
     color: white;
 }
 
 .submit-button:hover {
-    background-color: #1e7e34; 
+    background-color: #229954; 
 }
 
 .back-button, .button-footer a[href="query.html"] {
-    background-color: #6c757d; /* 灰色 */
+    background-color: #95a5a6; /* 淺灰色 */
     color: white;
 }
 
 .back-button:hover, .button-footer a[href="query.html"]:hover {
-    background-color: #5a6268;
+    background-color: #7f8c8d;
 }
 
 /* --- 頁尾 --- */
 footer {
     text-align: center;
-    padding: 15px 0;
-    background-color: #e9ecef;
-    color: #6c757d;
-    font-size: 0.85em;
-    position: relative;
-    bottom: 0;
-    width: 100%;
+    padding: 20px 0;
+    background-color: #f4f4f4;
+    color: #7f8c8d;
+    font-size: 0.8em;
 }
 
-/* --- RWD 響應式設計 (平板/手機) --- */
-@media (max-width: 992px) {
+/* --- RWD 響應式設計 --- */
+@media (max-width: 768px) {
     .main-layout {
         flex-direction: column;
     }
-}
-@media (max-width: 576px) {
     .button-footer {
         flex-direction: column;
         align-items: stretch;

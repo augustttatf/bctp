@@ -19,30 +19,28 @@
         <div class="container">
             <h2>個人反思與後果認知</h2>
             
-            <p>請針對您在上一頁查詢到的**法律後果**，認真填寫以下內容，並提交給平台紀錄。</p>
+            <p>請針對您在上一頁查詢到的法律後果，填寫以下資訊，並提交給平台紀錄。</p>
 
             <form id="reflection-form" class="form-card">
                 
                 <div class="form-group">
-                    <label for="behavior-display">您選擇的行為 (來自上一頁的紀錄):</label>
-                    <p id="behavior-display" class="behavior-display-box">正在加載...</p> 
+                    <label for="school-name">學校名稱 (必填)</label>
+                    <input type="text" id="school-name" required placeholder="例如：某某高職 / 某某國中">
                 </div>
 
                 <div class="form-group">
-                    <label for="reflection-text">您對於查詢到的法律後果有何反思？</label>
-                    <textarea id="reflection-text" required rows="8" 
-                        placeholder="請寫下您對於可能面臨的法律責任和賠償的看法..."></textarea>
+                    <label for="student-name">姓名 (必填)</label>
+                    <input type="text" id="student-name" required placeholder="請輸入您的真實姓名">
                 </div>
-
-                <div class="form-group checkbox-group">
-                    <label>
-                        <input type="checkbox" id="reporting-checkbox" name="reporting">
-                        我瞭解到這個行為的嚴重性，並**願意**與師長/輔導人員討論通報事宜。
-                    </label>
+                
+                <div class="form-group">
+                    <label for="reflection-text">反省內容 (必填)</label>
+                    <textarea id="reflection-text" required rows="8" 
+                        placeholder="請寫下您對於可能面臨的法律責任和賠償的看法與反省..."></textarea>
                 </div>
 
                 <div class="button-footer">
-                    <button type="submit" id="submit-button" class="submit-button">提交表單</button>
+                    <button type="submit" id="submit-button" class="submit-button">提交反省表單</button>
                     <a href="query.html" class="back-button">返回查詢頁面</a>
                 </div>
             </form>
@@ -60,11 +58,6 @@
             
             const form = document.getElementById('reflection-form');
             const submitButton = document.getElementById('submit-button');
-            const behaviorDisplay = document.getElementById('behavior-display');
-            
-            // 讀取從 query.html 儲存的行為數據
-            const behavior = localStorage.getItem('selectedBehaviors') || '無選擇行為，請返回查詢頁面重新選擇。';
-            behaviorDisplay.textContent = behavior; 
 
             form.addEventListener('submit', function(e) {
                 e.preventDefault(); 
@@ -73,16 +66,21 @@
                 submitButton.disabled = true;
                 submitButton.textContent = '資料回傳中...';
 
-                // 1. 獲取表單數據
+                // 1. 獲取表單數據 (新的欄位)
+                const school = document.getElementById('school-name').value;
+                const studentName = document.getElementById('student-name').value;
                 const reflection = document.getElementById('reflection-text').value;
-                const reportingCheckbox = document.getElementById('reporting-checkbox');
-                const reporting = reportingCheckbox.checked ? '是 (願意)' : '否 (不願意)';
                 
-                // 2. 準備 JSON 格式的數據
+                // (可選) 獲取上一頁的行為數據，並一併傳輸，但這次主要欄位是學校/姓名/反省
+                const selectedBehaviors = localStorage.getItem('selectedBehaviors') || '無紀錄';
+
+                // 2. 準備 JSON 格式的數據 (欄位名稱必須與 GAS 腳本中的 data.xxx 一致)
                 const formData = {
-                    behavior: behavior,
-                    reflection: reflection,
-                    reporting: reporting
+                    school: school,         // 對應 GAS 中的 data.school
+                    studentName: studentName,   // 對應 GAS 中的 data.studentName
+                    reflection: reflection,     // 對應 GAS 中的 data.reflection
+                    // 額外附加行為數據，方便查閱
+                    selectedBehaviors: selectedBehaviors 
                 };
                 
                 // 3. 使用 fetch 發送數據到 Google Apps Script
@@ -95,17 +93,16 @@
                     body: JSON.stringify(formData) 
                 })
                 .then(response => {
-                    alert('✨ 表單提交成功！您的反思數據已安全傳送到 Google 試算表。');
+                    alert('✨ 表單提交成功！您的反省數據已提交。');
                     
                     form.reset();
-                    behaviorDisplay.textContent = behavior; 
                     submitButton.textContent = '✅ 已完成提交';
                     submitButton.disabled = true;
                 })
                 .catch(error => {
                     console.error('發送數據時發生錯誤:', error);
                     alert('提交失敗，請檢查 Web App URL 是否正確部署。');
-                    submitButton.textContent = '提交表單';
+                    submitButton.textContent = '提交反省表單';
                     submitButton.disabled = false;
                 });
             });

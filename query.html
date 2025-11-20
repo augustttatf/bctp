@@ -23,18 +23,10 @@
                 <p>勾選觸發法律後果的行為，查看對應的法律後果。</p>
 
                 <div class="checkbox-group" id="behavior-filters">
-                    <label>
-                        <input type="checkbox" name="behavior" value="physical-injury"> 肢體推打 / 造成輕傷
-                    </label>
-                    <label>
-                        <input type="checkbox" name="behavior" value="online-slander"> 網路散布謠言 / 損害名譽
-                    </label>
-                    <label>
-                        <input type="checkbox" name="behavior" value="money-extortion"> 威脅取財 / 損毀支付金錢
-                    </label>
-                    <label>
-                        <input type="checkbox" name="behavior" value="psychological-damage"> 密集訊息騷擾 / 造成精神壓力
-                    </label>
+                    <label><input type="checkbox" name="behavior" value="physical-injury"> 肢體推打 / 造成輕傷</label>
+                    <label><input type="checkbox" name="behavior" value="online-slander"> 網路散布謠言 / 損害名譽</label>
+                    <label><input type="checkbox" name="behavior" value="money-extortion"> 威脅取財 / 損毀支付金錢</label>
+                    <label><input type="checkbox" name="behavior" value="psychological-damage"> 密集訊息騷擾 / 造成精神壓力</label>
                 </div>
             </div>
 
@@ -51,7 +43,7 @@
         </div> 
 
         <div class="button-footer">
-            <a href="form.html" class="submit-button">下一步：反思與通報表單 &rarr;</a>
+            <a href="form.html" class="submit-button">下一步：反思表單 &rarr;</a>
         </div>
     </main>
     
@@ -68,38 +60,21 @@
 
             let lawKeywords = {}; 
 
-            /**
-             * 步驟 1: 異步讀取 data.json 檔案
-             */
+            // 異步讀取 data.json 檔案
             async function loadData() {
-                // 顯示載入提示
                 statuteResults.innerHTML = '<div class="alert-info">正在加載法律數據...</div>';
-
                 try {
                     const response = await fetch('data.json');
-                    if (!response.ok) {
-                        throw new Error(`HTTP 錯誤! 狀態: ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP 錯誤! 狀態: ${response.status}`);
                     lawKeywords = await response.json();
-                    
-                    // 數據加載成功後，初始化頁面邏輯
                     initializePage();
                 } catch (error) {
                     console.error('無法讀取 data.json 檔案:', error);
-                    // 如果加載失敗，顯示錯誤訊息
-                    statuteResults.innerHTML = `
-                        <div class="alert-error">
-                            錯誤：無法加載法律數據檔案 (data.json)。請確認檔案是否存在於根目錄。
-                        </div>
-                    `;
+                    statuteResults.innerHTML = `<div class="alert-error">錯誤：無法加載法律數據檔案 (data.json)。</div>`;
                 }
             }
             
-            /**
-             * 步驟 2: 初始化頁面功能（在數據加載成功後執行）
-             */
             function initializePage() {
-                // 核心功能：即時更新結果
                 function updateResults() {
                     const checkedValues = Array.from(checkboxes)
                         .filter(cb => cb.checked)
@@ -109,68 +84,54 @@
                     caseResults.innerHTML = '';    
 
                     if (checkedValues.length === 0) {
-                        statuteResults.innerHTML = `
-                            <div class="alert-info">
-                                請在左側勾選一項或多項行為，結果將會即時呈現。
-                            </div>
-                        `;
-                        // 確保未選擇時清除 Local Storage 數據
-                        localStorage.removeItem('selectedBehaviors');
+                        statuteResults.innerHTML = `<div class="alert-info">請在左側勾選一項或多項行為，結果將會即時呈現。</div>`;
+                        localStorage.removeItem('selectedBehaviors'); // 清除數據
                         return;
                     }
 
-                    // 添加標題
                     statuteResults.innerHTML = '<h3>相關法律條文</h3>';
                     caseResults.innerHTML = '<h3>真實判例警示</h3>';
                     
-
                     let behaviorNames = [];
 
-                    // 根據勾選的項目分別生成條文卡片和判例卡片
                     checkedValues.forEach(value => {
                         const data = lawKeywords[value];
                         if (data) {
-                            // 收集行為名稱
+                            // 收集行為名稱並準備存入 Local Storage
                             const labelElement = filterContainer.querySelector(`input[value="${value}"]`).parentElement;
                             behaviorNames.push(labelElement ? labelElement.textContent.trim() : value);
 
                             // 1. 條文卡片
-                            const statuteHtml = `
+                            statuteResults.innerHTML += `
                                 <div class="result-card statute-card">
                                     <h3>${data.lawName}</h3>
                                     <p><strong>第 ${data.articleNo} 條：</strong> ${data.statuteContent}</p>
-                                    <p>點擊查看 <a href="${data.statuteLink}" target="_blank">前往全國法規資料庫 &rarr;</a></p>
+                                    <p><a href="${data.statuteLink}" target="_blank">前往全國法規資料庫 &rarr;</a></p>
                                 </div>
                             `;
-                            statuteResults.innerHTML += statuteHtml;
                             
                             // 2. 判例卡片
-                            const caseHtml = `
+                            caseResults.innerHTML += `
                                 <div class="result-card case-card">
                                     <h3>${data.caseTitle}</h3>
                                     <p>${data.caseContent}</p>
-                                    <p>點擊查看 <a href="${data.caseLink}" target="_blank">司法院法學資料檢索系統 &rarr;</a></p>
+                                    <p><a href="${data.caseLink}" target="_blank">司法院法學資料檢索系統 &rarr;</a></p>
                                 </div>
                             `;
-                            caseResults.innerHTML += caseHtml;
                         }
                     });
                     
                     // --- 將勾選的行為名稱儲存到 Local Storage ---
-                    const selectedBehaviors = behaviorNames.join('; '); // 使用分號分隔，讓試算表易讀
+                    const selectedBehaviors = behaviorNames.join('; '); 
                     localStorage.setItem('selectedBehaviors', selectedBehaviors);
                 }
 
-                // 監聽所有勾選框的狀態變化
                 checkboxes.forEach(checkbox => {
                     checkbox.addEventListener('change', updateResults);
                 });
-
-                // 首次載入時執行一次，確保初始狀態正確
                 updateResults();
             }
 
-            // 啟動：首先載入數據
             loadData();
         });
     </script>

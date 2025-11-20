@@ -54,61 +54,39 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const filterContainer = document.getElementById('behavior-filters');
-            const statuteResults = document.getElementById('statute-results'); 
-            const caseResults = document.getElementById('case-results');       
             const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
 
-            let lawKeywords = {}; 
+            // 確保每次加載頁面時，清除 Local Storage 以防止殘留數據，直到用戶勾選
+            localStorage.removeItem('selectedBehaviors');
 
-            // 異步讀取 data.json 檔案
-            async function loadData() {
-                // 假設 data.json 存在且正確
-                try {
-                    const response = await fetch('data.json');
-                    lawKeywords = await response.json();
-                    initializePage();
-                } catch (error) {
-                    console.error('無法讀取 data.json 檔案:', error);
-                    statuteResults.innerHTML = `<div class="alert-error">錯誤：無法加載法律數據檔案。</div>`;
+            function updateResults() {
+                const checkedValues = Array.from(checkboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                if (checkedValues.length === 0) {
+                    localStorage.removeItem('selectedBehaviors'); 
+                    // 這裡應放置您顯示「請勾選行為」的邏輯
+                    return;
                 }
-            }
-            
-            function initializePage() {
-                function updateResults() {
-                    const checkedValues = Array.from(checkboxes)
-                        .filter(cb => cb.checked)
-                        .map(cb => cb.value);
-
-                    // ... (省略結果顯示邏輯，保持與您原有專案一致) ...
-
-                    if (checkedValues.length === 0) {
-                        localStorage.removeItem('selectedBehaviors'); 
-                        // ... (顯示請勾選提示)
-                        return;
-                    }
-                    
-                    let behaviorNames = [];
-                    checkedValues.forEach(value => {
-                        const data = lawKeywords[value];
-                        if (data) {
-                            // 獲取並收集行為名稱
-                            const labelElement = filterContainer.querySelector(`input[value="${value}"]`).parentElement;
-                            behaviorNames.push(labelElement ? labelElement.textContent.trim() : value);
-                        }
-                    });
-                    
-                    // --- 關鍵步驟：將勾選的行為名稱儲存到 Local Storage ---
-                    const selectedBehaviors = behaviorNames.join('; '); 
-                    localStorage.setItem('selectedBehaviors', selectedBehaviors);
-                }
-
-                checkboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', updateResults);
+                
+                let behaviorNames = [];
+                checkedValues.forEach(value => {
+                    const labelElement = filterContainer.querySelector(`input[value="${value}"]`).parentElement;
+                    behaviorNames.push(labelElement ? labelElement.textContent.trim() : value);
                 });
-                updateResults();
+                
+                // --- 關鍵步驟：將勾選的行為名稱儲存到 Local Storage ---
+                const selectedBehaviors = behaviorNames.join('; '); 
+                localStorage.setItem('selectedBehaviors', selectedBehaviors);
+                
+                // 這裡應放置您顯示法律結果和判例的邏輯
             }
 
-            loadData();
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateResults);
+            });
+            updateResults();
         });
     </script>
 </body>

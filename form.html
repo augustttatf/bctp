@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BCTP - 反思表單 (單頁版)</title>
+    <title>BCTP - 反思表單</title>
     <link rel="stylesheet" href="style.css"> 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
 </head>
@@ -24,9 +24,9 @@
             <form id="reflection-form" class="form-card">
                 
                 <div class="form-group">
-                    <label for="reflection-display">您選擇的行為 (來自上一頁的紀錄):</label>
+                    <label for="behavior-display">您選擇的行為 (來自上一頁的紀錄):</label>
                     <p id="behavior-display" class="behavior-display-box">正在加載...</p> 
-                    </div>
+                </div>
 
                 <div class="form-group">
                     <label for="reflection-text">您對於查詢到的法律後果有何反思？</label>
@@ -55,7 +55,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // *** 🚨 貼上點：請將此處替換為您部署的 Google Apps Script Web App URL ***
+            // *** 🚨 替換點：請將此處替換為您部署的 Google Apps Script Web App URL ***
             const GAS_URL = '貼上您部署的 Web App URL (以 /exec 結尾)'; 
             
             const form = document.getElementById('reflection-form');
@@ -64,7 +64,7 @@
             
             // 讀取從 query.html 儲存的行為數據
             const behavior = localStorage.getItem('selectedBehaviors') || '無選擇行為，請返回查詢頁面重新選擇。';
-            behaviorDisplay.textContent = behavior; // 顯示給使用者看
+            behaviorDisplay.textContent = behavior; 
 
             form.addEventListener('submit', function(e) {
                 e.preventDefault(); 
@@ -80,7 +80,7 @@
                 
                 // 2. 準備 JSON 格式的數據
                 const formData = {
-                    behavior: behavior, // 來自上一頁的數據
+                    behavior: behavior,
                     reflection: reflection,
                     reporting: reporting
                 };
@@ -95,12 +95,10 @@
                     body: JSON.stringify(formData) 
                 })
                 .then(response => {
-                    // 由於 no-cors 模式無法檢查實際的回應，假設發送成功
-                    alert('✨ 表單提交成功！您的反思數據已安全傳送到 Google 試算表。請確認是否需要與師長討論。');
+                    alert('✨ 表單提交成功！您的反思數據已安全傳送到 Google 試算表。');
                     
-                    // 成功後清除表單，並將按鈕改為已完成狀態
                     form.reset();
-                    behaviorDisplay.textContent = behavior; // 保持行為顯示
+                    behaviorDisplay.textContent = behavior; 
                     submitButton.textContent = '✅ 已完成提交';
                     submitButton.disabled = true;
                 })

@@ -8,62 +8,17 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
     
     <style>
-        /* 確保 Label 和 Input 垂直排列 */
-        .form-group label {
-            display: block; 
-            margin-bottom: 8px; 
-            font-weight: bold; 
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
+        .form-group input[type="text"], .form-group textarea {
+            width: 100%; padding: 12px; box-sizing: border-box; 
+            border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px;
         }
-        /* 確保輸入框佔滿父容器寬度 */
-        .form-group input[type="text"],
-        .form-group textarea {
-            width: 100%; 
-            padding: 12px;
-            box-sizing: border-box; 
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            margin-bottom: 15px; /* 增加輸入框下方間距 */
-        }
-
-        /* 核取方塊樣式調整 */
-        .checkbox-group label {
-            display: flex;
-            align-items: center; 
-            font-weight: normal; 
-            margin-top: 15px; 
-            cursor: pointer;
-        }
-        .checkbox-group input[type="checkbox"] {
-            width: auto; 
-            margin-right: 10px;
-            transform: scale(1.3); 
-        }
-
-        /* 按鈕區塊修正：統一大小與樣式 */
-        .button-footer {
-            display: flex;
-            justify-content: flex-end; 
-            gap: 15px; 
-            margin-top: 30px;
-        }
-        .button-footer button {
-            padding: 12px 25px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            min-width: 150px; 
-        }
-        .submit-button {
-            background-color: #28a745; 
-            color: white;
-        }
-        .back-button {
-            background-color: #6c757d; 
-            color: white;
-        }
-
+        .checkbox-group label { display: flex; align-items: center; font-weight: normal; margin-top: 15px; cursor: pointer; }
+        .checkbox-group input[type="checkbox"] { width: auto; margin-right: 10px; transform: scale(1.3); }
+        .button-footer { display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; }
+        .button-footer button { padding: 12px 25px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; min-width: 150px; }
+        .submit-button { background-color: #28a745; color: white; }
+        .back-button { background-color: #6c757d; color: white; }
     </style>
 </head>
 <body>
@@ -101,10 +56,9 @@
                 <div class="form-group checkbox-group">
                     <label for="confirmation-checkbox">
                         <input type="checkbox" id="confirmation-checkbox" name="confirmation" required>
-                        我已確認上述填寫的資料皆無錯誤，並瞭解提交後的法律後果。
+                        我已確認上述填寫的資料皆無錯誤
                     </label>
                 </div>
-
 
                 <div class="button-footer">
                     <button type="button" class="back-button" onclick="window.location.href='query.html'">返回查詢頁面</button>
@@ -146,10 +100,10 @@
                 const studentName = document.getElementById('student-name').value;
                 const reflection = document.getElementById('reflection-text').value;
                 
-                // 2. 從 Local Storage 讀取上一頁的行為數據 (關鍵)
-                const selectedBehaviors = localStorage.getItem('selectedBehaviors') || '無紀錄';
+                // 2. 從 Local Storage 讀取上一頁的行為數據
+                const selectedBehaviors = localStorage.getItem('selectedBehaviors') || null; // 設為 null
 
-                // 3. 準備 JSON 格式的數據 (必須與 GAS 腳本中的 data.xxx 完全一致)
+                // 3. 準備 JSON 格式的數據 (確保 key 名稱正確)
                 const formData = {
                     school: school,
                     studentName: studentName,

@@ -3,87 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BCTP - 反省與回饋表單</title>
+    <title>BCTP - 反思與通報表單</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
-    <style>
-        /* 專門為表單設計的樣式 */
-        .form-panel {
-            max-width: 700px;
-            margin: 50px auto;
-            padding: 40px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-        .form-panel h2 {
-            text-align: center;
-            color: #0056b3;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 25px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #444;
-        }
-        .form-group input[type="text"],
-        .form-group textarea {
-            width: 95%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1em;
-            resize: vertical;
-        }
-        .submit-form-button {
-            width: 100%;
-            padding: 15px;
-            background-color: #28a745; 
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .submit-form-button:hover {
-            background-color: #1e7e34;
-        }
-    </style>
-</head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+    
+    </head>
 <body>
     <header>
         <div class="container">
             <h1>BCTP</h1>
-            <p>反省與資料回饋表單</p>
+            <p>反思與通報表單</p>
         </div>
     </header>
 
     <main>
-        <div class="form-panel">
-            <h2>霸凌行為反省與回饋表單 (模擬繳回教育部)</h2>
-            <p style="text-align:center; color:#dc3545;">* 填寫此表單是讓霸凌者反省的流程。</p>
-            <form>
-                <div class="form-group">
-                    <label for="name">您的姓名/學號 (必填):</label>
-                    <input type="text" id="name" required>
-                </div>
+        <div class="container">
+            <h2>個人反思與後果認知</h2>
+            <p>請針對您在上一頁查詢到的法律後果，填寫以下反思內容。</p>
 
-                <div class="form-group">
-                    <label for="reflection">反省內容 (請詳細說明您在查詢系統中學到了什麼，以及未來如何改進):</label>
-                    <textarea id="reflection" rows="8" required></textarea>
-                </div>
+            <form id="reflection-form" class="form-card">
                 
                 <div class="form-group">
-                    <label for="agreement">我確認我已閱讀並理解法律後果:</label>
-                    <input type="checkbox" id="agreement" required> (勾選)
+                    <label for="reflection-display">您選擇的行為 (來自上一頁):</label>
+                    <p id="reflection-display" class="behavior-display-box"></p>
                 </div>
 
-                <button type="submit" class="submit-form-button">提交反省表單 &rarr;</button>
+                <div class="form-group">
+                    <label for="reflection-text">您對於查詢到的法律後果有何反思？</label>
+                    <textarea id="reflection-text" required rows="6" placeholder="請寫下您對於可能面臨的法律責任和賠償的看法..."></textarea>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="reporting-checkbox" name="reporting">
+                        我瞭解到這個行為的嚴重性，並願意與師長/輔導人員討論通報事宜。
+                    </label>
+                </div>
+
+                <div class="button-footer">
+                    <button type="submit" id="submit-button" class="submit-button">提交表單</button>
+                    <a href="query.html" class="back-button">&larr; 返回查詢頁面</a>
+                </div>
             </form>
         </div>
     </main>
@@ -91,5 +51,66 @@
     <footer>
         <p>BCTP (Bullying Consequence Transparency Platform)</p>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // *** 🚨 替換點：請將此處替換為您部署的 Google Apps Script Web App URL ***
+            const GAS_URL = 'https://script.google.com/macros/s/AKfycbw4qpHBbdHgLZ62YuDUp1rUg0eeUr__py3PhsfiydmrAQd-t9I9qAEuUl_25sxnwNqghQ/exec'; 
+            
+            const form = document.getElementById('reflection-form');
+            const submitButton = document.getElementById('submit-button');
+            const reflectionDisplay = document.getElementById('reflection-display');
+            
+            // 讀取從 query.html 儲存的行為數據
+            const behavior = localStorage.getItem('selectedBehaviors') || '無選擇行為';
+            reflectionDisplay.textContent = behavior; // 顯示給使用者看
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); 
+                
+                if (!submitButton) return;
+                submitButton.disabled = true;
+                submitButton.textContent = '資料回傳中...';
+
+                // 1. 獲取表單數據
+                const reflection = document.getElementById('reflection-text').value;
+                const reportingCheckbox = document.getElementById('reporting-checkbox');
+                const reporting = reportingCheckbox.checked ? '是 (願意)' : '否 (不願意)';
+                
+                // 2. 準備 JSON 格式的數據
+                const formData = {
+                    // 該欄位名稱必須與您 GAS 程式碼中的 data.behavior 一致
+                    behavior: behavior, 
+                    reflection: reflection,
+                    reporting: reporting
+                };
+                
+                // 3. 使用 fetch 發送數據到 Google Apps Script
+                fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // 必須使用 no-cors 才能讓 GAS 成功接收 (瀏覽器要求)
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8', // GAS 要求 text/plain
+                    },
+                    body: JSON.stringify(formData) // 轉換為 JSON 字串
+                })
+                .then(response => {
+                    // 由於 no-cors 模式無法檢查實際的回應，假設發送成功
+                    alert('✨ 表單提交成功！您的反思數據已安全傳送到 Google 試算表。');
+                    
+                    // 成功後清除表單，並將按鈕改為已完成狀態
+                    form.reset();
+                    submitButton.textContent = '✅ 已完成提交';
+                    submitButton.disabled = true;
+                })
+                .catch(error => {
+                    console.error('發送數據時發生錯誤:', error);
+                    alert('提交失敗，請檢查 Web App URL 是否正確部署。');
+                    submitButton.textContent = '提交表單';
+                    submitButton.disabled = false;
+                });
+            });
+        });
+    </script>
 </body>
 </html>

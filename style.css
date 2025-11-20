@@ -1,261 +1,221 @@
-/* --- 基礎設定與字體 --- */
+/* style.css - BCTP 基礎樣式與版面配置 */
+
+/* --- 基礎重置與字體 --- */
 body {
-    font-family: 'Noto Sans TC', 'Microsoft YaHei', sans-serif; 
+    font-family: '微軟正黑體', 'Microsoft JhengHei', Arial, sans-serif;
+    line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #f4f6f8; 
+    background-color: #f4f7f6; /* 淺灰色背景 */
     color: #333;
 }
+
 .container {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 15px;
+    padding: 20px 0;
 }
 
-/* --- 頂部導航列 --- */
+/* --- 頂部導航欄/頁首 --- */
 header {
-    background-color: #004080; 
+    background-color: #007bff; /* 主題藍色 */
     color: white;
     padding: 20px 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 header h1 {
-    margin: 0;
+    margin: 0 0 5px 0;
     font-size: 2.5em;
-    font-weight: 700;
 }
+
 header p {
-    margin: 5px 0 0;
+    margin: 0;
     font-size: 1em;
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
-/* --- 主要內容佈局 (Flexbox: query.html 使用) --- */
-.main-layout {
-    display: flex; 
-    gap: 30px; 
+/* --- 主要內容區域 --- */
+main {
     padding: 40px 0;
-    text-align: left; 
-}
-@media (max-width: 900px) {
-    .main-layout {
-        flex-direction: column; 
-    }
 }
 
-/* --- 篩選器面板 (左側) --- */
+h2 {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+/* --- query.html 特有佈局 --- */
+.main-layout {
+    display: flex;
+    gap: 30px;
+}
+
+/* 行為勾選面板 */
 .filter-panel {
-    flex: 1; 
-    background-color: #ffffff;
+    flex: 1;
+    background: white;
     padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-    min-width: 250px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
-.filter-panel h2 {
-    color: #0056b3;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 10px;
+
+/* 結果展示面板 */
+.results-panel {
+    flex: 2;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
+
+/* --- 核取方塊群組樣式 --- */
 .checkbox-group label {
     display: block;
-    padding: 12px 0;
-    border-bottom: 1px dashed #eee;
+    padding: 10px 0;
     cursor: pointer;
-    text-align: left;
+    border-bottom: 1px dashed #e9ecef;
     transition: background-color 0.2s;
 }
+
 .checkbox-group label:hover {
-    background-color: #f9f9f9;
+    background-color: #f8f9fa;
 }
+
 .checkbox-group input[type="checkbox"] {
     margin-right: 10px;
+    transform: scale(1.1);
 }
 
-#search-button {
-    width: 100%;
-    padding: 15px;
-    margin-top: 20px;
-    background-color: #ff6347; 
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-#search-button:hover {
-    background-color: #e55337;
-}
-
-/* --- 結果面板 (右側) --- */
-.results-panel {
-    flex: 2; 
-}
-.results-panel h2 {
-    color: #444;
-}
-
-/* 卡片與警示訊息樣式 */
-.result-card, .alert-info {
-    background-color: white;
-    padding: 25px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    text-align: left;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-}
-
-.alert-info {
-    background-color: #d1ecf1;
-    color: #0c5460;
-    border: 1px solid #bee5eb;
-}
-
-.statute-card {
+/* --- 法律條文卡片樣式 (results-area) --- */
+.law-card {
     border-left: 5px solid #007bff; 
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.case-card {
-    border-left: 5px solid #dc3545; 
-}
-
-.result-card h3 {
-    margin-top: 0;
-    color: #004080;
-}
-.result-card a {
+.law-card h3 {
     color: #007bff;
-    text-decoration: none;
-    font-weight: bold;
-    display: block;
+    margin-top: 0;
+    font-size: 1.1em;
+    border-bottom: 1px dashed #ced4da;
+    padding-bottom: 5px;
+}
+.law-card p {
+    font-size: 0.95em;
+    color: #495057;
+    margin-top: 8px;
+}
+.law-card strong {
+    color: #333;
+}
+.law-card .note {
+    font-style: italic;
+    color: #6c757d;
+    border-top: 1px solid #e9ecef;
+    padding-top: 5px;
     margin-top: 10px;
 }
-.result-card a:hover {
-    text-decoration: underline;
+
+/* --- 表單樣式 (form.html 適用) --- */
+.form-card {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-.hidden {
-    display: none !important;
-}
-
-/* --- 底部填寫表單按鈕 (query.html) --- */
-.button-footer {
-    text-align: center;
-    padding: 30px 0;
-}
-.submit-button {
-    padding: 15px 30px;
-    background-color: #28a745; 
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.2em;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.3s;
-}
-.submit-button:hover {
-    background-color: #1e7e34;
-}
-
-/* --- 頁腳 (置中修正) --- */
-footer {
-    background-color: #333;
-    color: #bbb;
-    text-align: center; /* 頁腳文字置中 */
-    padding: 15px 0;
-    font-size: 0.9em;
-}
-
-
-/* ======================================= */
-/* ====== INDEX.HTML 專用樣式調整 ====== */
-/* ======================================= */
-
-/* 容器樣式 */
-.intro-container {
-    padding: 40px 20px; 
-    text-align: left; 
-    max-width: 900px; /* 擴大容器以容納並排元素 */
-    margin: 80px auto; /* 置中容器 */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* 保持卡片陰影效果 */
-    background-color: white; /* 保持白色背景 */
-    border-radius: 10px; /* 保持圓角 */
-}
-
-/* 圖片與文字的左右並排容器 (Flexbox) */
-.intro-content-wrapper {
-    display: flex; 
-    align-items: center; /* 垂直居中對齊 */
-    gap: 40px; 
-    margin-bottom: 40px; 
-    flex-wrap: nowrap; 
-}
-
-.intro-image-area {
-    flex: 0 0 auto; /* 圖片區域不佔滿空間，只佔圖片所需空間 */
-    text-align: center; 
-}
-.intro-text-area {
-    flex: 1; /* 文字區域佔用剩餘空間 */
-    min-width: 300px; 
-}
-
-/* 圖片放大樣式 */
-.intro-logo {
-    max-width: 350px; /* 放大圖片尺寸 */
-    height: auto;
+.form-group label {
     display: block; 
-    margin: 0 auto; 
+    margin-bottom: 8px; 
+    font-weight: bold; 
+    color: #333;
+}
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%; 
+    padding: 12px;
+    box-sizing: border-box; 
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 1em;
 }
 
-.intro-container h1 {
-    font-size: 2.5em;
-    padding: 0;
-    margin-top: 0;
-    margin-bottom: 15px; 
-}
-.intro-container p {
-    margin-bottom: 25px; 
+/* --- 底部按鈕區 --- */
+.button-footer {
+    display: flex;
+    justify-content: flex-end; 
+    gap: 15px; 
+    margin-top: 30px;
 }
 
-/* 按鈕化超連結樣式 */
-.start-button {
-    padding: 15px 30px;
-    background-color: #ff6347; 
-    color: white; 
+.button-footer a,
+.button-footer button {
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
     border: none;
-    border-radius: 5px;
-    font-size: 1.5em;
+    border-radius: 8px;
     cursor: pointer;
-    text-decoration: none; /* 移除底線 */
-    transition: background-color 0.3s;
-    display: inline-block; 
-    margin-left: 0; 
-}
-.start-button:hover {
-    background-color: #e55337; 
+    min-width: 150px; 
+    text-decoration: none; /* 移除超連結的下劃線 */
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.3s ease;
 }
 
+.submit-button {
+    background-color: #28a745; /* 綠色 */
+    color: white;
+}
 
-/* 針對小螢幕的調整 */
-@media (max-width: 768px) {
-    .intro-content-wrapper {
-        flex-direction: column; /* 垂直堆疊 */
-        text-align: center; 
+.submit-button:hover {
+    background-color: #1e7e34; 
+}
+
+.back-button, .button-footer a[href="query.html"] {
+    background-color: #6c757d; /* 灰色 */
+    color: white;
+}
+
+.back-button:hover, .button-footer a[href="query.html"]:hover {
+    background-color: #5a6268;
+}
+
+/* --- 頁尾 --- */
+footer {
+    text-align: center;
+    padding: 15px 0;
+    background-color: #e9ecef;
+    color: #6c757d;
+    font-size: 0.85em;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* --- RWD 響應式設計 (平板/手機) --- */
+@media (max-width: 992px) {
+    .main-layout {
+        flex-direction: column;
     }
-    .intro-image-area {
-        margin-bottom: 20px; 
+}
+@media (max-width: 576px) {
+    .button-footer {
+        flex-direction: column;
+        align-items: stretch;
     }
-    .intro-text-area {
-        text-align: center; 
-    }
-    .intro-container h1 {
-        font-size: 2em; 
-    }
-    .start-button {
-        margin-left: auto; 
-        margin-right: auto;
+    .button-footer a,
+    .button-footer button {
+        min-width: 100%; 
     }
 }

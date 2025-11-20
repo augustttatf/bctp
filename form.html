@@ -6,6 +6,56 @@
     <title>BCTP - 反思表單</title>
     <link rel="stylesheet" href="style.css"> 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+    
+    <style>
+        /* 確保 Label 和 Input 垂直排列 */
+        .form-group label {
+            display: block; /* 讓標籤佔滿一行 */
+            margin-bottom: 8px; /* 增加標籤與輸入框的間距 */
+            font-weight: bold; /* 強調欄位名稱 */
+        }
+        /* 確保輸入框佔滿父容器寬度 */
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%; 
+            padding: 12px;
+            box-sizing: border-box; /* 保持內邊距不撐大寬度 */
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        /* 按鈕區塊修正：實現按鈕等寬、對齊 */
+        .button-footer {
+            display: flex;
+            justify-content: flex-end; /* 將按鈕靠右對齊 */
+            gap: 15px; /* 按鈕間的間距 */
+            margin-top: 30px;
+        }
+
+        /* 統一按鈕大小和樣式 */
+        .button-footer button {
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            min-width: 150px; /* 確保兩個按鈕有相同的最小寬度 */
+        }
+
+        /* 提交按鈕樣式 */
+        .submit-button {
+            background-color: #28a745; /* 綠色 */
+            color: white;
+        }
+        
+        /* 返回按鈕樣式（輔助按鈕） */
+        .back-button {
+            background-color: #6c757d; /* 灰色 */
+            color: white;
+        }
+
+    </style>
 </head>
 <body>
     <header>
@@ -36,12 +86,12 @@
                 <div class="form-group">
                     <label for="reflection-text">反省內容 (必填)</label>
                     <textarea id="reflection-text" required rows="8" 
-                        placeholder="請寫下您對於可能面臨的法律責任和賠償的看法與反省..."></textarea>
+                        placeholder="請寫下您對於可能面臨的法律責任、賠償的看法與深入的反省..."></textarea>
                 </div>
 
                 <div class="button-footer">
-                    <button type="submit" id="submit-button" class="submit-button">提交反省表單</button>
                     <button type="button" class="back-button" onclick="window.location.href='query.html'">返回查詢頁面</button>
+                    <button type="submit" id="submit-button" class="submit-button">提交反省表單</button>
                 </div>
             </form>
         </div>
@@ -54,7 +104,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // *** 🚨 替換點：請將此處替換為您部署的 Google Apps Script Web App URL ***
-            const GAS_URL = 'https://script.google.com/macros/s/AKfycbw4qpHBbdHgLZ62YuDUp1rUg0eeUr__py3PhsfiydmrAQd-t9I9qAEuUl_25sxnwNqghQ/exec'; 
+            const GAS_URL = '貼上您部署的 Web App URL (以 /exec 結尾)'; 
             
             const form = document.getElementById('reflection-form');
             const submitButton = document.getElementById('submit-button');
@@ -71,15 +121,15 @@
                 const studentName = document.getElementById('student-name').value;
                 const reflection = document.getElementById('reflection-text').value;
                 
-                // 2. 關鍵修正：從 Local Storage 讀取上一頁的行為數據
+                // 2. 從 Local Storage 讀取上一頁的行為數據 (確保數據回傳)
                 const selectedBehaviors = localStorage.getItem('selectedBehaviors') || '無紀錄';
 
-                // 3. 準備 JSON 格式的數據 (欄位名稱必須與 GAS 腳本中的 data.xxx 完全一致)
+                // 3. 準備 JSON 格式的數據 (欄位名稱與 GAS 腳本中的 data.xxx 完全一致)
                 const formData = {
                     school: school,
                     studentName: studentName,
                     reflection: reflection,
-                    behaviors: selectedBehaviors // 修正：確保行為數據傳輸
+                    behaviors: selectedBehaviors 
                 };
                 
                 // 4. 使用 fetch 發送數據到 Google Apps Script

@@ -4,133 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BCTP - 反思表單</title>
-    <link rel="stylesheet" href="style.css"> 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
-    
-    <style>
-        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
-        .form-group input[type="text"], .form-group textarea {
-            width: 100%; padding: 12px; box-sizing: border-box; 
-            border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px;
-        }
-        .checkbox-group label { display: flex; align-items: center; font-weight: normal; margin-top: 15px; cursor: pointer; }
-        .checkbox-group input[type="checkbox"] { width: auto; margin-right: 10px; transform: scale(1.3); }
-        .button-footer { display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; }
-        .button-footer button { padding: 12px 25px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; min-width: 150px; }
-        .submit-button { background-color: #28a745; color: white; }
-        .back-button { background-color: #6c757d; color: white; }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✍️</text></svg>">
 </head>
 <body>
     <header>
         <div class="container">
             <h1>BCTP</h1>
-            <p>反思與後果認知表單</p>
+            <p>霸凌行為後果透明化資訊平台</p>
         </div>
     </header>
 
     <main>
         <div class="container">
-            <h2>個人反思與後果認知</h2>
-            
-            <p>請針對您在上一頁查詢到的法律後果，填寫以下資訊，並提交給平台紀錄。</p>
-
-            <form id="reflection-form" class="form-card">
+            <div class="form-card">
+                <h2>步驟三：提交反思表單</h2>
+                <p>請您針對先前選擇的行為，認真寫下反思內容。您的反思將被記錄以供輔導參考。</p>
                 
-                <div class="form-group">
-                    <label for="school-name">學校名稱 (必填)</label>
-                    <input type="text" id="school-name" required placeholder="例如：某某高職 / 某某國中">
+                <div id="selected-behaviors-display" style="margin-bottom: 20px; padding: 15px; background-color: #eef; border-radius: 4px; border-left: 5px solid #007bff;">
+                    <strong>您勾選的行為：</strong> <span id="behaviors-text">（正在載入...）</span>
                 </div>
 
-                <div class="form-group">
-                    <label for="student-name">姓名 (必填)</label>
-                    <input type="text" id="student-name" required placeholder="請輸入您的真實姓名">
-                </div>
-                
-                <div class="form-group">
-                    <label for="reflection-text">反省內容 (必填)</label>
-                    <textarea id="reflection-text" required rows="8" 
-                        placeholder="請寫下您對於可能面臨的法律責任、賠償的看法與深入的反省..."></textarea>
-                </div>
-                
-                <div class="form-group checkbox-group">
-                    <label for="confirmation-checkbox">
-                        <input type="checkbox" id="confirmation-checkbox" name="confirmation" required>
-                        我已確認上述填寫的資料皆無錯誤
-                    </label>
-                </div>
+                <form id="reflection-form">
+                    <div class="form-group">
+                        <label for="school">學校名稱：</label>
+                        <input type="text" id="school" name="school" required placeholder="請輸入您的學校名稱">
+                    </div>
 
-                <div class="button-footer">
-                    <button type="button" class="back-button" onclick="window.location.href='query.html'">返回查詢頁面</button>
-                    <button type="submit" id="submit-button" class="submit-button">提交反省表單</button>
-                </div>
-            </form>
+                    <div class="form-group">
+                        <label for="studentName">姓名 (或代號)：</label>
+                        <input type="text" id="studentName" name="studentName" required placeholder="請輸入您的姓名或輔導代號">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reflection">反省內容 (請至少填寫 50 字)：</label>
+                        <textarea id="reflection" name="reflection" rows="8" required placeholder="請寫下您對所選行為的深刻反思、對受害者的歉意，以及未來如何改進的計劃。"></textarea>
+                    </div>
+
+                    <div class="button-footer">
+                        <a href="query.html" class="back-button">← 返回查詢頁面</a>
+                        <button type="submit" class="submit-button">提交反省表單</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </main>
-    
+
     <footer>
         <p>BCTP (Bullying Consequence Transparency Platform)</p>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // *** 🚨 替換點：請將此處替換為您部署的 Google Apps Script Web App URL ***
-            const GAS_URL = 'https://script.google.com/macros/s/AKfycbyh17cPQLk0QpaMC4Rg8fYR8npLc8e0hymU2ldLUTMSS_dAPZr7HlStVRvejdhAx3I4Pg/exec'; 
+            // *** 🚨 替換點：將此處替換為您重新部署後 Apps Script Web App URL ***
+            const GAS_URL = '<YOUR_DEPLOYED_GAS_URL>'; 
             
             const form = document.getElementById('reflection-form');
-            const submitButton = document.getElementById('submit-button');
-            const confirmationCheckbox = document.getElementById('confirmation-checkbox');
+            const behaviorsText = document.getElementById('behaviors-text');
+            const selectedBehaviors = localStorage.getItem('selectedBehaviors');
+
+            if (selectedBehaviors) {
+                behaviorsText.textContent = selectedBehaviors;
+            } else {
+                behaviorsText.textContent = '未勾選任何行為。請返回查詢頁面。';
+                behaviorsText.style.color = 'red';
+            }
 
 
             form.addEventListener('submit', function(e) {
-                
-                if (!confirmationCheckbox.checked) {
-                    e.preventDefault(); 
-                    return; 
+                e.preventDefault();
+
+                const formData = {
+                    school: document.getElementById('school').value,
+                    studentName: document.getElementById('studentName').value,
+                    reflection: document.getElementById('reflection').value,
+                    behaviors: selectedBehaviors || '未勾選行為'
+                };
+
+                if (formData.reflection.length < 50) {
+                    alert('反思內容至少需要 50 個字！');
+                    return;
                 }
                 
-                e.preventDefault(); 
-                
-                if (!submitButton) return;
+                const submitButton = form.querySelector('.submit-button');
+                submitButton.textContent = '提交中...';
                 submitButton.disabled = true;
-                submitButton.textContent = '資料回傳中...';
 
-                // 1. 獲取表單數據
-                const school = document.getElementById('school-name').value;
-                const studentName = document.getElementById('student-name').value;
-                const reflection = document.getElementById('reflection-text').value;
-                
-                // 2. 從 Local Storage 讀取上一頁的行為數據
-                const selectedBehaviors = localStorage.getItem('selectedBehaviors') || null; // 設為 null
-
-                // 3. 準備 JSON 格式的數據 (確保 key 名稱正確)
-                const formData = {
-                    school: school,
-                    studentName: studentName,
-                    reflection: reflection,
-                    behaviors: selectedBehaviors 
-                };
-                
-                // 4. 使用 fetch 發送數據到 Google Apps Script
                 fetch(GAS_URL, {
                     method: 'POST',
-                    mode: 'no-cors', 
-                    headers: {
-                        'Content-Type': 'text/plain;charset=utf-8', 
-                    },
-                    body: JSON.stringify(formData) 
+                    contentType: 'application/json',
+                    body: JSON.stringify(formData)
                 })
-                .then(response => {
-                    alert('✨ 表單提交成功！您的反省數據已提交。');
-                    
-                    form.reset();
-                    submitButton.textContent = '✅ 已完成提交';
-                    submitButton.disabled = true;
-                    localStorage.removeItem('selectedBehaviors'); 
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        alert('反思表單提交成功！數據已記錄。');
+                        form.reset();
+                        localStorage.removeItem('selectedBehaviors'); 
+                        submitButton.textContent = '提交反省表單';
+                        submitButton.disabled = false;
+                        behaviorsText.textContent = '（已提交，請返回主頁）';
+                    } else {
+                        alert(`提交失敗：${data.message}`);
+                        submitButton.textContent = '提交反省表單';
+                        submitButton.disabled = false;
+                    }
                 })
                 .catch(error => {
-                    console.error('發送數據時發生錯誤:', error);
-                    alert('提交失敗，請檢查 Web App URL 或網路連線。');
+                    console.error('Fetch error:', error);
+                    alert('網路或伺服器錯誤，請稍後再試。');
                     submitButton.textContent = '提交反省表單';
                     submitButton.disabled = false;
                 });

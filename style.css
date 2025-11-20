@@ -1,76 +1,304 @@
-background-color: #1e7e34;
+/* style.css - 終極排版修正版 (2025-11-20) */
+
+/* --- 基礎設定與字體重置 --- */
+html, body {
+    height: 100%; /* 確保頁面高度佔滿視窗 */
+    margin: 0;
+    padding: 0;
+    font-family: '微軟正黑體', 'Microsoft JhengHei', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa; /* 統一淺灰背景 */
 }
 
-/* --- 頁腳 (已修正為置中) --- */
-/* --- 頁腳 (置中修正) --- */
-footer {
-background-color: #333;
-color: #bbb;
-@@ -173,34 +173,38 @@ footer {
-/* ====== INDEX.HTML 專用樣式調整 ====== */
-/* ======================================= */
-
-/* 容器樣式 */
-.intro-container {
-padding: 40px 20px; 
-text-align: left; 
-    max-width: 900px; 
-    margin: 80px auto; 
-    max-width: 900px; /* 擴大容器以容納並排元素 */
-    margin: 80px auto; /* 置中容器 */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* 保持卡片陰影效果 */
-    background-color: white; /* 保持白色背景 */
-    border-radius: 10px; /* 保持圓角 */
+/* 確保容器居中並有最大寬度 */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
 }
 
-/* 圖片與文字的左右並排容器 */
-/* 圖片與文字的左右並排容器 (Flexbox) */
-.intro-content-wrapper {
-display: flex; 
-    align-items: center; 
-    align-items: center; /* 垂直居中對齊 */
-gap: 40px; 
-margin-bottom: 40px; 
-flex-wrap: nowrap; 
+/* --- 頁首 (Header) --- */
+header {
+    background-color: #007bff; /* 品牌藍色 */
+    color: white;
+    padding: 25px 0;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.intro-image-area {
-    flex: 0 0 auto; 
-    flex: 0 0 auto; /* 圖片區域不佔滿空間，只佔圖片所需空間 */
-text-align: center; 
-}
-.intro-text-area {
-    flex: 1; 
-    flex: 1; /* 文字區域佔用剩餘空間 */
-min-width: 300px; 
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    letter-spacing: 1px;
 }
 
-/* 圖片放大樣式 */
-.intro-logo {
-    max-width: 350px; /* 圖片寬度 */
-    max-width: 350px; /* 放大圖片尺寸 */
-height: auto;
-display: block; 
-margin: 0 auto; 
-@@ -225,7 +229,7 @@ footer {
-border-radius: 5px;
-font-size: 1.5em;
-cursor: pointer;
+header p {
+    margin: 5px 0 0;
+    font-size: 1em;
+    opacity: 0.9;
+}
+
+/* --- 主要內容區 (Main) --- */
+main {
+    padding: 40px 0;
+    min-height: calc(100vh - 180px); /* 確保內容區至少佔滿視窗高度，扣除 header/footer */
+    display: flex; /* 讓內容垂直居中（如果需要）*/
+    flex-direction: column;
+    align-items: center; /* 水平居中 */
+}
+
+/* --- 標題樣式 --- */
+h2 {
+    color: #34495e; /* 深灰色 */
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 1.6em;
+    text-align: center; /* 標題居中 */
+}
+
+/* --- 首頁 (index.html) 專用樣式 --- */
+.hero-section {
+    text-align: center;
+    padding: 50px 0;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.hero-section img {
+    max-width: 300px; /* 控制圖片最大寬度 */
+    height: auto;
+    display: block; /* 讓圖片可以自動水平居中 */
+    margin: 0 auto 30px auto; /* 圖片下方留白 */
+    border-radius: 50%; /* 如果圖片是方形，可變圓形 */
+    border: 5px solid #007bff; /* 增加邊框 */
+}
+
+.hero-section h2 {
+    font-size: 2em;
+    color: #007bff;
+    margin-bottom: 20px;
+    border-bottom: none; /* 首頁 H2 不需底線 */
+    padding-bottom: 0;
+}
+
+.hero-section p {
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.start-button {
+    background-color: #28a745; /* 綠色 */
+    color: white;
+    padding: 15px 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    display: inline-block; /* 讓按鈕可以居中 */
+    margin-top: 20px;
+}
+
+.start-button:hover {
+    background-color: #218838;
+}
+
+/* --- 查詢頁 (query.html) 佈局 --- */
+.main-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start; /* 讓左右兩欄頂部對齊 */
+    width: 100%; /* 佔滿 container 寬度 */
+    max-width: 1200px;
+}
+
+/* 左右面板共用樣式 */
+.filter-panel, .results-panel, .form-card {
+    background: #ffffff; 
+    padding: 30px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6; /* 輕微邊框 */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* 輕微陰影，讓區塊更明顯 */
+}
+
+.filter-panel {
+    flex: 1; /* 佔據 1 份空間 */
+    min-width: 280px;
+}
+
+.results-panel {
+    flex: 2; /* 佔據 2 份空間 */
+}
+
+/* --- 核取方塊群組樣式 (query.html) --- */
+.checkbox-group label {
+    display: flex; 
+    align-items: center;
+    padding: 12px 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+    font-size: 1em;
+}
+
+.checkbox-group label:hover {
+    background-color: #e9f0f6; /* 淺藍色hover效果 */
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 15px;
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+/* --- 法律條文卡片樣式 (results-area) --- */
+.law-card {
+    border-left: 5px solid #007bff; /* 主題藍色側邊條 */
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05); 
+}
+.law-card h3 {
+    color: #007bff;
+    margin-top: 0;
+    font-size: 1.1em;
+    border-bottom: 1px dashed #ced4da;
+    padding-bottom: 5px;
+}
+.law-card p {
+    font-size: 0.95em;
+    color: #495057;
+    margin-top: 8px;
+}
+.law-card .note {
+    font-style: italic;
+    color: #6c757d;
+    border-top: 1px solid #e9ecef;
+    padding-top: 5px;
+    margin-top: 10px;
+}
+
+/* --- 表單樣式 (form.html) --- */
+.form-card {
+    max-width: 800px; /* 限制表單最大寬度 */
+    margin: 0 auto; /* 讓表單居中 */
+    padding: 30px;
+}
+
+.form-group label {
+    display: block; 
+    margin-bottom: 8px; 
+    font-weight: bold; 
+}
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%; 
+    padding: 12px;
+    box-sizing: border-box; 
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 1em;
+}
+.form-group.checkbox-group label {
+    padding: 0; /* 重置為預設，避免表單頁的核取方塊有過多的 padding */
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.form-group.checkbox-group input[type="checkbox"] {
+    margin-bottom: 0;
+}
+
+
+/* --- 底部按鈕區 (通用樣式，包括置中) --- */
+.button-footer {
+    display: flex;
+    justify-content: center; /* 讓按鈕水平居中 */
+    gap: 15px; 
+    margin-top: 30px;
+    width: 100%; /* 確保佔滿父容器寬度，才能居中 */
+}
+
+.button-footer a,
+.button-footer button {
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px; /* 稍微圓潤 */
+    cursor: pointer;
+    min-width: 150px; 
     text-decoration: none; 
-    text-decoration: none; /* 移除底線 */
-transition: background-color 0.3s;
-display: inline-block; 
-margin-left: 0; 
-@@ -235,10 +239,10 @@ footer {
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+.submit-button {
+    background-color: #28a745; /* 綠色 */
+    color: white;
+}
 
-/* 針對小螢幕的調整 (圖片和文字垂直堆疊) */
-/* 針對小螢幕的調整 */
+.submit-button:hover {
+    background-color: #218838;
+    transform: translateY(-2px); /* 輕微上浮效果 */
+}
+
+.back-button, .button-footer a[href="query.html"] {
+    background-color: #6c757d; /* 灰色 */
+    color: white;
+}
+
+.back-button:hover, .button-footer a[href="query.html"]:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+}
+
+/* --- 頁尾 (Footer) --- */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #e9ecef;
+    color: #6c757d;
+    font-size: 0.85em;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* 頁尾輕微陰影 */
+}
+
+/* --- RWD 響應式設計 (針對行動裝置) --- */
 @media (max-width: 768px) {
-.intro-content-wrapper {
-        flex-direction: column; 
-        flex-direction: column; /* 垂直堆疊 */
-text-align: center; 
+    .container {
+        width: 95%;
+    }
+    header h1 {
+        font-size: 2em;
+    }
+    .main-layout {
+        flex-direction: column; /* 堆疊佈局 */
+        gap: 20px;
+    }
+    .filter-panel, .results-panel, .form-card {
+        padding: 20px;
+    }
+    .hero-section img {
+        max-width: 200px; /* 手機上圖片更小 */
+    }
+    .start-button, .button-footer a, .button-footer button {
+        width: 100%; /* 按鈕佔滿寬度 */
+        min-width: unset; /* 取消最小寬度限制 */
+    }
+    .button-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
 }
-.intro-image-area {

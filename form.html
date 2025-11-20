@@ -41,7 +41,7 @@
 
                 <div class="button-footer">
                     <button type="submit" id="submit-button" class="submit-button">提交反省表單</button>
-                    <a href="query.html" class="back-button">返回查詢頁面</a>
+                    <button type="button" class="back-button" onclick="window.location.href='query.html'">返回查詢頁面</button>
                 </div>
             </form>
         </div>
@@ -66,24 +66,23 @@
                 submitButton.disabled = true;
                 submitButton.textContent = '資料回傳中...';
 
-                // 1. 獲取表單數據 (新的欄位)
+                // 1. 獲取表單數據
                 const school = document.getElementById('school-name').value;
                 const studentName = document.getElementById('student-name').value;
                 const reflection = document.getElementById('reflection-text').value;
                 
-                // (可選) 獲取上一頁的行為數據，並一併傳輸，但這次主要欄位是學校/姓名/反省
+                // 2. 關鍵修正：從 Local Storage 讀取上一頁的行為數據
                 const selectedBehaviors = localStorage.getItem('selectedBehaviors') || '無紀錄';
 
-                // 2. 準備 JSON 格式的數據 (欄位名稱必須與 GAS 腳本中的 data.xxx 一致)
+                // 3. 準備 JSON 格式的數據 (欄位名稱必須與 GAS 腳本中的 data.xxx 完全一致)
                 const formData = {
-                    school: school,         // 對應 GAS 中的 data.school
-                    studentName: studentName,   // 對應 GAS 中的 data.studentName
-                    reflection: reflection,     // 對應 GAS 中的 data.reflection
-                    // 額外附加行為數據，方便查閱
-                    selectedBehaviors: selectedBehaviors 
+                    school: school,
+                    studentName: studentName,
+                    reflection: reflection,
+                    behaviors: selectedBehaviors // 修正：確保行為數據傳輸
                 };
                 
-                // 3. 使用 fetch 發送數據到 Google Apps Script
+                // 4. 使用 fetch 發送數據到 Google Apps Script
                 fetch(GAS_URL, {
                     method: 'POST',
                     mode: 'no-cors', 
@@ -101,7 +100,7 @@
                 })
                 .catch(error => {
                     console.error('發送數據時發生錯誤:', error);
-                    alert('提交失敗，請檢查 Web App URL 是否正確部署。');
+                    alert('提交失敗，請檢查 Web App URL 或網路連線。');
                     submitButton.textContent = '提交反省表單';
                     submitButton.disabled = false;
                 });

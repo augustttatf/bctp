@@ -22,7 +22,7 @@
                 <p>請您針對先前選擇的行為，認真寫下反思內容。您的反思將被記錄以供輔導參考。</p>
                 
                 <div id="selected-behaviors-display" style="margin-bottom: 20px; padding: 15px; background-color: #eef; border-radius: 4px; border-left: 5px solid #007bff;">
-                    <strong>您勾選的行為：</strong> <pre id="behaviors-text" style="margin: 0; white-space: pre-wrap;"></pre>
+                    <strong>您勾選的行為：</strong> <pre id="behaviors-text" style="margin: 0; white-space: pre-wrap; color: inherit; font-family: inherit;"></pre>
                 </div>
 
                 <form id="reflection-form">
@@ -80,7 +80,7 @@
                     school: document.getElementById('school').value,
                     studentName: document.getElementById('studentName').value,
                     reflection: document.getElementById('reflection').value,
-                    // 將換行符號替換成 GAS 友善的分隔符號 (例如：分號 + 空格)
+                    // 將換行符號替換成 GAS 友善的分隔符號 (例如：分號 + 空格)，但保持原始數據用於顯示
                     behaviors: selectedBehaviors ? selectedBehaviors.replace(/\n/g, '; ') : '未勾選行為'
                 };
                 

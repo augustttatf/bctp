@@ -6,7 +6,8 @@
     <title>BCTP - 行為後果查詢</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
-</head><body>
+</head>
+<body>
     <header>
         <div class="container">
             <h1>BCTP</h1>
@@ -66,6 +67,7 @@
 
             localStorage.removeItem('selectedBehaviors');
 
+            // ... (loadLawData 函數保持不變) ...
             async function loadLawData() {
                 try {
                     const response = await fetch(JSON_URL);
@@ -86,6 +88,7 @@
                     loadingMessage.style.color = 'red';
                 }
             }
+
 
             function updateResults() {
                 resultsArea.innerHTML = ''; 
@@ -114,7 +117,7 @@
 
                 if (loadingMessage) loadingMessage.remove(); 
                 
-                // ... (法律卡片顯示邏輯與先前版本一致) ...
+                // ... (法律卡片顯示邏輯保持不變) ...
                 let displayedLawIdentifiers = new Set(); 
                 let foundLaws = []; 
 
@@ -136,6 +139,7 @@
                     }
                 });
 
+
                 if (foundLaws.length === 0) {
                      resultsArea.innerHTML = `<p style="color: red;">抱歉，目前資料庫中未找到與您勾選行為相關的法律條文。</p>`;
                      return;
@@ -144,10 +148,13 @@
                 foundLaws.forEach(law => {
                     const card = document.createElement('div');
                     card.className = 'law-card'; 
+                    
                     let lawTypeLabel = law.LawType === 0 ? '少年事件處理法 (通用處分)' : lawData.LawType_Mapping[law.LawType.toString()] || '相關法條';
+                    
                     let html = `<h3>${lawTypeLabel} - ${law.LawNum || '無條款號'}</h3>`;
                     html += `<p><strong>條文詳情：</strong> ${law.LawDetails || '無詳情'}</p>`;
                     html += `<p class="note"><strong>(相關說明)</strong> ${law.RelevanceNote || '無相關性說明'}</p>`;
+                    
                     card.innerHTML = html;
                     resultsArea.appendChild(card);
                 });

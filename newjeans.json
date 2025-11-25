@@ -5,32 +5,49 @@
     "2": "網路散布謠言",
     "3": "威脅取財",
     "4": "密集訊息騷擾"
-  },
+  },	
   "news": [
   {
 	 "newsType": 1,
      "newscontent":"高三學長疑因妹妹被欺負，連續兩節下課在廁所毆打高一學弟，現場學生還圍觀錄影鼓譟。事後加害學長因手脫臼送醫，受害學弟卻只能在校等待家長，報警後也未獲積極處理。教育局表示已對該學長記大過一次。",
-     "source":"https://tw.news.yahoo.com/台中貴族高中爆霸凌-學長打人手脫臼送醫-學弟挺揍卻留校-003459915.html"
+     "source":"https://tw.news.yahoo.com/台中貴族高中爆霸凌-學長打人手脫臼送醫-學弟挺揍卻留校-003459915.html",
+	 "videoconnection":"https://www.youtube.com/watch?v=sO1uP3d-OG4&rco=1"
   },
   {
 	 "newsType": 1,
      "newscontent":"桃園某私校16日發生疑似霸凌事件，一名高一生因「插座誤會」在教室遭同學痛毆，過程被同學錄下流出，讓家長心碎報案。校方表示兩人彼此不熟、溝通不良引發衝突，已進行輔導與法治教育並召集雙方家長溝通。教育局指出事件已完成校安通報，家長也於當晚至派出所製作筆錄。",
-     "source":"https://tw.news.yahoo.com/傻眼-桃園高-生教室遭同學-暴揍23秒-只因1事-074100621.html"
+     "source":"https://tw.news.yahoo.com/傻眼-桃園高一生教室遭同學-暴揍23秒-只因1事-074100621.html",
+	 "videoconnection":"https://www.youtube.com/watch?v=euelcZ6ylkg"
   },
   {
 		"newsType": 2,
 		"newscontent":"雲林一所私立國中爆出霸凌事件，少女因被惡意造謠「與老師談戀愛」遭到排擠、網路散播不堪內容，最終心理受創轉學，甚至謠言延燒到新學校。涉案 5 名學生雖被記過，卻在 3 個月內迅速銷過，還在畢業典禮擔任代表、領校長獎，引發家長質疑「變相鼓勵霸凌」。",
-		"source":"https://tw.news.yahoo.com/少女遭霸凌流淚轉學-加害者卻風光上台領獎-全網炸鍋-雲林某國中回應了-102700311.html"
+		"source":"https://tw.news.yahoo.com/少女遭霸凌流淚轉學-加害者卻風光上台領獎-全網炸鍋-雲林某國中回應了-102700311.html",
+		 "videoconnection":"https://www.youtube.com/watch?v=DjK2Nm8THwo"
   },
   {
 		"newsType": 2,
 		"newscontent":"桃園一名 17 歲少年玩遊戲時罵「腦殘嗎」被提告妨害名譽，最後以 6000 元和解。家屬發現提告者熟悉流程，常在期限前一次告多人，質疑動機不純。律師指出，確實有人利用遊戲謾罵蒐證提告、藉賠償金牟利。",
-		"source":"https://tw.news.yahoo.com/遊戲打輸罰-腦殘嗎-少年遭告妨害名譽-110121580.html"
+		"source":"https://tw.news.yahoo.com/遊戲打輸罰-腦殘嗎-少年遭告妨害名譽-110121580.html",
+		 "videoconnection":"https://www.youtube.com/watch?v=vp24K1buWVw"
   },
   {
 		"newsType": 3,
-		"newscontent":"台中李姓男子夥同多名朋友，以未成年少女假裝援交為誘餌約出被害人，見面後恐嚇索討 60 萬並威脅公開訊息。雙方在停車場爭吵被民眾發現報警，嫌犯還企圖搶走車內物品。警方到場逮捕 5 人，依搶奪與恐嚇取財罪移送法辦。",
-		"source":"https://tw.news.yahoo.com/未成年少女當誘餌-假援交恐嚇取財-100733258.html"
+		"newscontent":" 竹聯幫明仁會陳姓主嫌利用一名16歲少女在社群媒體設下「仙人跳」陷阱，將被害人約至住處後，指揮小弟闖入拘禁、毆打並強拍裸照並以裸照勒索被害人50萬元。警方長期蒐證後，逮捕陳嫌及涉案少女等共六人，依組織犯罪防制條例、妨害自由等罪嫌移送法辦。",
+		"source":"https://news.ltn.com.tw/news/society/breakingnews/5116163",
+		 "videoconnection":"https://www.youtube.com/watch?v=AIEYTmHsde8"
+  },
+  {
+		"newsType": 4,
+		"newscontent":"新北市國中女學生，收到男同學的騷擾訊息，在媽媽得知後，通知學校 並要求對方道歉，沒想到卻引來其他同學，傳訊息嗆聲「會找媽媽處理事情很厲害？」還繼續在網路上不斷po文攻擊，被害女學生，承受不了連日的謾罵，不但求助身心科，更不敢上學，現在家長也打算對出言霸凌的學生，提告誹謗告訴。",
+		"source":"https://today.line.me/tw/v3/article/Kz6PVG",
+		 "videoconnection":"https://www.youtube.com/watch?v=YFBIsJacqfA"
+  },
+  {
+		"newsType": 4,
+		"newscontent":"新北市一名男子，日前拿著朋友的手機，傳訊息給女性友人，問她「身上香嗎？」，讓女子覺得被騷擾。女子的弟弟得知消息，找來十多人約對方談判，拿著球棒，要求拍下道歉影片，幸好警方到場，迅速將一夥人帶回警局。",
+		"source":"https://www.ftvnews.com.tw/news/detail/2020817S06M1",
+		 "videoconnection":"https://www.youtube.com/watch?v=X9d8OYUYof8" 
   }
   ]
 }

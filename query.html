@@ -20,7 +20,7 @@
             <div class="main-layout">
                 
                 <div class="filter-panel">
-                    <h2>步驟一：行為勾選 <span id="vc-label"></span></h2>
+                    <h2>步驟一：行為勾選</h2>
                     <p>勾選觸發法律後果的行為，查看對應的法律後果。</p>
 
                     <div class="checkbox-group" id="behavior-filters">
@@ -54,21 +54,19 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // *** 🚨 關鍵更新：最新的 JSON 網址 ***
+            // *** 🚨 JSON 網址 (請確保此網址為有效連結) ***
             const JSON_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/meowmeowmeow.json'; 
             
             const filterContainer = document.getElementById('behavior-filters');
             const resultsArea = document.getElementById('results-area');
             const loadingMessage = document.getElementById('loading-message');
             const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
-            const vcLabel = document.getElementById('vc-label'); 
             
             let lawData = { related_statutes_segmented: [], LawType_Mapping: {} }; 
             let generalLaws = []; 
             let minorOffenseLaws = []; 
 
             localStorage.removeItem('selectedBehaviors');
-            vcLabel.textContent = ' (V: 3.2)'; // 版本標記
 
             async function loadLawData() {
                 try {
@@ -132,7 +130,7 @@
                 } else if (law.LawType === 5) {
                     lawTypeLabel = `🤝 ${lawTypeLabel}`; // 情節輕微/不付審理處分
                 } else if (law.ReplenishType === 1) {
-                    lawTypeLabel = `⚠ ${lawTypeLabel} (需配合補充項)`; // 特定行為中，需要補充的法條
+                    lawTypeLabel = `⚠ ${lawTypeLabel} (需和解/賠償)`; // 特定行為中，需要補充的法條
                 }
 
                 let html = `<h3>${lawTypeLabel} - ${law.LawNum || '無條款號'}</h3>`;
@@ -173,7 +171,6 @@
                 
                 // 1. 找出所有選定 LawType (1-4) 的法條
                 lawData.related_statutes_segmented.forEach(law => {
-                    // 只檢查 LawType 1-4
                     if (selectedLawTypes.has(law.LawType) && law.LawType >= 1 && law.LawType <= 4) {
                         const lawIdentifier = `${law.LawType}-${law.LawNum}`;
                         if (!displayedLawIdentifiers.has(lawIdentifier)) {
@@ -209,38 +206,34 @@
                 
                 // 4. 區分並顯示結果
                 let neededReplenishLaws = foundLaws.filter(law => law.ReplenishType === 1);
-                // 包含 LawType: 5 (ReplenishType: 2) 和其他 ReplenishType: 2 的法條
                 let replenishContents = foundLaws.filter(law => law.ReplenishType === 2 || law.LawType === 5);
-                // 核心法條 (特定行為 ReplenishType: 0 和 LawType: 0)
                 let otherLaws = foundLaws.filter(law => law.ReplenishType === 0 && law.LawType !== 5); 
 
                 // --- 顯示核心法條 (特定行為與通用保護處分) ---
                 const mainTitle = document.createElement('h3');
-                mainTitle.textContent = "🛡️ 核心與特定行為相關法條 (ReplenishType: 0)：";
+                mainTitle.textContent = "🛡️ 核心與特定行為相關法條：";
                 resultsArea.appendChild(mainTitle);
+                
                 if (otherLaws.length === 0) {
-                    resultsArea.innerHTML += '<p class="note">無特定行為的核心法條。</p>';
+                    if (foundLaws.length > 0 && (neededReplenishLaws.length > 0 || replenishContents.length > 0)) {
+                         resultsArea.innerHTML += '<p class="note">無特定行為的核心法條（但有協商或輕微處分條文）。</p>';
+                    }
                 } else {
                     otherLaws.forEach(law => resultsArea.appendChild(createLawCard(law)));
                 }
 
 
-                // --- 顯示需要補充的法條 (ReplenishType: 1) ---
-                if (neededReplenishLaws.length > 0) {
-                    const requiredDiv = document.createElement('div');
-                    requiredDiv.className = 'replenish-section';
-                    requiredDiv.innerHTML = '<h4>👉 需配合補充項的條文 (如和解/賠償)：</h4>';
-                    neededReplenishLaws.forEach(law => requiredDiv.appendChild(createLawCard(law)));
-                    resultsArea.appendChild(requiredDiv);
-                }
-
-                // --- 顯示補充項的內容 (LawType: 5 或 ReplenishType: 2) ---
-                if (replenishContents.length > 0) {
-                    const contentDiv = document.createElement('div');
-                    contentDiv.className = 'replenish-section';
-                    contentDiv.innerHTML = '<h4>🤝 補充項 (情節輕微處分細節/和解處分細節)：</h4>';
-                    replenishContents.forEach(law => contentDiv.appendChild(createLawCard(law)));
-                    resultsArea.appendChild(contentDiv);
+                // --- 顯示協商與輕微處分 (合併顯示 ReplenishType: 1 和 LawType: 5/ReplenishType: 2) ---
+                if (neededReplenishLaws.length > 0 || replenishContents.length > 0) {
+                    const combinedTitle = document.createElement('h3');
+                    combinedTitle.textContent = "⚖️ 協商、賠償與情節輕微處分：";
+                    resultsArea.appendChild(combinedTitle);
+                    
+                    // 1. 顯示需要補充的法條 (ReplenishType: 1)
+                    neededReplenishLaws.forEach(law => resultsArea.appendChild(createLawCard(law)));
+                    
+                    // 2. 顯示補充項的內容 (LawType: 5 或 ReplenishType: 2)
+                    replenishContents.forEach(law => resultsArea.appendChild(createLawCard(law)));
                 }
             }
 

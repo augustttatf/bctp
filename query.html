@@ -20,7 +20,7 @@
             <div class="main-layout">
                 
                 <div class="filter-panel">
-                    <h2>步驟一：行為勾選 vc</h2>
+                    <h2>步驟一：行為勾選 <span id="vc-label"></span></h2>
                     <p>勾選觸發法律後果的行為，查看對應的法律後果。</p>
 
                     <div class="checkbox-group" id="behavior-filters">
@@ -54,40 +54,64 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 請確保您的 JSON 檔案網址是正確的！
-            const JSON_URL = 'https://raw.githubusercontent.com/voidSTU/BCTP/refs/heads/main/meowmeowmeow.json'; 
+            // *** 🚨 關鍵更新：最新的 JSON 網址 ***
+            const JSON_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/meowmeowmeow.json'; 
             
             const filterContainer = document.getElementById('behavior-filters');
             const resultsArea = document.getElementById('results-area');
             const loadingMessage = document.getElementById('loading-message');
             const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
+            const vcLabel = document.getElementById('vc-label'); 
             
             let lawData = { related_statutes_segmented: [], LawType_Mapping: {} }; 
-            let generalLaws = []; // LawType: 0 (通用/保護處分)
-            let minorOffenseLaws = []; // LawType: 5 (情節輕微/不付審理)
+            let generalLaws = []; 
+            let minorOffenseLaws = []; 
 
             localStorage.removeItem('selectedBehaviors');
+            vcLabel.textContent = ' (V: 3.2)'; // 版本標記
 
             async function loadLawData() {
                 try {
                     const response = await fetch(JSON_URL); 
+                    
+                    // 🚨 錯誤檢查 1: 檢查 HTTP 狀態碼
                     if (!response.ok) {
-                        throw new Error(`HTTP 錯誤! 狀態碼: ${response.status}`);
+                        const errorStatus = response.status;
+                        let errorMessage = `載入失敗：HTTP 狀態碼 ${errorStatus}。`;
+                        if (errorStatus === 404) {
+                            errorMessage += '錯誤：檔案不存在或網址錯誤。';
+                        } else if (errorStatus === 403) {
+                            errorMessage += '錯誤：存取被拒（權限問題）。';
+                        } else if (errorStatus === 400) {
+                            errorMessage += '錯誤：請求無效。';
+                        }
+                        throw new Error(errorMessage);
                     }
-                    const fullData = await response.json();
+                    
+                    const textData = await response.text();
+                    
+                    // 🚨 錯誤檢查 2: 檢查 JSON 語法
+                    let fullData;
+                    try {
+                        fullData = JSON.parse(textData);
+                    } catch (e) {
+                        console.error("JSON Parse Error:", e);
+                        throw new Error("JSON 語法錯誤，請檢查檔案內容。");
+                    }
+
                     lawData = fullData;
                     
-                    // 🚨 邏輯更新：分開儲存 LawType: 0 和 LawType: 5
+                    // 🚨 數據分組
                     generalLaws = lawData.related_statutes_segmented.filter(law => law.LawType === 0);
                     minorOffenseLaws = lawData.related_statutes_segmented.filter(law => law.LawType === 5);
                     
-                    loadingMessage.textContent = '載入完成，請勾選左側行為。';
+                    loadingMessage.textContent = '✔️ 法律資料載入成功。請勾選左側行為。';
                     loadingMessage.style.color = '#28a745';
                     updateResults(); 
 
                 } catch (error) {
                     console.error('載入法律資料失敗:', error);
-                    loadingMessage.textContent = '❌ 載入法律資料失敗，請檢查 JSON 網址或格式。';
+                    loadingMessage.innerHTML = `❌ 載入法律資料失敗：<br><strong>${error.message}</strong><br>請檢查 JSON 網址是否正確。`;
                     loadingMessage.style.color = 'red';
                 }
             }
@@ -98,12 +122,11 @@
                 // 根據 ReplenishType 給予不同的類別
                 card.className = `law-card 
                     ${law.ReplenishType === 1 ? 'replenish-required' : ''} 
-                    ${law.ReplenishType === 2 ? 'replenish-content' : ''}
+                    ${law.ReplenishType === 2 || law.LawType === 5 ? 'replenish-content' : ''}
                 `; 
                 
                 let lawTypeLabel = lawData.LawType_Mapping[law.LawType.toString()] || '相關法條';
                 
-                // 標記 LawType: 0, 1, 5 的顯示名稱
                 if (law.LawType === 0) {
                     lawTypeLabel = `🛡️ ${lawTypeLabel}`; // 通用法條
                 } else if (law.LawType === 5) {
@@ -186,9 +209,10 @@
                 
                 // 4. 區分並顯示結果
                 let neededReplenishLaws = foundLaws.filter(law => law.ReplenishType === 1);
-                // 🚨 邏輯更新：將 LawType: 5 的 ReplenishType: 2 單獨分離出來
+                // 包含 LawType: 5 (ReplenishType: 2) 和其他 ReplenishType: 2 的法條
                 let replenishContents = foundLaws.filter(law => law.ReplenishType === 2 || law.LawType === 5);
-                let otherLaws = foundLaws.filter(law => law.ReplenishType === 0 && law.LawType !== 5); // 排除 LawType 5
+                // 核心法條 (特定行為 ReplenishType: 0 和 LawType: 0)
+                let otherLaws = foundLaws.filter(law => law.ReplenishType === 0 && law.LawType !== 5); 
 
                 // --- 顯示核心法條 (特定行為與通用保護處分) ---
                 const mainTitle = document.createElement('h3');
@@ -210,7 +234,7 @@
                     resultsArea.appendChild(requiredDiv);
                 }
 
-                // --- 顯示補充項的內容 (ReplenishType: 2 或 LawType: 5) ---
+                // --- 顯示補充項的內容 (LawType: 5 或 ReplenishType: 2) ---
                 if (replenishContents.length > 0) {
                     const contentDiv = document.createElement('div');
                     contentDiv.className = 'replenish-section';

@@ -54,8 +54,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // *** 您的 GitHub Raw JSON 連結已在此處設定 ***
-            const JSON_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/meowmeowmeow.json'; 
+            // 請確保您的 JSON 檔案網址是正確的！
+            const JSON_URL = 'https://raw.githubusercontent.com/voidSTU/BCTP/refs/heads/main/meowmeowmeow.json'; 
             
             const filterContainer = document.getElementById('behavior-filters');
             const resultsArea = document.getElementById('results-area');
@@ -63,20 +63,23 @@
             const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
             
             let lawData = { related_statutes_segmented: [], LawType_Mapping: {} }; 
-            let generalLaws = []; 
+            let generalLaws = []; // LawType: 0 (通用/保護處分)
+            let minorOffenseLaws = []; // LawType: 5 (情節輕微/不付審理)
 
             localStorage.removeItem('selectedBehaviors');
 
-            // ... (loadLawData 函數保持不變) ...
             async function loadLawData() {
                 try {
-                    const response = await fetch(JSON_URL);
+                    const response = await fetch(JSON_URL); 
                     if (!response.ok) {
                         throw new Error(`HTTP 錯誤! 狀態碼: ${response.status}`);
                     }
                     const fullData = await response.json();
                     lawData = fullData;
+                    
+                    // 🚨 邏輯更新：分開儲存 LawType: 0 和 LawType: 5
                     generalLaws = lawData.related_statutes_segmented.filter(law => law.LawType === 0);
+                    minorOffenseLaws = lawData.related_statutes_segmented.filter(law => law.LawType === 5);
                     
                     loadingMessage.textContent = '載入完成，請勾選左側行為。';
                     loadingMessage.style.color = '#28a745';
@@ -90,10 +93,40 @@
             }
 
 
+            function createLawCard(law) {
+                const card = document.createElement('div');
+                // 根據 ReplenishType 給予不同的類別
+                card.className = `law-card 
+                    ${law.ReplenishType === 1 ? 'replenish-required' : ''} 
+                    ${law.ReplenishType === 2 ? 'replenish-content' : ''}
+                `; 
+                
+                let lawTypeLabel = lawData.LawType_Mapping[law.LawType.toString()] || '相關法條';
+                
+                // 標記 LawType: 0, 1, 5 的顯示名稱
+                if (law.LawType === 0) {
+                    lawTypeLabel = `🛡️ ${lawTypeLabel}`; // 通用法條
+                } else if (law.LawType === 5) {
+                    lawTypeLabel = `🤝 ${lawTypeLabel}`; // 情節輕微/不付審理處分
+                } else if (law.ReplenishType === 1) {
+                    lawTypeLabel = `⚠ ${lawTypeLabel} (需配合補充項)`; // 特定行為中，需要補充的法條
+                }
+
+                let html = `<h3>${lawTypeLabel} - ${law.LawNum || '無條款號'}</h3>`;
+                html += `<p><strong>條文詳情：</strong> ${law.LawDetails || '無詳情'}</p>`;
+                html += `<p class="note"><strong>(相關說明)</strong> ${law.RelevanceNote || '無相關性說明'}</p>`;
+                
+                card.innerHTML = html;
+                return card;
+            }
+
+
             function updateResults() {
                 resultsArea.innerHTML = ''; 
                 const selectedLawTypes = new Set(); 
                 let checkedBehaviorNames = []; 
+                let foundLaws = []; 
+                let displayedLawIdentifiers = new Set(); 
 
                 const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
                 
@@ -106,23 +139,19 @@
                 
                 checkedBoxes.forEach(cb => {
                     const type = parseInt(cb.getAttribute('data-type'));
-                    const name = cb.getAttribute('data-name');
                     selectedLawTypes.add(type);
-                    checkedBehaviorNames.push(`* ${name}`); // 使用星號作為條列符號
+                    checkedBehaviorNames.push(`* ${cb.getAttribute('data-name')}`); 
                 });
                 
-                // 關鍵修正：使用換行符號 (\n) 連接，實現條列式顯示
                 const selectedBehaviors = checkedBehaviorNames.join('\n'); 
                 localStorage.setItem('selectedBehaviors', selectedBehaviors);
 
                 if (loadingMessage) loadingMessage.remove(); 
                 
-                // ... (法律卡片顯示邏輯保持不變) ...
-                let displayedLawIdentifiers = new Set(); 
-                let foundLaws = []; 
-
+                // 1. 找出所有選定 LawType (1-4) 的法條
                 lawData.related_statutes_segmented.forEach(law => {
-                    if (selectedLawTypes.has(law.LawType) && law.LawType !== 0) {
+                    // 只檢查 LawType 1-4
+                    if (selectedLawTypes.has(law.LawType) && law.LawType >= 1 && law.LawType <= 4) {
                         const lawIdentifier = `${law.LawType}-${law.LawNum}`;
                         if (!displayedLawIdentifiers.has(lawIdentifier)) {
                             foundLaws.push(law);
@@ -130,8 +159,18 @@
                         }
                     }
                 });
-
+                
+                // 2. 找出所有 LawType: 0 的通用法條 (必須顯示)
                 generalLaws.forEach(law => {
+                    const lawIdentifier = `${law.LawType}-${law.LawNum}`;
+                    if (!displayedLawIdentifiers.has(lawIdentifier)) {
+                        foundLaws.push(law);
+                        displayedLawIdentifiers.add(lawIdentifier);
+                    }
+                });
+                
+                // 3. 找出 LawType: 5 的情節輕微/不付審理處分 (必須顯示)
+                minorOffenseLaws.forEach(law => {
                     const lawIdentifier = `${law.LawType}-${law.LawNum}`;
                     if (!displayedLawIdentifiers.has(lawIdentifier)) {
                         foundLaws.push(law);
@@ -145,20 +184,40 @@
                      return;
                 }
                 
-                foundLaws.forEach(law => {
-                    const card = document.createElement('div');
-                    card.className = 'law-card'; 
-                    
-                    let lawTypeLabel = law.LawType === 0 ? '少年事件處理法 (通用處分)' : lawData.LawType_Mapping[law.LawType.toString()] || '相關法條';
-                    
-                    let html = `<h3>${lawTypeLabel} - ${law.LawNum || '無條款號'}</h3>`;
-                    html += `<p><strong>條文詳情：</strong> ${law.LawDetails || '無詳情'}</p>`;
-                    html += `<p class="note"><strong>(相關說明)</strong> ${law.RelevanceNote || '無相關性說明'}</p>`;
-                    
-                    card.innerHTML = html;
-                    resultsArea.appendChild(card);
-                });
-                // ...
+                // 4. 區分並顯示結果
+                let neededReplenishLaws = foundLaws.filter(law => law.ReplenishType === 1);
+                // 🚨 邏輯更新：將 LawType: 5 的 ReplenishType: 2 單獨分離出來
+                let replenishContents = foundLaws.filter(law => law.ReplenishType === 2 || law.LawType === 5);
+                let otherLaws = foundLaws.filter(law => law.ReplenishType === 0 && law.LawType !== 5); // 排除 LawType 5
+
+                // --- 顯示核心法條 (特定行為與通用保護處分) ---
+                const mainTitle = document.createElement('h3');
+                mainTitle.textContent = "🛡️ 核心與特定行為相關法條 (ReplenishType: 0)：";
+                resultsArea.appendChild(mainTitle);
+                if (otherLaws.length === 0) {
+                    resultsArea.innerHTML += '<p class="note">無特定行為的核心法條。</p>';
+                } else {
+                    otherLaws.forEach(law => resultsArea.appendChild(createLawCard(law)));
+                }
+
+
+                // --- 顯示需要補充的法條 (ReplenishType: 1) ---
+                if (neededReplenishLaws.length > 0) {
+                    const requiredDiv = document.createElement('div');
+                    requiredDiv.className = 'replenish-section';
+                    requiredDiv.innerHTML = '<h4>👉 需配合補充項的條文 (如和解/賠償)：</h4>';
+                    neededReplenishLaws.forEach(law => requiredDiv.appendChild(createLawCard(law)));
+                    resultsArea.appendChild(requiredDiv);
+                }
+
+                // --- 顯示補充項的內容 (ReplenishType: 2 或 LawType: 5) ---
+                if (replenishContents.length > 0) {
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'replenish-section';
+                    contentDiv.innerHTML = '<h4>🤝 補充項 (情節輕微處分細節/和解處分細節)：</h4>';
+                    replenishContents.forEach(law => contentDiv.appendChild(createLawCard(law)));
+                    resultsArea.appendChild(contentDiv);
+                }
             }
 
             checkboxes.forEach(checkbox => {

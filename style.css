@@ -1,4 +1,4 @@
-/* style.css - 終極穩定排版修正版 (首頁/查詢頁兼容) */
+/* style.css - 最終修復版本 (首頁/查詢頁兼容，圖片/按鈕修正) */
 
 /* --- 基礎設定與字體重置 --- */
 html, body {
@@ -74,7 +74,7 @@ h2 {
 }
 
 .hero-section img {
-    max-width: 250px; 
+    max-width: 150px; /* 【修正】縮小圖片 */
     height: auto;
     display: block; 
     margin: 0 auto 30px auto;
@@ -91,12 +91,20 @@ h2 {
     border: none;
     border-radius: 5px;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
     display: inline-block; 
     margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 【修正】增加陰影使它看起來像按鈕 */
 }
 .start-button:hover {
     background-color: #218838;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); 
+    transform: translateY(-2px); 
+}
+.start-button:active {
+    background-color: #1e7e34; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateY(0); 
 }
 
 /* --- 舊的雙欄佈局 (適用於 form.html) --- */
@@ -117,7 +125,6 @@ h2 {
     align-items: stretch; 
 }
 
-/* 確保 filter-panel 橫跨兩欄，且不影響 form.html 的 filter-panel */
 .main-layout-grid .filter-panel {
     grid-column: 1 / 3;
     grid-row: 1 / 2;
@@ -141,7 +148,6 @@ h2 {
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-/* 舊的雙欄佈局 flex 比例 */
 .main-layout .filter-panel {
     flex: 1; 
     min-width: 280px;
@@ -150,7 +156,6 @@ h2 {
     flex: 2; 
 }
 
-/* 表單卡片置中 (適用於 form.html) */
 .form-card {
     max-width: 600px; 
     margin: 0 auto;
@@ -158,13 +163,11 @@ h2 {
     text-align: left; 
 }
 
-/* 查詢頁：行為勾選項目條列化 */
 .checkbox-group label {
     display: block; 
     margin-bottom: 8px;
 }
 
-/* 表單輸入框和文字區塊放大並靠左 */
 .form-group {
     margin-bottom: 20px;
 }
@@ -188,7 +191,7 @@ h2 {
 }
 
 
-/* --- 法律條文卡片樣式 (強化) --- */
+/* --- 法律條文卡片樣式 --- */
 .law-card {
     border-left: 5px solid #007bff; 
     padding: 15px;
@@ -206,11 +209,10 @@ h2 {
     padding-bottom: 5px;
 }
 .law-card.replenish-content {
-    border-left-color: #ffc107; /* 補充法條黃色邊框 */
+    border-left-color: #ffc107; 
     background-color: #fff9e6;
 }
 
-/* 法律條文列表 */
 .combined-relevance-list {
     list-style: none;
     padding-left: 0;
@@ -256,7 +258,7 @@ h2 {
 .video-container {
     position: relative;
     width: 100%;
-    padding-bottom: 56.25%; /* 16:9 比例 (9 / 16 * 100%) */
+    padding-bottom: 56.25%; 
     height: 0;
     overflow: hidden;
     margin-top: 15px;
@@ -340,14 +342,12 @@ footer {
 
 /* --- RWD 響應式設計 (針對行動裝置) --- */
 @media (max-width: 768px) {
-    /* 行動裝置上 .main-layout-grid 改為單欄堆疊 */
     .main-layout-grid {
         grid-template-columns: 1fr; 
         grid-template-rows: auto auto auto; 
         gap: 20px;
     }
     
-    /* 讓所有區塊恢復單欄佔滿 */
     .main-layout-grid .filter-panel, 
     .main-layout-grid .results-panel, 
     .main-layout-grid .case-panel {
@@ -355,13 +355,11 @@ footer {
         grid-row: auto; 
     }
     
-    /* 舊的雙欄佈局也變為單欄堆疊 (適用於 form.html) */
     .main-layout {
         flex-direction: column;
         gap: 20px;
     }
     
-    /* 確保所有面板有足夠的內邊距 */
     .filter-panel, .results-panel, .case-panel {
         padding: 20px;
     }

@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BCTP - 行為後果查詢</title>
     <link rel="stylesheet" href="style.css">
+    
+    <style>
+        #main-content-wrapper {
+            display: none; 
+        }
+    </style>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 </head>
 <body>
@@ -17,41 +23,44 @@
 
     <main>
         <div class="container">
-            <div class="main-layout-grid"> 
+            <div id="main-content-wrapper"> 
                 
-                <div class="filter-panel">
-                    <h2>行為勾選</h2>
-                    <p>勾選觸發法律後果的行為，查看對應的法律後果與案例。</p>
+                <div class="main-layout-grid"> 
+                    
+                    <div class="filter-panel">
+                        <h2>步驟一：行為勾選</h2>
+                        <p>勾選觸發法律後果的行為，查看對應的法律後果與案例。</p>
 
-                    <div class="checkbox-group" id="behavior-filters">
-                        <label><input type="checkbox" name="behavior" value="physical-injury" data-type="1" data-name="肢體推打 / 造成輕傷"> 肢體推打 / 造成輕傷</label>
-                        <label><input type="checkbox" name="behavior" value="online-slander" data-type="2" data-name="網路散布謠言 / 損害名譽"> 網路散布謠言 / 損害名譽</label>
-                        <label><input type="checkbox" name="behavior" value="money-extortion" data-type="3" data-name="威脅取財 / 損毀支付金錢"> 威脅取財 / 損毀支付金錢</label>
-                        <label><input type="checkbox" name="behavior" value="psychological-damage" data-type="4" data-name="密集訊息騷擾 / 造成精神壓力"> 密集訊息騷擾 / 造成精神壓力</label>
+                        <div class="checkbox-group" id="behavior-filters">
+                            <label><input type="checkbox" name="behavior" value="physical-injury" data-type="1" data-name="肢體推打 / 造成輕傷"> 肢體推打 / 造成輕傷</label>
+                            <label><input type="checkbox" name="behavior" value="online-slander" data-type="2" data-name="網路散布謠言 / 損害名譽"> 網路散布謠言 / 損害名譽</label>
+                            <label><input type="checkbox" name="behavior" value="money-extortion" data-type="3" data-name="威脅取財 / 損毀支付金錢"> 威脅取財 / 損毀支付金錢</label>
+                            <label><input type="checkbox" name="behavior" value="psychological-damage" data-type="4" data-name="密集訊息騷擾 / 造成精神壓力"> 密集訊息騷擾 / 造成精神壓力</label>
+                        </div>
                     </div>
-                </div>
 
-                <div class="results-panel">
-                    <h2>後果警示 (即時互動)</h2>
-                    <p>請在上方勾選行為標籤，結果將即時顯示相關法律條文。</p>
-                    <div id="results-area">
-                        <p id="loading-message">載入法律資料中...</p>
+                    <div class="results-panel">
+                        <h2>步驟二：後果警示 (即時互動)</h2>
+                        <p>請在上方勾選行為標籤，結果將即時顯示相關法律條文。</p>
+                        <div id="results-area">
+                            </div>
                     </div>
-                </div>
-                
-                <div class="case-panel">
-                    <h2>相關案例</h2>
-                    <p>請在上方勾選行為標籤，查看相關新聞案例。</p>
-                    <div id="case-area">
-                        <p id="case-loading-message" class="loading-message">等待勾選行為，載入案例...</p>
+                    
+                    <div class="case-panel">
+                        <h2>步驟三：相關案例</h2>
+                        <p>請在上方勾選行為標籤，查看相關新聞案例。</p>
+                        <div id="case-area">
+                             </div>
                     </div>
-                </div>
-                
-            </div> 
+                    
+                </div> 
 
-            <div class="button-footer">
-                <a href="form.html" id="next-form-button" class="submit-button">下一步：反思表單 &rarr;</a>
+                <div class="button-footer">
+                    <a href="form.html" id="next-form-button" class="submit-button">下一步：反思表單 &rarr;</a>
+                </div>
             </div>
+
+            <p id="initial-loading-status" style="text-align:center; font-size:1.1em;" class="loading-message">載入法律資料中...</p>
         </div>
     </main>
     
@@ -65,13 +74,16 @@
             const STATUTES_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/meowmeowmeow.json';
             const CASES_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/newjeans.json';
             
+            const mainContentWrapper = document.getElementById('main-content-wrapper');
+            const initialLoadingStatus = document.getElementById('initial-loading-status');
             const filterContainer = document.getElementById('behavior-filters');
             const resultsArea = document.getElementById('results-area');
-            const loadingMessage = document.getElementById('loading-message');
             const caseArea = document.getElementById('case-area'); 
-            const caseLoadingMessage = document.getElementById('case-loading-message'); 
             const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
             
+            // 提示訊息常數
+            const FATAL_ERROR_MESSAGE = '網站錯誤：核心資料載入失敗，即將返回首頁。請檢查網路連線或稍後再試。';
+
             let lawData = { related_statutes_segmented: [], LawType_Mapping: {}, cases: [] }; 
 
             // 輔助函數：取得 LawType 顯示名稱和標籤
@@ -91,16 +103,14 @@
                 return `🔗 ${lawTypeLabel}`;
             }
 
-            // 【載入數據的核心邏輯】
+            // 【載入數據的核心邏輯 - 含容錯跳轉】
             async function loadLawData() {
                 try {
-                    // 1. 同時發送請求
                     const [statutesResponse, casesResponse] = await Promise.all([
                         fetch(STATUTES_URL),
                         fetch(CASES_URL)
                     ]);
                     
-                    // 2. 檢查檔案狀態
                     if (!statutesResponse.ok) {
                         throw new Error(`法條檔案載入失敗 (HTTP ${statutesResponse.status})`);
                     }
@@ -108,30 +118,42 @@
                         throw new Error(`案例檔案載入失敗 (HTTP ${casesResponse.status})`);
                     }
                     
-                    // 3. 解析 JSON
                     const statutesData = await statutesResponse.json();
                     const casesData = await casesResponse.json();
 
-                    // 4. 合併資料
                     lawData.related_statutes_segmented = statutesData.related_statutes_segmented || [];
                     lawData.LawType_Mapping = statutesData.LawType_Mapping || {};
                     lawData.cases = casesData.cases || casesData || []; 
 
-                    // 5. 成功提示與更新
-                    loadingMessage.textContent = '✔️ 法律資料與案例載入成功。請勾選上方行為。';
-                    loadingMessage.style.color = '#28a745';
+                    // 載入成功：移除初始載入訊息，顯示主要內容
+                    if (initialLoadingStatus) initialLoadingStatus.remove();
+                    if (mainContentWrapper) {
+                        mainContentWrapper.style.display = 'block'; 
+                    }
+                    
+                    // 初始執行一次，確保未勾選時結果區是空的
                     updateResults(); 
 
                 } catch (error) {
+                    // 發生錯誤時：顯示錯誤並跳轉回首頁
                     console.error('載入法律資料失敗:', error);
-                    const errorHtml = `❌ 載入失敗：<br><strong>${error.message}</strong><br>請檢查 JSON 網址是否正確。`;
-                    loadingMessage.innerHTML = errorHtml;
-                    loadingMessage.style.color = 'red';
-                    caseArea.innerHTML = `<p class="error-message">${errorHtml}</p>`;
+                    
+                    const detailedError = `❌ ${FATAL_ERROR_MESSAGE}\n詳細錯誤: ${error.message}`;
+
+                    if (initialLoadingStatus) {
+                        initialLoadingStatus.innerHTML = detailedError.replace(/\n/g, '<br>');
+                        initialLoadingStatus.style.color = 'red';
+                    }
+                    
+                    alert(FATAL_ERROR_MESSAGE);
+
+                    // 跳轉回首頁
+                    window.location.href = 'index.html'; 
                 }
             }
 
-            // 輔助函數：創建顯示用的法條卡片 (不變)
+
+            // 輔助函數：創建顯示用的法條卡片
             function createLawCard(lawGroup) {
                 const card = document.createElement('div');
                 const isSupplementCategory = lawGroup.isSupplementCategory;
@@ -161,7 +183,7 @@
                 return card;
             }
 
-            // 輔助函數：創建案例卡片 (不變)
+            // 輔助函數：創建案例卡片
             function createCaseCard(caseItem) {
                 const card = document.createElement('div');
                 card.className = 'case-card';
@@ -213,7 +235,6 @@
                 resultsArea.innerHTML = ''; 
                 caseArea.innerHTML = ''; 
                 
-                // 儲存所有選中的 LawType (1, 2, 3, 4)
                 const selectedLawTypes = new Set(); 
                 let checkedBehaviorNames = []; 
                 let groupedLaws = {}; 
@@ -221,13 +242,7 @@
                 const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
                 
                 if (checkedBoxes.length === 0) {
-                    // ... (未勾選時的處理邏輯) ...
-                    resultsArea.appendChild(loadingMessage);
-                    if (loadingMessage.textContent.includes('載入成功')) {
-                        loadingMessage.textContent = '✔️ 法律資料與案例載入成功。請勾選上方行為。';
-                    }
-                    caseArea.appendChild(caseLoadingMessage);
-                    caseLoadingMessage.textContent = '等待勾選行為，載入案例...';
+                    // 【UX 優化】未勾選任何行為時，清空結果區和案例區。
                     localStorage.removeItem('selectedBehaviors'); 
                     return;
                 }
@@ -242,11 +257,8 @@
                 
                 const selectedBehaviors = checkedBehaviorNames.join('\n'); 
                 localStorage.setItem('selectedBehaviors', selectedBehaviors);
-
-                if (loadingMessage) loadingMessage.remove(); 
-                if (caseLoadingMessage) caseLoadingMessage.remove(); 
                 
-                // 1. 篩選法條 (邏輯保持不變)
+                // 1. 篩選法條
                 lawData.related_statutes_segmented.forEach(law => {
                     const isBehaviorLaw = law.LawType >= 1 && law.LawType <= 4;
                     const isGeneralOrSupplementLaw = law.LawType === 0 || law.LawType === 5;
@@ -283,7 +295,7 @@
                     }
                 });
                 
-                // 2. 顯示法條結果 (不變)
+                // 2. 顯示法條結果
                 const uniqueLawArray = Object.values(groupedLaws);
                 
                 let coreLaws = uniqueLawArray.filter(lawGroup => !lawGroup.isSupplementCategory);
@@ -312,13 +324,10 @@
                 }
                 
                 
-                // 3. 篩選並顯示案例 (【重要修復點】: LawType 直接匹配 NewsType)
-                
-                // 將選中的 LawType 集合轉換為數字陣列
+                // 3. 篩選並顯示案例 (LawType 直接匹配 NewsType)
                 const selectedNewsTypes = Array.from(selectedLawTypes); 
 
                 const casesToDisplay = lawData.cases.filter(caseItem => {
-                    // 案例的 NewsType 必須在我們選中的 LawType 集合內
                     return selectedNewsTypes.includes(caseItem.NewsType);
                 });
 
@@ -331,8 +340,9 @@
                     casesToDisplay.forEach(caseItem => caseArea.appendChild(createCaseCard(caseItem)));
                 }
                 
-                if (coreLaws.length === 0 && supplementLaws.length === 0 && casesToDisplay.length === 0) {
-                    resultsArea.innerHTML = '<p class="note">未找到相關法律條文。</p>';
+                if (coreLaws.length === 0 && supplementLaws.length === 0 && casesToDisplay.length === 0 && checkedBoxes.length > 0) {
+                    // 如果勾選了但沒找到任何結果，提供一個總結提示
+                    resultsArea.innerHTML = '<p class="note">未找到相關法律條文和案例。</p>';
                 }
             }
 
@@ -340,6 +350,9 @@
                 checkbox.addEventListener('change', updateResults);
             });
             
+            // 開始載入資料
             loadLawData();
         });
     </script>
+</body>
+</html>

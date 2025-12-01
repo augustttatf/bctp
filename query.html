@@ -59,5 +59,285 @@
         <p>BCTP (Bullying Consequence Transparency Platform)</p>
     </footer>
 
-    </body>
-</html>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // *** 🚨 數據源：兩個 JSON 網址 ***
+            const STATUTES_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/meowmeowmeow.json';
+            const CASES_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/newjeans.json';
+            
+            const filterContainer = document.getElementById('behavior-filters');
+            const resultsArea = document.getElementById('results-area');
+            const loadingMessage = document.getElementById('loading-message');
+            const caseArea = document.getElementById('case-area'); 
+            const caseLoadingMessage = document.getElementById('case-loading-message'); 
+            const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
+            
+            let lawData = { related_statutes_segmented: [], LawType_Mapping: {}, cases: [] }; 
+
+            // 輔助函數：取得 LawType 顯示名稱和標籤
+            function getLawTypeLabel(law) {
+                const lawTypeKey = law.LawType != null ? law.LawType.toString() : '';
+                let lawTypeLabel = lawData.LawType_Mapping[lawTypeKey] || '相關法條';
+                
+                if (law.LawType === 0) {
+                    return `🛡️ ${lawTypeLabel}`;
+                } else if (law.LawType === 5) {
+                    return `🤝 ${lawTypeLabel}`;
+                } 
+                
+                if (law.ReplenishType === 1) {
+                    return `⚠ ${lawTypeLabel} (建議和解/賠償)`; 
+                }
+                return `🔗 ${lawTypeLabel}`;
+            }
+
+            // 【載入數據的核心邏輯】
+            async function loadLawData() {
+                try {
+                    // 1. 同時發送請求
+                    const [statutesResponse, casesResponse] = await Promise.all([
+                        fetch(STATUTES_URL),
+                        fetch(CASES_URL)
+                    ]);
+                    
+                    // 2. 檢查檔案狀態
+                    if (!statutesResponse.ok) {
+                        throw new Error(`法條檔案載入失敗 (HTTP ${statutesResponse.status})`);
+                    }
+                    if (!casesResponse.ok) {
+                        throw new Error(`案例檔案載入失敗 (HTTP ${casesResponse.status})`);
+                    }
+                    
+                    // 3. 解析 JSON
+                    const statutesData = await statutesResponse.json();
+                    const casesData = await casesResponse.json();
+
+                    // 4. 合併資料
+                    lawData.related_statutes_segmented = statutesData.related_statutes_segmented || [];
+                    lawData.LawType_Mapping = statutesData.LawType_Mapping || {};
+                    lawData.cases = casesData.cases || casesData || []; 
+
+                    // 5. 成功提示與更新
+                    loadingMessage.textContent = '✔️ 法律資料與案例載入成功。請勾選上方行為。';
+                    loadingMessage.style.color = '#28a745';
+                    updateResults(); 
+
+                } catch (error) {
+                    console.error('載入法律資料失敗:', error);
+                    const errorHtml = `❌ 載入失敗：<br><strong>${error.message}</strong><br>請檢查 JSON 網址是否正確。`;
+                    loadingMessage.innerHTML = errorHtml;
+                    loadingMessage.style.color = 'red';
+                    caseArea.innerHTML = `<p class="error-message">${errorHtml}</p>`;
+                }
+            }
+
+            // 輔助函數：創建顯示用的法條卡片
+            function createLawCard(lawGroup) {
+                const card = document.createElement('div');
+                const isSupplementCategory = lawGroup.isSupplementCategory;
+                card.className = `law-card ${isSupplementCategory ? 'replenish-content' : ''}`; 
+                
+                let html = `<h3 class="law-num-title">${lawGroup.LawNum || '無條款號'}</h3>`;
+                html += `<p class="law-details"><strong>條文詳情：</strong> ${lawGroup.LawDetails || '無詳情'}</p>`;
+
+                if (lawGroup.combinedNotes.length > 0) {
+                    html += '<ul class="combined-relevance-list">';
+                    const isGeneralOrSupplement = lawGroup.LawType === 0 || lawGroup.LawType === 5;
+                    const uniqueNotes = [...new Map(lawGroup.combinedNotes.map(item => [item.LawType, item])).values()];
+
+                    uniqueNotes.forEach(note => {
+                        const specificLawTypeLabel = getLawTypeLabel(note);
+                        
+                        if (isGeneralOrSupplement) {
+                            html += `<li><strong>${specificLawTypeLabel}：</strong> ${lawGroup.RelevanceNote || '無相關性說明'}</li>`;
+                        } else {
+                             html += `<li><strong>${specificLawTypeLabel}：</strong> ${note.RelevanceNote || '無相關性說明'}</li>`;
+                        }
+                    });
+                    html += '</ul>';
+                }
+                
+                card.innerHTML = html;
+                return card;
+            }
+
+            // 輔助函數：創建案例卡片 (含影片預覽邏輯)
+            function createCaseCard(caseItem) {
+                const card = document.createElement('div');
+                card.className = 'case-card';
+
+                let html = `<h4 class="case-title">${caseItem.casename || '無案例標題'}</h4>`;
+                html += `<p class="case-content"><strong>事件經過：</strong> ${caseItem.newscontent || '無事件經過'}</p>`;
+                
+                if (caseItem.source) {
+                    html += `<p class="case-source"><strong>新聞來源：</strong> <a href="${caseItem.source}" target="_blank" rel="noopener noreferrer">點擊查看</a></p>`;
+                }
+
+                if (caseItem.videoconnection) {
+                    const youtubeMatch = caseItem.videoconnection.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\?v=)|youtu\.be\/)(\w+)/);
+                    const vimeoMatch = caseItem.videoconnection.match(/(?:vimeo\.com\/)(\d+)/);
+
+                    if (youtubeMatch && youtubeMatch[1]) {
+                        html += `
+                            <div class="video-container">
+                                <iframe 
+                                    src="https://www.youtube.com/embed/${youtubeMatch[1]}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen
+                                ></iframe>
+                            </div>
+                        `;
+                    } else if (vimeoMatch && vimeoMatch[1]) {
+                        html += `
+                            <div class="video-container">
+                                <iframe 
+                                    src="https://player.vimeo.com/video/${vimeoMatch[1]}" 
+                                    frameborder="0" 
+                                    allow="autoplay; fullscreen; picture-in-picture" 
+                                    allowfullscreen
+                                ></iframe>
+                            </div>
+                        `;
+                    } else {
+                        html += `<p class="case-video"><strong>相關影片：</strong> <a href="${caseItem.videoconnection}" target="_blank" rel="noopener noreferrer">點擊查看影片</a></p>`;
+                    }
+                }
+                
+                card.innerHTML = html;
+                return card;
+            }
+
+
+            function updateResults() {
+                resultsArea.innerHTML = ''; 
+                caseArea.innerHTML = ''; 
+                
+                const selectedLawTypes = new Set(); 
+                let checkedBehaviorNames = []; 
+                let groupedLaws = {}; 
+                let relatedCaseIDs = new Set(); 
+                
+                const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+                
+                if (checkedBoxes.length === 0) {
+                    resultsArea.appendChild(loadingMessage);
+                    if (loadingMessage.textContent.includes('載入成功')) {
+                        loadingMessage.textContent = '✔️ 法律資料與案例載入成功。請勾選上方行為。';
+                    }
+                    caseArea.appendChild(caseLoadingMessage);
+                    caseLoadingMessage.textContent = '等待勾選行為，載入案例...';
+                    localStorage.removeItem('selectedBehaviors'); 
+                    return;
+                }
+                
+                checkedBoxes.forEach(cb => {
+                    const type = parseInt(cb.getAttribute('data-type'));
+                    if (type >= 1 && type <= 4) {
+                        selectedLawTypes.add(type);
+                    }
+                    checkedBehaviorNames.push(`* ${cb.getAttribute('data-name')}`); 
+                });
+                
+                const selectedBehaviors = checkedBehaviorNames.join('\n'); 
+                localStorage.setItem('selectedBehaviors', selectedBehaviors);
+
+                if (loadingMessage) loadingMessage.remove(); 
+                if (caseLoadingMessage) caseLoadingMessage.remove(); 
+                
+                // 1. 篩選、分組並去重複法條
+                lawData.related_statutes_segmented.forEach(law => {
+                    const isBehaviorLaw = law.LawType >= 1 && law.LawType <= 4;
+                    const isGeneralOrSupplementLaw = law.LawType === 0 || law.LawType === 5;
+                    
+                    if ( (isBehaviorLaw && selectedLawTypes.has(law.LawType)) || isGeneralOrSupplementLaw) {
+                        
+                        const key = law.LawNum;
+                        
+                        if (!groupedLaws[key]) {
+                            groupedLaws[key] = {
+                                LawNum: law.LawNum,
+                                LawDetails: law.LawDetails,
+                                LawType: law.LawType, 
+                                RelevanceNote: law.RelevanceNote, 
+                                isSupplementCategory: law.LawType === 5 || law.ReplenishType === 1,
+                                combinedNotes: []
+                            };
+                        }
+                        
+                        // 處理案例 ID 
+                        if (law.CaseID) {
+                            (Array.isArray(law.CaseID) ? law.CaseID : [law.CaseID]).forEach(id => relatedCaseIDs.add(id));
+                        }
+                        
+                        // 處理備註
+                        const currentLawType = law.LawType;
+                        const alreadyExists = groupedLaws[key].combinedNotes.some(note => note.LawType === currentLawType);
+
+                        if (!alreadyExists) {
+                            groupedLaws[key].combinedNotes.push({
+                                LawType: currentLawType,
+                                ReplenishType: law.ReplenishType, 
+                                RelevanceNote: law.RelevanceNote
+                            });
+                        }
+                        
+                        if (law.LawType === 5 || law.ReplenishType === 1) {
+                            groupedLaws[key].isSupplementCategory = true;
+                        }
+                    }
+                });
+                
+                // 2. 顯示法條結果
+                const uniqueLawArray = Object.values(groupedLaws);
+                
+                let coreLaws = uniqueLawArray.filter(lawGroup => !lawGroup.isSupplementCategory);
+                let supplementLaws = uniqueLawArray.filter(lawGroup => lawGroup.isSupplementCategory);
+
+
+                const mainTitle = document.createElement('h3');
+                mainTitle.textContent = "🛡️ 核心與特定行為相關法條：";
+                resultsArea.appendChild(mainTitle);
+                
+                if (coreLaws.length === 0) {
+                    const note = document.createElement('p');
+                    note.className = 'note';
+                    note.textContent = '無核心法條。';
+                    resultsArea.appendChild(note);
+                } else {
+                    coreLaws.forEach(lawGroup => resultsArea.appendChild(createLawCard(lawGroup)));
+                }
+
+                if (supplementLaws.length > 0) {
+                    const combinedTitle = document.createElement('h3');
+                    combinedTitle.textContent = "⚖️ 協商、賠償與情節輕微處分：";
+                    resultsArea.appendChild(combinedTitle);
+                    
+                    supplementLaws.forEach(lawGroup => resultsArea.appendChild(createLawCard(lawGroup)));
+                }
+                
+                
+                // 3. 篩選並顯示案例
+                const casesToDisplay = lawData.cases.filter(caseItem => relatedCaseIDs.has(caseItem.CaseID));
+
+                if (casesToDisplay.length === 0) {
+                    const note = document.createElement('p');
+                    note.className = 'note';
+                    note.textContent = '目前沒有與所選行為相關的公開案例。';
+                    caseArea.appendChild(note);
+                } else {
+                    casesToDisplay.forEach(caseItem => caseArea.appendChild(createCaseCard(caseItem)));
+                }
+                
+                if (coreLaws.length === 0 && supplementLaws.length === 0 && casesToDisplay.length === 0) {
+                    resultsArea.innerHTML = '<p class="note">未找到相關法律條文。</p>';
+                }
+            }
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateResults);
+            });
+            
+            loadLawData();
+        });
+    </script>

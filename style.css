@@ -1,4 +1,4 @@
-/* style.css - 終極穩定排版修正版 (全頁面適用) */
+/* style.css - 終極穩定排版修正版 (適用於三區塊查詢頁) */
 
 /* --- 基礎設定與字體重置 --- */
 html, body {
@@ -60,113 +60,59 @@ h2 {
     font-size: 1.6em;
 }
 
+/* --- 查詢頁三區塊網格佈局 (新增/修改重點) --- */
 
-/* --- 首頁 (index.html) 專用樣式 --- */
-.hero-section {
-    text-align: center;
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
-    max-width: 800px;
-    width: 100%;
+/* 隱藏舊的 main-layout */
+.main-layout {
+    display: none; 
 }
 
-.hero-section img {
-    max-width: 250px; 
-    height: auto;
-    display: block; 
-    margin: 0 auto 30px auto;
-    border-radius: 50%; 
-    border: none; 
+/* 針對新的三區塊佈局使用 Grid */
+.main-layout-grid {
+    display: grid;
+    /* 佈局結構：
+       第一行：filter-panel (佔滿兩欄)
+       第二行：results-panel (左欄) | case-panel (右欄)
+    */
+    grid-template-columns: 1fr 1fr; /* 兩等份欄位 */
+    grid-template-rows: auto 1fr;  /* 上方高度自動，下方佔滿剩餘空間 */
+    gap: 30px;
+    width: 100%; 
+    align-items: stretch; /* 讓左右兩欄高度一致 */
 }
 
-.hero-section h2 {
-    font-size: 2em;
-    color: #007bff;
-    margin-bottom: 20px;
-    border-bottom: none; 
-    padding-bottom: 0;
-    text-align: center; 
+/* 讓 filter-panel 佔滿第一行的兩欄 */
+.filter-panel {
+    grid-column: 1 / 3;
+    grid-row: 1 / 2;
 }
 
-.start-button {
-    background-color: #28a745; 
-    color: white;
-    padding: 15px 30px;
-    font-size: 1.1em;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-    display: inline-block; 
-    margin-top: 20px;
+/* results-panel 和 case-panel 位於第二行 */
+.results-panel {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
 }
-.start-button:hover {
-    background-color: #218838;
+.case-panel {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
 }
 
 /* --- 查詢頁/表單頁面板樣式 --- */
-.main-layout {
-    display: flex;
-    gap: 30px;
-    align-items: flex-start;
-    width: 100%; 
-}
-.filter-panel, .results-panel, .form-card {
+.filter-panel, .results-panel, .case-panel, .form-card {
     background: #ffffff; 
     padding: 30px;
     border-radius: 8px;
     border: 1px solid #dee2e6; 
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
-.filter-panel {
-    flex: 1; 
-    min-width: 280px;
-}
-.results-panel {
-    flex: 2; 
-}
-.form-card {
-    max-width: 600px; /* 縮小表單卡片寬度，讓內容更集中 */
-    margin: 0 auto;
-    width: 100%;
-    text-align: left; 
-}
 
 /* 查詢頁：行為勾選項目條列化 */
 .checkbox-group label {
-    display: block; /* 讓每個選項獨佔一行 */
+    display: block; 
     margin-bottom: 8px;
 }
 
-/* 表單輸入框和文字區塊放大並靠左 */
-.form-group {
-    margin-bottom: 20px;
-}
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    text-align: left;
-}
-.form-group input[type="text"],
-.form-group textarea {
-    width: 100%; /* 佔滿父容器寬度 */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 1em;
-}
-.form-group textarea {
-    min-height: 150px; /* 增大反思內容輸入框高度 */
-}
-
-
-/* --- 法律條文卡片樣式 --- */
+/* --- 法律條文卡片樣式 (強化) --- */
 .law-card {
     border-left: 5px solid #007bff; 
     padding: 15px;
@@ -183,7 +129,128 @@ h2 {
     border-bottom: 1px dashed #ced4da;
     padding-bottom: 5px;
 }
+.law-card.replenish-content {
+    border-left-color: #ffc107; /* 補充法條黃色邊框 */
+    background-color: #fff9e6;
+}
+.law-details strong {
+    color: #34495e;
+}
 
+/* 法律條文列表 */
+.combined-relevance-list {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
+    font-size: 0.95em;
+}
+.combined-relevance-list li {
+    margin-bottom: 5px;
+    padding-left: 10px; 
+    border-left: 2px solid #ddd;
+}
+
+
+/* --- 案例卡片樣式 (新增) --- */
+.case-card {
+    border: 1px solid #dee2e6;
+    background-color: #ffffff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.case-title {
+    color: #dc3545; /* 案例使用醒目顏色 */
+    margin-top: 0;
+    font-size: 1.2em;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 10px;
+}
+.case-content {
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 15px;
+}
+.case-source a, .case-video a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+.case-source a:hover, .case-video a:hover {
+    text-decoration: underline;
+}
+
+/* 影片嵌入容器 (RWD 預覽功能) */
+.video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 比例 (9 / 16 * 100%) */
+    height: 0;
+    overflow: hidden;
+    margin-top: 15px;
+    border-radius: 6px;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* 通用提示訊息 */
+.loading-message, .error-message, .note {
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 15px;
+    font-style: italic;
+    line-height: 1.4;
+}
+.loading-message {
+    background-color: #e9f5ff;
+    color: #007bff;
+    border-left: 3px solid #007bff;
+}
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 3px solid #dc3545;
+}
+
+
+/* --- 其他表單/通用樣式 (維持不變) --- */
+
+.form-card {
+    max-width: 600px; 
+    margin: 0 auto;
+    width: 100%;
+    text-align: left; 
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    text-align: left;
+}
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%; 
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+.form-group textarea {
+    min-height: 150px; 
+}
 
 /* --- 底部按鈕區 (通用樣式，已修正置中) --- */
 .button-footer {
@@ -217,6 +284,8 @@ h2 {
     background-color: #6c757d; 
     color: white;
 }
+.submit-button:hover { background-color: #218838; }
+.back-button:hover, .button-footer a[href="query.html"]:hover { background-color: #5a6268; }
 
 /* --- 頁尾 (Footer) --- */
 footer {
@@ -231,10 +300,24 @@ footer {
 
 /* --- RWD 響應式設計 (針對行動裝置) --- */
 @media (max-width: 768px) {
-    .main-layout {
-        flex-direction: column; 
+    /* 行動裝置上改為單欄堆疊 */
+    .main-layout-grid {
+        grid-template-columns: 1fr; /* 單欄 */
+        grid-template-rows: auto auto auto; /* 依序堆疊 */
         gap: 20px;
     }
+    
+    /* 讓所有區塊恢復單欄佔滿 */
+    .filter-panel, .results-panel, .case-panel {
+        grid-column: 1 / 2;
+        grid-row: auto; 
+    }
+
+    /* 確保所有面板有足夠的內邊距 */
+    .filter-panel, .results-panel, .case-panel {
+        padding: 20px;
+    }
+
     .hero-section img {
         max-width: 180px; 
     }

@@ -131,7 +131,7 @@
                 }
             }
 
-            // 輔助函數：創建顯示用的法條卡片
+            // 輔助函數：創建顯示用的法條卡片 (不變)
             function createLawCard(lawGroup) {
                 const card = document.createElement('div');
                 const isSupplementCategory = lawGroup.isSupplementCategory;
@@ -161,7 +161,7 @@
                 return card;
             }
 
-            // 輔助函數：創建案例卡片 (含影片預覽邏輯)
+            // 輔助函數：創建案例卡片 (不變)
             function createCaseCard(caseItem) {
                 const card = document.createElement('div');
                 card.className = 'case-card';
@@ -213,14 +213,15 @@
                 resultsArea.innerHTML = ''; 
                 caseArea.innerHTML = ''; 
                 
+                // 儲存所有選中的 LawType (1, 2, 3, 4)
                 const selectedLawTypes = new Set(); 
                 let checkedBehaviorNames = []; 
                 let groupedLaws = {}; 
-                let relatedCaseIDs = new Set(); 
                 
                 const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
                 
                 if (checkedBoxes.length === 0) {
+                    // ... (未勾選時的處理邏輯) ...
                     resultsArea.appendChild(loadingMessage);
                     if (loadingMessage.textContent.includes('載入成功')) {
                         loadingMessage.textContent = '✔️ 法律資料與案例載入成功。請勾選上方行為。';
@@ -245,7 +246,7 @@
                 if (loadingMessage) loadingMessage.remove(); 
                 if (caseLoadingMessage) caseLoadingMessage.remove(); 
                 
-                // 1. 篩選、分組並去重複法條
+                // 1. 篩選法條 (邏輯保持不變)
                 lawData.related_statutes_segmented.forEach(law => {
                     const isBehaviorLaw = law.LawType >= 1 && law.LawType <= 4;
                     const isGeneralOrSupplementLaw = law.LawType === 0 || law.LawType === 5;
@@ -265,12 +266,6 @@
                             };
                         }
                         
-                        // 處理案例 ID 
-                        if (law.CaseID) {
-                            (Array.isArray(law.CaseID) ? law.CaseID : [law.CaseID]).forEach(id => relatedCaseIDs.add(id));
-                        }
-                        
-                        // 處理備註
                         const currentLawType = law.LawType;
                         const alreadyExists = groupedLaws[key].combinedNotes.some(note => note.LawType === currentLawType);
 
@@ -288,7 +283,7 @@
                     }
                 });
                 
-                // 2. 顯示法條結果
+                // 2. 顯示法條結果 (不變)
                 const uniqueLawArray = Object.values(groupedLaws);
                 
                 let coreLaws = uniqueLawArray.filter(lawGroup => !lawGroup.isSupplementCategory);
@@ -317,8 +312,15 @@
                 }
                 
                 
-                // 3. 篩選並顯示案例
-                const casesToDisplay = lawData.cases.filter(caseItem => relatedCaseIDs.has(caseItem.CaseID));
+                // 3. 篩選並顯示案例 (【重要修復點】: LawType 直接匹配 NewsType)
+                
+                // 將選中的 LawType 集合轉換為數字陣列
+                const selectedNewsTypes = Array.from(selectedLawTypes); 
+
+                const casesToDisplay = lawData.cases.filter(caseItem => {
+                    // 案例的 NewsType 必須在我們選中的 LawType 集合內
+                    return selectedNewsTypes.includes(caseItem.NewsType);
+                });
 
                 if (casesToDisplay.length === 0) {
                     const note = document.createElement('p');

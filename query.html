@@ -1,58 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BCTP - 行為後果查詢</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
-</head>
-<body>
-    <header>
-        <div class="container">
-            <h1>BCTP</h1>
-            <p>霸凌行為後果透明化資訊平台</p>
-        </div>
-    </header>
-
-    <main>
-        <div class="container">
-            <div class="main-layout">
-                
-                <div class="filter-panel">
-                    <h2>步驟一：行為勾選</h2>
-                    <p>勾選觸發法律後果的行為，查看對應的法律後果。</p>
-
-                    <div class="checkbox-group" id="behavior-filters">
-                        <label><input type="checkbox" name="behavior" value="physical-injury" data-type="1" data-name="肢體推打 / 造成輕傷"> 肢體推打 / 造成輕傷</label>
-                        <label><input type="checkbox" name="behavior" value="online-slander" data-type="2" data-name="網路散布謠言 / 損害名譽"> 網路散布謠言 / 損害名譽</label>
-                        <label><input type="checkbox" name="behavior" value="money-extortion" data-type="3" data-name="威脅取財 / 損毀支付金錢"> 威脅取財 / 損毀支付金錢</label>
-                        <label><input type="checkbox" name="psychological-damage" data-type="4" data-name="密集訊息騷擾 / 造成精神壓力"> 密集訊息騷擾 / 造成精神壓力</label>
-                    </div>
-                </div>
-
-                <div class="results-panel">
-                    <h2>步驟二：後果警示 (即時互動)</h2>
-                    <p>請在左側勾選行為標籤，結果將即時顯示相關法律條文與判例。</p>
-
-                    <div id="results-area">
-                        <p id="loading-message">載入法律資料中...</p>
-                    </div>
-                </div>
-                
-            </div> 
-
-            <div class="button-footer">
-                <a href="form.html" id="next-form-button" class="submit-button">下一步：反思表單 &rarr;</a>
-            </div>
-        </div>
-    </main>
-    
-    <footer>
-        <p>BCTP (Bullying Consequence Transparency Platform)</p>
-    </footer>
-
-    <script>
+<script>
         document.addEventListener('DOMContentLoaded', function() {
             // *** 🚨 JSON 網址 (請確保此網址為有效連結) ***
             // 由於用戶提供的 JSON 網址可能再次失效，這裡使用前一個有效網址，請自行替換為最新的有效網址
@@ -65,23 +11,30 @@
             
             let lawData = { related_statutes_segmented: [], LawType_Mapping: {} }; 
 
-            localStorage.removeItem('selectedBehaviors');
+            // 【優化點】：避免 localStorage 汙染，只在有勾選時設定
+            // localStorage.removeItem('selectedBehaviors'); 
 
             // 輔助函數：取得 LawType 顯示名稱和標籤
             function getLawTypeLabel(law) {
-                let lawTypeLabel = lawData.LawType_Mapping[law.LawType.toString()] || '相關法條';
+                // 【修復點】：確保 LawType_Mapping 存在且有對應的 key
+                const lawTypeKey = law.LawType != null ? law.LawType.toString() : '';
+                let lawTypeLabel = lawData.LawType_Mapping[lawTypeKey] || '相關法條';
                 
                 if (law.LawType === 0) {
                     return `🛡️ ${lawTypeLabel}`; // 通用法條
                 } else if (law.LawType === 5) {
-                    return `🤝 ${lawTypeLabel}`; // 法條補充
-                } else if (law.ReplenishType === 1) {
-                    return `⚠ ${lawTypeLabel} (需和解/賠償)`; // 特定行為中，需要補充的法條
+                    return `🤝 ${lawTypeLabel}`; // 法條補充 (協商/輕微)
+                } 
+                
+                // 針對 LawType 1-4 的行為
+                if (law.ReplenishType === 1) {
+                    return `⚠ ${lawTypeLabel} (建議和解/賠償)`; 
                 }
-                return lawTypeLabel;
+                return `🔗 ${lawTypeLabel}`; // 預設標籤
             }
 
             async function loadLawData() {
+                // ... (載入資料的邏輯保持不變，因為這部分相對標準)
                 try {
                     const response = await fetch(JSON_URL); 
                     
@@ -120,19 +73,11 @@
             function createLawCard(lawGroup) {
                 const card = document.createElement('div');
                 
-                // 決定卡片樣式：如果任何一個相關行為是 ReplenishType: 1 或 LawType: 5，則使用補充/和解樣式
+                // 決定卡片樣式
                 const isSupplementCategory = lawGroup.isSupplementCategory;
                 card.className = `law-card ${isSupplementCategory ? 'replenish-content' : ''}`; 
                 
-                // 1. 主要標題和條文內容 (只顯示一次)
-                let mainTitle = isSupplementCategory ? '⚖️ 協商、賠償或情節輕微處分' : '🛡️ 核心法條';
-                
-                // 針對 LawType 0 的通用法條，我們在標題上不重複 LawType 0 的通用標籤
-                // 對於 LawType 5，由於它本身就是 LawType 5 條文，它會在 combinedNotes 中顯示一次 LawType 5 的完整標籤
-                if (lawGroup.LawType === 0) {
-                    mainTitle = `🛡️ ${lawData.LawType_Mapping[lawGroup.LawType.toString()]}`;
-                }
-
+                // 1. 主要標題和條文內容
                 let html = `<h3 class="law-num-title">${lawGroup.LawNum || '無條款號'}</h3>`;
                 html += `<p class="law-details"><strong>條文詳情：</strong> ${lawGroup.LawDetails || '無詳情'}</p>`;
 
@@ -140,26 +85,25 @@
                 if (lawGroup.combinedNotes.length > 0) {
                     html += '<ul class="combined-relevance-list">';
                     
-                    // 檢查是否有 LawType 0 或 LawType 5 的條文
                     const isGeneralOrSupplement = lawGroup.LawType === 0 || lawGroup.LawType === 5;
 
                     lawGroup.combinedNotes.forEach(note => {
-                        // LawType 0 (通用) 或 LawType 5 (法條補充) 的條文，只顯示一個簡單標籤 (因為它不針對特定行為)
+                        // 【修復/優化點】：LawType 0 (通用) 或 LawType 5 (法條補充) 的條文，只需要顯示一次通用標籤
+                        // 而 LawType 1-4 的行為，顯示特定的行為標籤和備註
+                        
+                        const specificLawTypeLabel = getLawTypeLabel(note);
+                        
+                        // LawType 0/5 的法條，只顯示其本身的備註
                         if (isGeneralOrSupplement) {
-                            html += `<li><strong>${getLawTypeLabel(lawGroup)}：</strong> ${lawGroup.RelevanceNote || '無相關性說明'}</li>`;
+                            // 由於 combinedNotes 對於 LawType 0/5 只有一條，因此直接顯示
+                            html += `<li><strong>${specificLawTypeLabel}：</strong> ${lawGroup.RelevanceNote || '無相關性說明'}</li>`;
                         } else {
-                            // LawType 1-4 的條文，顯示特定的行為標籤和備註
-                            const specificLawTypeLabel = getLawTypeLabel(note);
-                            html += `<li><strong>${specificLawTypeLabel}：</strong> ${note.RelevanceNote || '無相關性說明'}</li>`;
+                            // 針對 LawType 1-4 的特定行為，顯示行為標籤和備註
+                             html += `<li><strong>${specificLawTypeLabel}：</strong> ${note.RelevanceNote || '無相關性說明'}</li>`;
                         }
                     });
 
-                    // 針對 LawType 0 和 LawType 5，由於它們不應該被重複列出，我們只顯示一次，然後結束
-                    if (isGeneralOrSupplement) {
-                         // 因為 LawType 0 和 5 在 combinedNotes 裡只會有一個條目，且只列一次
-                    } else {
-                        html += '</ul>';
-                    }
+                    html += '</ul>';
                 }
                 
                 card.innerHTML = html;
@@ -171,21 +115,26 @@
                 resultsArea.innerHTML = ''; 
                 const selectedLawTypes = new Set(); 
                 let checkedBehaviorNames = []; 
-                let groupedLaws = {}; // 用 LawNum 作為 Key 進行去重複
-                let uniqueLawArray = []; // 最終的 LawGroup 陣列
+                let groupedLaws = {}; 
                 
                 const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
                 
                 if (checkedBoxes.length === 0) {
+                    // 【優化點】：如果沒有勾選，恢復初始的載入成功提示
                     resultsArea.appendChild(loadingMessage);
-                    loadingMessage.textContent = '請勾選左側行為以查看對應法律後果。';
+                    if (loadingMessage.textContent.includes('載入成功')) {
+                        loadingMessage.textContent = '✔️ 法律資料載入成功。請勾選左側行為。';
+                    }
                     localStorage.removeItem('selectedBehaviors'); 
                     return;
                 }
                 
                 checkedBoxes.forEach(cb => {
+                    // 【修復點】：確保 LawType 轉換正確，並只處理 1-4
                     const type = parseInt(cb.getAttribute('data-type'));
-                    selectedLawTypes.add(type);
+                    if (type >= 1 && type <= 4) {
+                        selectedLawTypes.add(type);
+                    }
                     checkedBehaviorNames.push(`* ${cb.getAttribute('data-name')}`); 
                 });
                 
@@ -209,33 +158,38 @@
                             groupedLaws[key] = {
                                 LawNum: law.LawNum,
                                 LawDetails: law.LawDetails,
-                                LawType: law.LawType, // 保留 LawType 用於分類 LawType 0/5
-                                RelevanceNote: law.RelevanceNote, // 保留 LawType 0/5 的備註
+                                LawType: law.LawType, 
+                                RelevanceNote: law.RelevanceNote, 
                                 isSupplementCategory: law.LawType === 5 || law.ReplenishType === 1,
                                 combinedNotes: []
                             };
                         }
                         
-                        // 針對 LawType 1-4，將其行為備註加入 combinedNotes
+                        // LawType 1-4 的處理
                         if (isBehaviorLaw) {
-                            // 檢查是否已存在，避免重複加入 (雖然 LawNum 已經是 Key，但多重行為會共用 LawNum)
-                            // 這裡透過 LawType 來確認是否是重複的行為-法條組合
                             const alreadyExists = groupedLaws[key].combinedNotes.some(note => note.LawType === law.LawType);
                             
                             if (!alreadyExists) {
+                                // 【修復點】：對於 LawType 1-4，將其完整的屬性 (含 ReplenishType) 加入 combinedNotes
                                 groupedLaws[key].combinedNotes.push({
                                     LawType: law.LawType,
                                     ReplenishType: law.ReplenishType,
                                     RelevanceNote: law.RelevanceNote
                                 });
                             }
-                        } else if (isGeneralOrSupplementLaw && groupedLaws[key].combinedNotes.length === 0) {
-                             // LawType 0/5 只需要顯示一次，將其自身作為唯一註釋
-                            groupedLaws[key].combinedNotes.push({
-                                LawType: law.LawType,
-                                ReplenishType: law.ReplenishType,
-                                RelevanceNote: law.RelevanceNote
-                            });
+                        } 
+                        // LawType 0/5 的處理
+                        else if (isGeneralOrSupplementLaw) {
+                            // 【修復點】：LawType 0/5 只需加入一次，且只包含 LawType 本身
+                             const alreadyExists = groupedLaws[key].combinedNotes.some(note => note.LawType === law.LawType);
+
+                            if (!alreadyExists) {
+                                groupedLaws[key].combinedNotes.push({
+                                    LawType: law.LawType,
+                                    ReplenishType: law.ReplenishType, // LawType 5 可能有 ReplenishType
+                                    RelevanceNote: law.RelevanceNote
+                                });
+                            }
                         }
 
                         // 如果這個 LawNum 來源於任何 ReplenishType 1 或 LawType 5，則將整個群組設為 Supplementary
@@ -246,11 +200,11 @@
                 });
                 
                 // 2. 將分組結果轉換為陣列，並按分類分組
-                uniqueLawArray = Object.values(groupedLaws);
+                const uniqueLawArray = Object.values(groupedLaws);
                 
+                // 【優化點】：排序，將 ReplenishType: 0 (核心) 和 LawType: 0 (通用) 優先顯示
                 let coreLaws = uniqueLawArray.filter(lawGroup => !lawGroup.isSupplementCategory);
                 let supplementLaws = uniqueLawArray.filter(lawGroup => lawGroup.isSupplementCategory);
-
 
                 // --- 顯示核心法條 (特定行為 ReplenishType: 0 和 LawType: 0) ---
                 const mainTitle = document.createElement('h3');
@@ -258,19 +212,21 @@
                 resultsArea.appendChild(mainTitle);
                 
                 if (coreLaws.length === 0) {
-                    resultsArea.innerHTML += '<p class="note">無特定行為的核心法條。</p>';
+                    const note = document.createElement('p');
+                    note.className = 'note';
+                    note.textContent = '無特定行為的核心法條。';
+                    resultsArea.appendChild(note);
                 } else {
                     coreLaws.forEach(lawGroup => resultsArea.appendChild(createLawCard(lawGroup)));
                 }
 
 
-                // --- 顯示協商與輕微處分 (合併顯示 ReplenishType: 1 和 LawType: 5/ReplenishType: 2) ---
+                // --- 顯示協商與輕微處分 (合併顯示 ReplenishType: 1 和 LawType: 5) ---
                 if (supplementLaws.length > 0) {
                     const combinedTitle = document.createElement('h3');
                     combinedTitle.textContent = "⚖️ 協商、賠償與情節輕微處分：";
                     resultsArea.appendChild(combinedTitle);
                     
-                    // 這裡不需要再細分，直接將所有 supplementLaws 輸出即可
                     supplementLaws.forEach(lawGroup => resultsArea.appendChild(createLawCard(lawGroup)));
                 }
             }
@@ -279,8 +235,7 @@
                 checkbox.addEventListener('change', updateResults);
             });
             
+            // 頁面載入時檢查是否有選中的行為，如果有則觸發更新
             loadLawData();
         });
     </script>
-</body>
-</html>

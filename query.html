@@ -1,241 +1,63 @@
-<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // *** 🚨 JSON 網址 (請確保此網址為有效連結) ***
-            // 由於用戶提供的 JSON 網址可能再次失效，這裡使用前一個有效網址，請自行替換為最新的有效網址
-            const JSON_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/meowmeowmeow.json'; 
-            
-            const filterContainer = document.getElementById('behavior-filters');
-            const resultsArea = document.getElementById('results-area');
-            const loadingMessage = document.getElementById('loading-message');
-            const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
-            
-            let lawData = { related_statutes_segmented: [], LawType_Mapping: {} }; 
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCTP - 行為後果查詢</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>BCTP</h1>
+            <p>霸凌行為後果透明化資訊平台</p>
+        </div>
+    </header>
 
-            // 【優化點】：避免 localStorage 汙染，只在有勾選時設定
-            // localStorage.removeItem('selectedBehaviors'); 
-
-            // 輔助函數：取得 LawType 顯示名稱和標籤
-            function getLawTypeLabel(law) {
-                // 【修復點】：確保 LawType_Mapping 存在且有對應的 key
-                const lawTypeKey = law.LawType != null ? law.LawType.toString() : '';
-                let lawTypeLabel = lawData.LawType_Mapping[lawTypeKey] || '相關法條';
+    <main>
+        <div class="container">
+            <div class="main-layout-grid"> 
                 
-                if (law.LawType === 0) {
-                    return `🛡️ ${lawTypeLabel}`; // 通用法條
-                } else if (law.LawType === 5) {
-                    return `🤝 ${lawTypeLabel}`; // 法條補充 (協商/輕微)
-                } 
+                <div class="filter-panel">
+                    <h2>步驟一：行為勾選</h2>
+                    <p>勾選觸發法律後果的行為，查看對應的法律後果與案例。</p>
+
+                    <div class="checkbox-group" id="behavior-filters">
+                        <label><input type="checkbox" name="behavior" value="physical-injury" data-type="1" data-name="肢體推打 / 造成輕傷"> 肢體推打 / 造成輕傷</label>
+                        <label><input type="checkbox" name="behavior" value="online-slander" data-type="2" data-name="網路散布謠言 / 損害名譽"> 網路散布謠言 / 損害名譽</label>
+                        <label><input type="checkbox" name="behavior" value="money-extortion" data-type="3" data-name="威脅取財 / 損毀支付金錢"> 威脅取財 / 損毀支付金錢</label>
+                        <label><input type="checkbox" name="behavior" value="psychological-damage" data-type="4" data-name="密集訊息騷擾 / 造成精神壓力"> 密集訊息騷擾 / 造成精神壓力</label>
+                    </div>
+                </div>
+
+                <div class="results-panel">
+                    <h2>步驟二：後果警示 (即時互動)</h2>
+                    <p>請在上方勾選行為標籤，結果將即時顯示相關法律條文。</p>
+                    <div id="results-area">
+                        <p id="loading-message">載入法律資料中...</p>
+                    </div>
+                </div>
                 
-                // 針對 LawType 1-4 的行為
-                if (law.ReplenishType === 1) {
-                    return `⚠ ${lawTypeLabel} (建議和解/賠償)`; 
-                }
-                return `🔗 ${lawTypeLabel}`; // 預設標籤
-            }
-
-            async function loadLawData() {
-                // ... (載入資料的邏輯保持不變，因為這部分相對標準)
-                try {
-                    const response = await fetch(JSON_URL); 
-                    
-                    if (!response.ok) {
-                        const errorStatus = response.status;
-                        let errorMessage = `載入失敗：HTTP 狀態碼 ${errorStatus}。`;
-                        if (errorStatus === 404) {
-                            errorMessage += '錯誤：檔案不存在或網址錯誤。';
-                        }
-                        throw new Error(errorMessage);
-                    }
-                    
-                    const textData = await response.text();
-                    let fullData;
-                    try {
-                        fullData = JSON.parse(textData);
-                    } catch (e) {
-                        throw new Error("JSON 語法錯誤，請檢查檔案內容。");
-                    }
-
-                    lawData = fullData;
-                    
-                    loadingMessage.textContent = '✔️ 法律資料載入成功。請勾選左側行為。';
-                    loadingMessage.style.color = '#28a745';
-                    updateResults(); 
-
-                } catch (error) {
-                    console.error('載入法律資料失敗:', error);
-                    loadingMessage.innerHTML = `❌ 載入法律資料失敗：<br><strong>${error.message}</strong><br>請檢查 JSON 網址是否正確。`;
-                    loadingMessage.style.color = 'red';
-                }
-            }
-
-
-            // 輔助函數：創建顯示用的法條卡片 (處理去重複後的資料結構)
-            function createLawCard(lawGroup) {
-                const card = document.createElement('div');
+                <div class="case-panel">
+                    <h2>步驟三：相關案例</h2>
+                    <p>請在上方勾選行為標籤，查看相關新聞案例。</p>
+                    <div id="case-area">
+                        <p id="case-loading-message" class="loading-message">等待勾選行為，載入案例...</p>
+                    </div>
+                </div>
                 
-                // 決定卡片樣式
-                const isSupplementCategory = lawGroup.isSupplementCategory;
-                card.className = `law-card ${isSupplementCategory ? 'replenish-content' : ''}`; 
-                
-                // 1. 主要標題和條文內容
-                let html = `<h3 class="law-num-title">${lawGroup.LawNum || '無條款號'}</h3>`;
-                html += `<p class="law-details"><strong>條文詳情：</strong> ${lawGroup.LawDetails || '無詳情'}</p>`;
+            </div> 
 
-                // 2. 彙整相關行為和備註 (去重複)
-                if (lawGroup.combinedNotes.length > 0) {
-                    html += '<ul class="combined-relevance-list">';
-                    
-                    const isGeneralOrSupplement = lawGroup.LawType === 0 || lawGroup.LawType === 5;
+            <div class="button-footer">
+                <a href="form.html" id="next-form-button" class="submit-button">下一步：反思表單 &rarr;</a>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>BCTP (Bullying Consequence Transparency Platform)</p>
+    </footer>
 
-                    lawGroup.combinedNotes.forEach(note => {
-                        // 【修復/優化點】：LawType 0 (通用) 或 LawType 5 (法條補充) 的條文，只需要顯示一次通用標籤
-                        // 而 LawType 1-4 的行為，顯示特定的行為標籤和備註
-                        
-                        const specificLawTypeLabel = getLawTypeLabel(note);
-                        
-                        // LawType 0/5 的法條，只顯示其本身的備註
-                        if (isGeneralOrSupplement) {
-                            // 由於 combinedNotes 對於 LawType 0/5 只有一條，因此直接顯示
-                            html += `<li><strong>${specificLawTypeLabel}：</strong> ${lawGroup.RelevanceNote || '無相關性說明'}</li>`;
-                        } else {
-                            // 針對 LawType 1-4 的特定行為，顯示行為標籤和備註
-                             html += `<li><strong>${specificLawTypeLabel}：</strong> ${note.RelevanceNote || '無相關性說明'}</li>`;
-                        }
-                    });
-
-                    html += '</ul>';
-                }
-                
-                card.innerHTML = html;
-                return card;
-            }
-
-
-            function updateResults() {
-                resultsArea.innerHTML = ''; 
-                const selectedLawTypes = new Set(); 
-                let checkedBehaviorNames = []; 
-                let groupedLaws = {}; 
-                
-                const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
-                
-                if (checkedBoxes.length === 0) {
-                    // 【優化點】：如果沒有勾選，恢復初始的載入成功提示
-                    resultsArea.appendChild(loadingMessage);
-                    if (loadingMessage.textContent.includes('載入成功')) {
-                        loadingMessage.textContent = '✔️ 法律資料載入成功。請勾選左側行為。';
-                    }
-                    localStorage.removeItem('selectedBehaviors'); 
-                    return;
-                }
-                
-                checkedBoxes.forEach(cb => {
-                    // 【修復點】：確保 LawType 轉換正確，並只處理 1-4
-                    const type = parseInt(cb.getAttribute('data-type'));
-                    if (type >= 1 && type <= 4) {
-                        selectedLawTypes.add(type);
-                    }
-                    checkedBehaviorNames.push(`* ${cb.getAttribute('data-name')}`); 
-                });
-                
-                const selectedBehaviors = checkedBehaviorNames.join('\n'); 
-                localStorage.setItem('selectedBehaviors', selectedBehaviors);
-
-                if (loadingMessage) loadingMessage.remove(); 
-                
-                // 1. 篩選、分組並去重複法條
-                lawData.related_statutes_segmented.forEach(law => {
-                    const isBehaviorLaw = law.LawType >= 1 && law.LawType <= 4;
-                    const isGeneralOrSupplementLaw = law.LawType === 0 || law.LawType === 5;
-                    
-                    // 確保只處理選中的行為 LawType (1-4)，或通用的 LawType (0, 5)
-                    if ( (isBehaviorLaw && selectedLawTypes.has(law.LawType)) || isGeneralOrSupplementLaw) {
-                        
-                        const key = law.LawNum;
-                        
-                        if (!groupedLaws[key]) {
-                            // 初始化法條群組
-                            groupedLaws[key] = {
-                                LawNum: law.LawNum,
-                                LawDetails: law.LawDetails,
-                                LawType: law.LawType, 
-                                RelevanceNote: law.RelevanceNote, 
-                                isSupplementCategory: law.LawType === 5 || law.ReplenishType === 1,
-                                combinedNotes: []
-                            };
-                        }
-                        
-                        // LawType 1-4 的處理
-                        if (isBehaviorLaw) {
-                            const alreadyExists = groupedLaws[key].combinedNotes.some(note => note.LawType === law.LawType);
-                            
-                            if (!alreadyExists) {
-                                // 【修復點】：對於 LawType 1-4，將其完整的屬性 (含 ReplenishType) 加入 combinedNotes
-                                groupedLaws[key].combinedNotes.push({
-                                    LawType: law.LawType,
-                                    ReplenishType: law.ReplenishType,
-                                    RelevanceNote: law.RelevanceNote
-                                });
-                            }
-                        } 
-                        // LawType 0/5 的處理
-                        else if (isGeneralOrSupplementLaw) {
-                            // 【修復點】：LawType 0/5 只需加入一次，且只包含 LawType 本身
-                             const alreadyExists = groupedLaws[key].combinedNotes.some(note => note.LawType === law.LawType);
-
-                            if (!alreadyExists) {
-                                groupedLaws[key].combinedNotes.push({
-                                    LawType: law.LawType,
-                                    ReplenishType: law.ReplenishType, // LawType 5 可能有 ReplenishType
-                                    RelevanceNote: law.RelevanceNote
-                                });
-                            }
-                        }
-
-                        // 如果這個 LawNum 來源於任何 ReplenishType 1 或 LawType 5，則將整個群組設為 Supplementary
-                        if (law.LawType === 5 || law.ReplenishType === 1) {
-                            groupedLaws[key].isSupplementCategory = true;
-                        }
-                    }
-                });
-                
-                // 2. 將分組結果轉換為陣列，並按分類分組
-                const uniqueLawArray = Object.values(groupedLaws);
-                
-                // 【優化點】：排序，將 ReplenishType: 0 (核心) 和 LawType: 0 (通用) 優先顯示
-                let coreLaws = uniqueLawArray.filter(lawGroup => !lawGroup.isSupplementCategory);
-                let supplementLaws = uniqueLawArray.filter(lawGroup => lawGroup.isSupplementCategory);
-
-                // --- 顯示核心法條 (特定行為 ReplenishType: 0 和 LawType: 0) ---
-                const mainTitle = document.createElement('h3');
-                mainTitle.textContent = "🛡️ 核心與特定行為相關法條：";
-                resultsArea.appendChild(mainTitle);
-                
-                if (coreLaws.length === 0) {
-                    const note = document.createElement('p');
-                    note.className = 'note';
-                    note.textContent = '無特定行為的核心法條。';
-                    resultsArea.appendChild(note);
-                } else {
-                    coreLaws.forEach(lawGroup => resultsArea.appendChild(createLawCard(lawGroup)));
-                }
-
-
-                // --- 顯示協商與輕微處分 (合併顯示 ReplenishType: 1 和 LawType: 5) ---
-                if (supplementLaws.length > 0) {
-                    const combinedTitle = document.createElement('h3');
-                    combinedTitle.textContent = "⚖️ 協商、賠償與情節輕微處分：";
-                    resultsArea.appendChild(combinedTitle);
-                    
-                    supplementLaws.forEach(lawGroup => resultsArea.appendChild(createLawCard(lawGroup)));
-                }
-            }
-
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', updateResults);
-            });
-            
-            // 頁面載入時檢查是否有選中的行為，如果有則觸發更新
-            loadLawData();
-        });
-    </script>
+    </body>
+</html>

@@ -28,7 +28,7 @@
                 <div class="main-layout-grid"> 
                     
                     <div class="filter-panel">
-                        <h2>步驟一：行為勾選 v0</h2>
+                        <h2>步驟一：行為勾選</h2>
                         <p>勾選觸發法律後果的行為，查看對應的法律後果與案例。</p>
 
                         <div class="checkbox-group" id="behavior-filters">
@@ -86,7 +86,7 @@
 
             let lawData = { related_statutes_segmented: [], LawType_Mapping: {}, cases: [] }; 
 
-            // 輔助函數：取得 LawType 顯示名稱和標籤
+            // 輔助函數：取得 LawType 顯示名稱和標籤 (不變)
             function getLawTypeLabel(law) {
                 const lawTypeKey = law.LawType != null ? law.LawType.toString() : '';
                 let lawTypeLabel = lawData.LawType_Mapping[lawTypeKey] || '相關法條';
@@ -123,8 +123,8 @@
 
                     lawData.related_statutes_segmented = statutesData.related_statutes_segmented || [];
                     lawData.LawType_Mapping = statutesData.LawType_Mapping || {};
-                    // 檢查案例是否是陣列，確保數據結構正確
-                    lawData.cases = Array.isArray(casesData.cases) ? casesData.cases : (Array.isArray(casesData) ? casesData : []); 
+                    // 修正：您的 JSON 範例顯示案例列表在 "news" 欄位，如果不是則回退到 "cases" 或直接使用根物件
+                    lawData.cases = Array.isArray(casesData.news) ? casesData.news : (Array.isArray(casesData.cases) ? casesData.cases : (Array.isArray(casesData) ? casesData : [])); 
 
                     // 載入成功：移除初始載入訊息，顯示主要內容
                     if (initialLoadingStatus) initialLoadingStatus.remove();
@@ -258,7 +258,7 @@
                 const selectedBehaviors = checkedBehaviorNames.join('\n'); 
                 localStorage.setItem('selectedBehaviors', selectedBehaviors);
                 
-                // 1. 篩選法條
+                // 1. 篩選法條 (邏輯不變)
                 lawData.related_statutes_segmented.forEach(law => {
                     const isBehaviorLaw = law.LawType >= 1 && law.LawType <= 4;
                     const isGeneralOrSupplementLaw = law.LawType === 0 || law.LawType === 5;
@@ -295,7 +295,7 @@
                     }
                 });
                 
-                // 2. 顯示法條結果
+                // 2. 顯示法條結果 (邏輯不變)
                 const uniqueLawArray = Object.values(groupedLaws);
                 
                 let coreLaws = uniqueLawArray.filter(lawGroup => !lawGroup.isSupplementCategory);
@@ -324,17 +324,16 @@
                 }
                 
                 
-                // 3. 篩選並顯示案例 (關鍵：最嚴格的資料類型轉換和檢查)
+                // 3. 篩選並顯示案例 (關鍵修復：將 NewsType 修正為 newsType)
                 const selectedNewsTypes = Array.from(selectedLawTypes); 
 
                 const casesToDisplay = lawData.cases.filter(caseItem => {
-                    // 確保 NewsType 欄位存在，且不為 null/undefined
-                    if (caseItem && caseItem.NewsType != null) {
+                    // 🚨 修正點：使用 caseItem.newsType 匹配您的 JSON 結構
+                    if (caseItem && caseItem.newsType != null) {
                         
-                        // 嘗試將 NewsType 轉為數字 (處理字串 "1" 和數字 1)
-                        const caseNewsType = parseInt(caseItem.NewsType);
+                        // 處理字串或數字類型的不匹配問題
+                        const caseNewsType = parseInt(caseItem.newsType);
                         
-                        // 檢查 caseNewsType 是否為有效的數字（不是 NaN），且包含在選中的類型中
                         const isMatch = !isNaN(caseNewsType) && selectedNewsTypes.includes(caseNewsType);
                         
                         return isMatch;

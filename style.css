@@ -1,3 +1,6 @@
+/* -----------------------------
+   全站通用排版
+----------------------------- */
 html, body {
     margin: 0;
     padding: 0;
@@ -13,24 +16,24 @@ header {
     color: white;
 }
 
-header h1 { 
-    margin: 0; 
-    font-size: 2.6em; 
+header h1 {
+    margin: 0;
+    font-size: 2.6em;
 }
 
-.subtitle { 
-    margin-top: 6px; 
-    font-size: 1.2em; 
+.subtitle {
+    margin-top: 6px;
+    font-size: 1.2em;
 }
 
 /* container */
-.container { 
-    width: 90%; 
-    max-width: 1200px; 
-    margin: auto; 
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
 }
 
-/* hero area */
+/* hero 區域 */
 .hero-section {
     text-align: center;
     padding: 40px 0;
@@ -39,16 +42,19 @@ header h1 {
     margin-top: 30px;
 }
 
-/* ⭐ 修正首頁 LOGO 大小 */
+/* ⭐ LOGO 最佳化尺寸 */
 .index-logo {
-    width: 260px;      /* 預設寬 */
-    max-width: 90%;    /* RWD 保護 */
+    width: 220px;
+    max-width: 90%;
     display: block;
     margin: 0 auto 25px;
     border-radius: 12px;
 }
 
-/* footer */
+
+/* -----------------------------
+   footer
+----------------------------- */
 footer {
     margin-top: 40px;
     text-align: center;
@@ -59,120 +65,90 @@ footer {
 
 
 
-/* ============================================================================
-   ⭐⭐ 首頁專用動畫按鈕 — 已完全隔離，不會干擾 query.html / form.html
-============================================================================ */
+/* =======================================================================
+    ⭐⭐ 首頁專用動畫按鈕（完全隔離，不影響 query & form）
+======================================================================= */
 .homepage-buttons {
     display: flex;
     justify-content: center;
     margin-top: 30px;
 }
 
-.homepage-buttons button {
-    width: 180px;
+.homepage-buttons a {
+    text-decoration: none;
+}
+
+.fancy-btn {
+    width: 200px;
     height: 55px;
     background: white;
     color: #568fa6;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
     position: relative;
     overflow: hidden;
-    cursor: pointer;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
+
+    font-size: 18px;
     font-weight: bold;
 }
 
-/* 文字保留可顯示 */
-.homepage-buttons button span,
-.homepage-buttons button p {
-    pointer-events: none;
-}
-
-/* ⭐ 修復動畫 — 外框線 */
-.homepage-buttons button:before,
-.homepage-buttons button:after {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 2px;
-    background: #44d8a4;
-    transition: all 0.35s ease;
-}
-
-.homepage-buttons button:before {
-    top: 0;
-    right: 0;
-}
-
-.homepage-buttons button:after {
-    bottom: 0;
-    left: 0;
-}
-
-.homepage-buttons button span {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-
-.homepage-buttons button span:before,
-.homepage-buttons button span:after {
-    content: "";
-    position: absolute;
-    width: 2px;
-    height: 0;
-    background: #44d8a4;
-    transition: all 0.35s ease;
-}
-
-.homepage-buttons button span:before {
-    top: 0;
-    right: 0;
-}
-
-.homepage-buttons button span:after {
-    left: 0;
-    bottom: 0;
-}
-
-/* ⭐ 修復文字切換 — 正常顯示 */
-.homepage-buttons button p {
+/* 兩段文字統一設定 */
+.fancy-btn .text {
     position: absolute;
     width: 100%;
     text-align: center;
+    left: 0;
+
+    transition: 0.35s ease;
+}
+
+/* 預設字顯示在中央 */
+.fancy-btn .default {
     top: 50%;
     transform: translateY(-50%);
-    transition: all 0.35s ease;
 }
 
-.homepage-buttons button p:before {
-    content: attr(data-title);
-}
-
-.homepage-buttons button p:after {
-    content: attr(data-text);
-    color: #44d8a4;
-    position: absolute;
-    width: 100%;
-    top: 150%;
+/* hover 時出現的文字，一開始在按鈕下方 */
+.fancy-btn .hover {
+    top: 140%;
+    opacity: 0;
 }
 
 /* hover 動畫 */
-.homepage-buttons button:hover:before,
-.homepage-buttons button:hover:after {
-    width: 100%;
+.fancy-btn:hover .default {
+    top: -60%;
+    opacity: 0;
 }
 
-.homepage-buttons button:hover span:before,
-.homepage-buttons button:hover span:after {
-    height: 100%;
-}
-
-.homepage-buttons button:hover p:before {
-    transform: translateY(-150%) rotate(4deg);
-}
-
-.homepage-buttons button:hover p:after {
+.fancy-btn:hover .hover {
     top: 50%;
     transform: translateY(-50%);
+    opacity: 1;
+}
+
+/* 外框線效果 */
+.fancy-btn::before,
+.fancy-btn::after {
+    content: "";
+    position: absolute;
+    height: 2px;
+    width: 0;
+    background: #44d8a4;
+    transition: 0.35s ease;
+}
+
+.fancy-btn::before {
+    top: 0;
+    left: 0;
+}
+
+.fancy-btn::after {
+    bottom: 0;
+    right: 0;
+}
+
+.fancy-btn:hover::before,
+.fancy-btn:hover::after {
+    width: 100%;
 }

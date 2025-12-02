@@ -16,11 +16,22 @@ header {
     color: white;
 }
 
-header h1 { margin: 0; font-size: 2.6em; }
-.subtitle { margin-top: 6px; font-size: 1.2em; }
+header h1 { 
+    margin: 0; 
+    font-size: 2.6em; 
+}
+
+.subtitle { 
+    margin-top: 6px; 
+    font-size: 1.2em; 
+}
 
 /* container */
-.container { width: 90%; max-width: 1200px; margin: auto; }
+.container { 
+    width: 90%; 
+    max-width: 1200px; 
+    margin: auto; 
+}
 
 /* hero area */
 .hero-section {
@@ -31,10 +42,10 @@ header h1 { margin: 0; font-size: 2.6em; }
     margin-top: 30px;
 }
 
-/* ⭐ 修正後 LOGO 尺寸 */
+/* ⭐ 修正首頁 LOGO 大小 */
 .index-logo {
-    width: 240px;
-    max-width: 90%;
+    width: 260px;      /* 預設寬 */
+    max-width: 90%;    /* RWD 保護 */
     display: block;
     margin: 0 auto 25px;
     border-radius: 12px;
@@ -51,10 +62,9 @@ footer {
 
 
 
-/* =======================================================================
-   ⭐⭐ 按鈕動畫（最關鍵：使用 .homepage-buttons 限定作用區域）
-   → 不會影響 query.html / form.html
-======================================================================= */
+/* ============================================================================
+   ⭐⭐ 首頁專用動畫按鈕 — 已完全隔離，不會干擾 query.html / form.html
+============================================================================ */
 .homepage-buttons {
     display: flex;
     justify-content: center;
@@ -75,13 +85,13 @@ footer {
     font-weight: bold;
 }
 
+/* 文字保留可顯示 */
 .homepage-buttons button span,
 .homepage-buttons button p {
     pointer-events: none;
 }
 
-/* 以下所有選擇器全部加上 .homepage-buttons
-   → 保證動畫不干擾其他頁面 */
+/* ⭐ 修復動畫 — 外框線 */
 .homepage-buttons button:before,
 .homepage-buttons button:after {
     content: "";
@@ -89,7 +99,17 @@ footer {
     width: 0;
     height: 2px;
     background: #44d8a4;
-    transition: 0.3s;
+    transition: all 0.35s ease;
+}
+
+.homepage-buttons button:before {
+    top: 0;
+    right: 0;
+}
+
+.homepage-buttons button:after {
+    bottom: 0;
+    left: 0;
 }
 
 .homepage-buttons button span {
@@ -105,16 +125,27 @@ footer {
     width: 2px;
     height: 0;
     background: #44d8a4;
-    transition: 0.3s;
+    transition: all 0.35s ease;
 }
 
+.homepage-buttons button span:before {
+    top: 0;
+    right: 0;
+}
+
+.homepage-buttons button span:after {
+    left: 0;
+    bottom: 0;
+}
+
+/* ⭐ 修復文字切換 — 正常顯示 */
 .homepage-buttons button p {
     position: absolute;
     width: 100%;
     text-align: center;
     top: 50%;
     transform: translateY(-50%);
-    transition: 0.3s;
+    transition: all 0.35s ease;
 }
 
 .homepage-buttons button p:before {
@@ -129,6 +160,17 @@ footer {
     top: 150%;
 }
 
+/* hover 動畫 */
+.homepage-buttons button:hover:before,
+.homepage-buttons button:hover:after {
+    width: 100%;
+}
+
+.homepage-buttons button:hover span:before,
+.homepage-buttons button:hover span:after {
+    height: 100%;
+}
+
 .homepage-buttons button:hover p:before {
     transform: translateY(-150%) rotate(4deg);
 }
@@ -137,4 +179,3 @@ footer {
     top: 50%;
     transform: translateY(-50%);
 }
-

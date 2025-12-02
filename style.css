@@ -36,7 +36,7 @@ footer {
 }
 
 /* -----------------------------
-   首頁專屬
+   首頁專屬樣式
 ----------------------------- */
 .homepage .hero-section {
     text-align: center;
@@ -62,7 +62,7 @@ footer {
 }
 
 /* -----------------------------
-   首頁按鈕
+   首頁按鈕動畫
 ----------------------------- */
 .homepage-buttons {
     display: flex;
@@ -263,6 +263,7 @@ footer {
     width: 100%;
 }
 
+/* query.html / form.html 按鈕樣式 */
 .button-footer a, .button-footer button {
     padding: 12px 25px;
     font-size: 16px;
@@ -274,14 +275,19 @@ footer {
     text-decoration: none;
     display: inline-block;
     text-align: center;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    color: white;
 }
 
-.submit-button { background-color: #28a745; color: white; }
-.back-button, .button-footer a[href="query.html"] { background-color: #6c757d; color: white; }
-.submit-button:hover { background-color: #218838; }
-.back-button:hover, .button-footer a[href="query.html"]:hover { background-color: #5a6268; }
+.button-footer .submit-button { background-color: #28a745; }
+.button-footer .back-button { background-color: #6c757d; }
 
+.button-footer .submit-button:hover { background-color: #218838; }
+.button-footer .back-button:hover { background-color: #5a6268; }
+
+/* -----------------------------
+   響應式設計
+----------------------------- */
 @media (max-width: 768px) {
     header h1 { font-size: 2em; }
     header .subtitle { font-size: 1em; }

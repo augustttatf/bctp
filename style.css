@@ -44,6 +44,7 @@ header p {
 /* --- 主要內容區 (Main) - 留白修正微調 */
 main {
     flex-grow: 1; 
+    /* 移除頂部 padding，減少頁首和內容之間的間距 */
     padding: 0 0 40px 0; 
 }
 
@@ -82,7 +83,7 @@ h2 {
 }
 
 
-/* --- 按鈕重構後的樣式 (確保顯示與顏色對比) --- */
+/* --- 按鈕重構後的樣式 (最終顏色與穩定性修正) --- */
 
 .button-link {
     text-decoration: none; 
@@ -99,30 +100,31 @@ h2 {
 .buttons .animated-btn {
   width: 200px; 
   height: 50px;
-  /* 修正：改變按鈕顏色，提高對比度 */
-  background-color: #007bff; 
+  /* 修正 1：改變按鈕顏色為更突出的綠色 */
+  background-color: #28a745; 
   margin: 20px;
   color: white; 
   position: relative;
-  overflow: hidden;
+  /* 關鍵：隱藏超出按鈕範圍的內容 */
+  overflow: hidden; 
   font-size: 14px;
   letter-spacing: 1px;
-  font-weight: 500;
+  font-weight: bold; /* 加粗字體 */
   text-transform: uppercase;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
-  border: 0;
+  border: none;
   display: flex; 
   align-items: center;
   justify-content: center;
-  border-radius: 3px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* 加深陰影 */
   padding: 0;
 }
 
 .buttons .animated-btn:hover {
-    background-color: #44d8a4; /* 懸停時，變為強調色 */
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3); 
+    background-color: #218838; /* 懸停時，顏色微變深 */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4); 
 }
 
 /* 兩個文字層的通用樣式 */
@@ -134,19 +136,22 @@ h2 {
     align-items: center;
     justify-content: center;
     transition: all 0.4s ease-in-out;
-    top: 0; /* 確保文字層都在按鈕中間 */
+    top: 0; 
+    left: 0;
 }
 
 /* 常態文字 (BCTP) */
 .buttons .btn-default-text {
+    /* 修正 2：確保常態文字完全顯示在中間 */
     opacity: 1;
     transform: translateY(0);
 }
 
 /* 懸停文字 (開始查詢) */
 .buttons .btn-hover-text {
-    opacity: 0; /* 初始不可見 */
-    transform: translateY(100%); /* 初始位置在按鈕下方 */
+    /* 修正 3：確保懸停文字初始時完全不可見且定位在下方 */
+    opacity: 0; 
+    transform: translateY(100%); 
 }
 
 /* 懸停效果：常態文字向上移出並淡出 */

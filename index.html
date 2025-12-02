@@ -7,37 +7,38 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
 </head>
+
 <body>
-    <header>
-        <div class="container">
-            <h1>BCTP</h1>
-            <p>霸凌行為後果透明化資訊平台</p>
-        </div>
-    </header>
+    <header>
+        <div class="container">
+            <h1>BCTP</h1>
+            <p>霸凌行為後果透明化資訊平台</p>
+        </div>
+    </header>
 
-    <main>
-        <div class="container hero-section">
-            
-            <img src="Home1mage.jpg"> 
-            
-            <h2>深入了解霸凌行為的法律後果</h2>
-            <p>本平台旨在提供透明、易懂的法律資訊，幫助學生、家長和教育者認知霸凌行為可能帶來的法律責任和保護處分。</p>
-            <p>「法律認知的斷層，不該成為犯行的藉口。」</p>
+    <main>
+        <div class="container hero-section">
 
+            <!-- ⭐ 已修正 LOGO 大小 -->
+            <img src="Home1mage.jpg" class="index-logo">
+
+            <h2>深入了解霸凌行為的法律後果</h2>
+            <p>本平台旨在提供透明、易懂的法律資訊，幫助學生、家長和教育者認知霸凌行為可能帶來的法律責任和保護處分。</p>
+            <p>「法律認知的斷層，不該成為犯行的藉口。」</p>
+
+            <!-- ⭐ 改成與你的動畫 CSS 相容的結構 -->
             <div class="buttons">
-                <a href="query.html" class="button-link">
-                    <button class="animated-btn">
-                        <span class="btn-default-text">BCTP</span>
-                        <span class="btn-hover-text">🛡️ 開始查詢</span>
-                    </button>
-                </a>
+                <button onclick="location.href='query.html'" data-title="BCTP" data-text="🛡️ 開始查詢">
+                    <span></span>
+                    <p></p>
+                </button>
             </div>
 
-        </div>
-    </main>
-    
-    <footer>
-        <p>BCTP (Bullying Consequence Transparency Platform)</p>
-    </footer>
+        </div>
+    </main>
+
+    <footer>
+        <p>BCTP (Bullying Consequence Transparency Platform)</p>
+    </footer>
 </body>
 </html>

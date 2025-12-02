@@ -131,7 +131,6 @@
                         mainContentWrapper.style.display = 'block'; 
                     }
                     
-                    // 初始執行一次，確保未勾選時結果區是空的
                     updateResults(); 
 
                 } catch (error) {
@@ -242,7 +241,7 @@
                 const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
                 
                 if (checkedBoxes.length === 0) {
-                    // 【UX 優化】未勾選任何行為時，清空結果區和案例區。
+                    // 未勾選任何行為時，清空結果區和案例區。
                     localStorage.removeItem('selectedBehaviors'); 
                     return;
                 }
@@ -258,7 +257,7 @@
                 const selectedBehaviors = checkedBehaviorNames.join('\n'); 
                 localStorage.setItem('selectedBehaviors', selectedBehaviors);
                 
-                // 1. 篩選法條
+                // 1. 篩選法條 (邏輯不變)
                 lawData.related_statutes_segmented.forEach(law => {
                     const isBehaviorLaw = law.LawType >= 1 && law.LawType <= 4;
                     const isGeneralOrSupplementLaw = law.LawType === 0 || law.LawType === 5;
@@ -295,7 +294,7 @@
                     }
                 });
                 
-                // 2. 顯示法條結果
+                // 2. 顯示法條結果 (邏輯不變)
                 const uniqueLawArray = Object.values(groupedLaws);
                 
                 let coreLaws = uniqueLawArray.filter(lawGroup => !lawGroup.isSupplementCategory);
@@ -324,11 +323,14 @@
                 }
                 
                 
-                // 3. 篩選並顯示案例 (LawType 直接匹配 NewsType)
+                // 3. 篩選並顯示案例 (【關鍵修復點】: 轉換為數字進行比對)
                 const selectedNewsTypes = Array.from(selectedLawTypes); 
 
                 const casesToDisplay = lawData.cases.filter(caseItem => {
-                    return selectedNewsTypes.includes(caseItem.NewsType);
+                    // 🚨 確保 NewsType 被轉換為數字
+                    const caseNewsType = parseInt(caseItem.NewsType);
+                    // 檢查是否為有效數字，並包含在選中的 LawType 中
+                    return !isNaN(caseNewsType) && selectedNewsTypes.includes(caseNewsType);
                 });
 
                 if (casesToDisplay.length === 0) {

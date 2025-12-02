@@ -1,193 +1,140 @@
-/* ===== 基本頁面排版 ===== */
-body {
+/* -----------------------------
+   全域排版不動
+----------------------------- */
+html, body {
     margin: 0;
-    font-family: "Noto Sans TC", sans-serif;
-    background-color: #f7f9fc;
-    color: #333;
+    padding: 0;
+    font-family: '微軟正黑體', sans-serif;
+    background: #f8f9fa;
 }
 
+/* header */
 header {
-    background-color: #568fa6;
+    background: #007bff;
     padding: 20px 0;
     text-align: center;
     color: white;
 }
 
-.container {
-    width: 90%;
-    max-width: 900px;
-    margin: auto;
-}
+header h1 { margin: 0; font-size: 2.6em; }
+.subtitle { margin-top: 6px; font-size: 1.2em; }
 
-h1 {
-    margin: 0;
-    font-size: 32px;
-}
+/* container */
+.container { width: 90%; max-width: 1200px; margin: auto; }
 
+/* hero area */
 .hero-section {
     text-align: center;
-    padding: 30px 0;
+    padding: 40px 0;
+    background: white;
+    border-radius: 10px;
+    margin-top: 30px;
 }
 
-/* ⭐ 修正 LOGO 圖片過大 */
+/* ⭐ 修正後 LOGO 尺寸 */
 .index-logo {
-    width: 320px;       /* 你可以改成 250–350px */
-    max-width: 90%;     /* 適合手機 */
-    height: auto;
+    width: 240px;
+    max-width: 90%;
     display: block;
-    margin: 0 auto 20px;
+    margin: 0 auto 25px;
     border-radius: 12px;
 }
 
-/* ===== footer ===== */
+/* footer */
 footer {
+    margin-top: 40px;
     text-align: center;
     padding: 20px;
-    margin-top: 20px;
-    background-color: #568fa6;
-    color: white;
+    background: #e9ecef;
+    color: #555;
 }
 
 
 
-/* ===================================================================================== */
-/* ⭐⭐ 以下為你的完整按鈕動畫（完全保留 + 已整合） */
-/* ===================================================================================== */
-
-.buttons {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+/* =======================================================================
+   ⭐⭐ 按鈕動畫（最關鍵：使用 .homepage-buttons 限定作用區域）
+   → 不會影響 query.html / form.html
+======================================================================= */
+.homepage-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
 }
 
-.buttons button {
-  width: 150px;
-  height: 50px;
-  background-color: white;
-  margin: 20px;
-  color: #568fa6;
-  position: relative;
-  overflow: hidden;
-  font-size: 14px;
-  letter-spacing: 1px;
-  font-weight: 500;
-  text-transform: uppercase;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  border: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 3px;
+.homepage-buttons button {
+    width: 180px;
+    height: 55px;
+    background: white;
+    color: #568fa6;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
-.buttons button:before, .buttons button:after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 2px;
-  background-color: #44d8a4;
-  transition: all 0.3s cubic-bezier(0.35, 0.1, 0.25, 1);
+.homepage-buttons button span,
+.homepage-buttons button p {
+    pointer-events: none;
 }
 
-.buttons button:before {
-  right: 0;
-  top: 0;
-  transition: all 0.5s cubic-bezier(0.35, 0.1, 0.25, 1);
+/* 以下所有選擇器全部加上 .homepage-buttons
+   → 保證動畫不干擾其他頁面 */
+.homepage-buttons button:before,
+.homepage-buttons button:after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: #44d8a4;
+    transition: 0.3s;
 }
 
-.buttons button:after {
-  left: 0;
-  bottom: 0;
+.homepage-buttons button span {
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
-.buttons button span {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-  margin: 0;
-  padding: 0;
-  z-index: 1;
+.homepage-buttons button span:before,
+.homepage-buttons button span:after {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 0;
+    background: #44d8a4;
+    transition: 0.3s;
 }
 
-.buttons button span:before, .buttons button span:after {
-  content: "";
-  position: absolute;
-  width: 2px;
-  height: 0;
-  background-color: #44d8a4;
-  transition: all 0.3s cubic-bezier(0.35, 0.1, 0.25, 1);
+.homepage-buttons button p {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: 0.3s;
 }
 
-.buttons button span:before {
-  right: 0;
-  top: 0;
-  transition: all 0.5s cubic-bezier(0.35, 0.1, 0.25, 1);
+.homepage-buttons button p:before {
+    content: attr(data-title);
 }
 
-.buttons button span:after {
-  left: 0;
-  bottom: 0;
+.homepage-buttons button p:after {
+    content: attr(data-text);
+    color: #44d8a4;
+    position: absolute;
+    width: 100%;
+    top: 150%;
 }
 
-.buttons button p {
-  padding: 0;
-  margin: 0;
-  transition: all 0.4s cubic-bezier(0.35, 0.1, 0.25, 1);
-  position: absolute;
-  width: 100%;
-  height: 100%;
+.homepage-buttons button:hover p:before {
+    transform: translateY(-150%) rotate(4deg);
 }
 
-.buttons button p:before, .buttons button p:after {
-  position: absolute;
-  width: 100%;
-  transition: all 0.4s cubic-bezier(0.35, 0.1, 0.25, 1);
-  z-index: 1;
-  left: 0;
+.homepage-buttons button:hover p:after {
+    top: 50%;
+    transform: translateY(-50%);
 }
 
-.buttons button p:before {
-  content: attr(data-title);
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.buttons button p:after {
-  content: attr(data-text);
-  top: 150%;
-  color: #44d8a4;
-}
-
-.buttons button:hover:before, .buttons button:hover:after {
-  width: 100%;
-}
-
-.buttons button:hover span {
-  z-index: 1;
-}
-
-.buttons button:hover span:before, .buttons button:hover span:after {
-  height: 100%;
-}
-
-.buttons button:hover p:before {
-  top: -50%;
-  transform: rotate(5deg);
-}
-
-.buttons button:hover p:after {
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.buttons button:active {
-  outline: none;
-  border: none;
-}
-
-.buttons button:focus {
-  outline: 0;
-}

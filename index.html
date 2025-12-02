@@ -1,43 +1,37 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BCTP - 霸凌行為後果透明化資訊平台</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BCTP - 首頁</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <header>
-        <div class="container">
-            <h1>BCTP</h1>
-            <p class="subtitle">霸凌行為後果透明化資訊平台</p>
-        </div>
-    </header>
+<header>
+    <div class="container">
+        <h1>BCTP</h1>
+        <p class="subtitle">霸凌行為後果透明化資訊平台</p>
+    </div>
+</header>
 
-    <main>
-        <div class="container hero-section">
-
-            <!-- 首頁圖片 -->
-            <img src="Home1mage.jpg" alt="BCTP 主視覺" class="index-logo">
-
-            <!-- 原本介紹文字（完整保留） -->
-            <h2>深入了解霸凌行為的法律後果</h2>
-            <p>本平台旨在提供透明、易懂的法律資訊，幫助學生、家長和教育者認知霸凌行為可能帶來的法律責任和保護處分。</p>
-            <p>「法律認知的斷層，不該成為犯行的藉口。」</p>
-
-            <!-- ✔ 修正後按鈕（用 a 標籤實作） -->
+<main class="homepage">
+    <div class="container">
+        <div class="hero-section">
+            <img src="logo.png" class="index-logo" alt="BCTP LOGO">
+            <p>本平台提供法律條文與案例查詢服務，協助使用者了解霸凌行為後果，保障自身與他人權益。</p>
             <div class="homepage-buttons">
-                <a href="query.html" class="fancy-btn">
-                    <span class="default">BCTP</span>
-                    <span class="hover">🛡️ 開始查詢</span>
-                </a>
+                <button onclick="window.location.href='query.html'">
+                    <span></span>
+                    <span class="default-text">BCTP</span>
+                    <span class="hover-text">開始查詢</span>
+                </button>
             </div>
         </div>
-    </main>
+    </div>
+</main>
 
-    <footer>
-        <p>BCTP (Bullying Consequence Transparency Platform)</p>
-    </footer>
+<footer>
+    <p>BCTP (Bullying Consequence Transparency Platform)</p>
+</footer>
 </body>
 </html>

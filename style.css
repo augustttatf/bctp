@@ -1,4 +1,4 @@
-/* style.css - 最終重構版本 (解決留白、按鈕重疊、顏色對比度問題) */
+/* style.css - 最終穩定版本 (修正 Header/LOGO/留白/按鈕) */
 
 /* --- 基礎設定與字體重置 --- */
 html, body {
@@ -35,16 +35,18 @@ header h1 {
     font-size: 2.5em;
 }
 
+/* 修正 1：加大副標題字體並確保顏色對比度 */
 header p {
     margin: 5px 0 0;
-    font-size: 1em;
-    opacity: 0.9;
+    font-size: 1.2em; /* 字體加大 */
+    color: white; /* 確保在淺藍背景下明顯 */
+    opacity: 1; 
 }
 
 /* --- 主要內容區 (Main) - 留白修正微調 */
 main {
     flex-grow: 1; 
-    /* 移除頂部 padding，減少頁首和內容之間的間距 */
+    /* 減少主要內容的上下邊距 */
     padding: 0 0 40px 0; 
 }
 
@@ -62,7 +64,8 @@ h2 {
 /* --- 首頁 (index.html) 專用樣式 --- */
 .hero-section {
     text-align: center;
-    padding: 50px 30px 30px 30px; 
+    /* 修正 3：減少上邊距，拉近與頁首的距離，減少上部留白 */
+    padding: 30px 30px 30px 30px; 
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
@@ -73,8 +76,9 @@ h2 {
     margin-right: auto;
 }
 
+/* 修正 2：放大圖片/LOGO 尺寸 */
 .hero-section img {
-    max-width: 150px; 
+    max-width: 250px; /* 尺寸加大 */
     height: auto;
     display: block; 
     margin: 0 auto 30px auto;
@@ -83,7 +87,7 @@ h2 {
 }
 
 
-/* --- 按鈕重構後的樣式 (最終顏色與穩定性修正) --- */
+/* --- 按鈕重構後的樣式 (綠色底，文字切換 - 假設 index.html 結構已更新) --- */
 
 .button-link {
     text-decoration: none; 
@@ -100,16 +104,14 @@ h2 {
 .buttons .animated-btn {
   width: 200px; 
   height: 50px;
-  /* 修正 1：改變按鈕顏色為更突出的綠色 */
   background-color: #28a745; 
   margin: 20px;
   color: white; 
   position: relative;
-  /* 關鍵：隱藏超出按鈕範圍的內容 */
   overflow: hidden; 
   font-size: 14px;
   letter-spacing: 1px;
-  font-weight: bold; /* 加粗字體 */
+  font-weight: bold; 
   text-transform: uppercase;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
@@ -118,12 +120,12 @@ h2 {
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* 加深陰影 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); 
   padding: 0;
 }
 
 .buttons .animated-btn:hover {
-    background-color: #218838; /* 懸停時，顏色微變深 */
+    background-color: #218838; 
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4); 
 }
 
@@ -142,14 +144,12 @@ h2 {
 
 /* 常態文字 (BCTP) */
 .buttons .btn-default-text {
-    /* 修正 2：確保常態文字完全顯示在中間 */
     opacity: 1;
     transform: translateY(0);
 }
 
 /* 懸停文字 (開始查詢) */
 .buttons .btn-hover-text {
-    /* 修正 3：確保懸停文字初始時完全不可見且定位在下方 */
     opacity: 0; 
     transform: translateY(100%); 
 }

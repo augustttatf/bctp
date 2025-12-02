@@ -1,4 +1,4 @@
-/* style.css - 最終修訂版本 (解決留白、按鈕重疊、顏色對比度問題) */
+/* style.css - 最終重構版本 (解決留白、按鈕重疊、顏色對比度問題) */
 
 /* --- 基礎設定與字體重置 --- */
 html, body {
@@ -44,7 +44,6 @@ header p {
 /* --- 主要內容區 (Main) - 留白修正微調 */
 main {
     flex-grow: 1; 
-    /* 移除頂部 padding，減少頁首和內容之間的間距 */
     padding: 0 0 40px 0; 
 }
 
@@ -62,7 +61,6 @@ h2 {
 /* --- 首頁 (index.html) 專用樣式 --- */
 .hero-section {
     text-align: center;
-    /* 增加頂部 padding，讓內容不至於太靠近頁首 */
     padding: 50px 30px 30px 30px; 
     background-color: #ffffff;
     border-radius: 8px;
@@ -84,7 +82,7 @@ h2 {
 }
 
 
-/* --- 新增：自定義動畫按鈕樣式 (Buttons) --- */
+/* --- 按鈕重構後的樣式 (確保顯示與顏色對比) --- */
 
 .button-link {
     text-decoration: none; 
@@ -98,13 +96,12 @@ h2 {
   margin-top: 25px; 
 }
 
-.buttons button {
+.buttons .animated-btn {
   width: 200px; 
   height: 50px;
   /* 修正：改變按鈕顏色，提高對比度 */
   background-color: #007bff; 
   margin: 20px;
-  /* 修正：文字顏色改為白色 */
   color: white; 
   position: relative;
   overflow: hidden;
@@ -112,140 +109,58 @@ h2 {
   letter-spacing: 1px;
   font-weight: 500;
   text-transform: uppercase;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   border: 0;
   display: flex; 
   align-items: center;
   justify-content: center;
   border-radius: 3px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* 加深陰影 */
-}
-/* 懸停時按鈕變色，與邊框色協調 */
-.buttons button:hover {
-    background-color: #44d8a4; 
-    color: white;
-}
-
-
-/* 邊框動畫樣式 (不變) */
-.buttons button:before, .buttons button:after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 2px;
-  background-color: white; /* 邊框色改為白色，在藍底上顯眼 */
-  transition: all 0.3s cubic-bezier(0.35, 0.1, 0.25, 1);
-}
-.buttons button:before {
-  right: 0;
-  top: 0;
-  transition: all 0.5s cubic-bezier(0.35, 0.1, 0.25, 1);
-}
-.buttons button:after {
-  left: 0;
-  bottom: 0;
-}
-.buttons button span {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-  margin: 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
   padding: 0;
-  z-index: 1;
-}
-.buttons button span:before, .buttons button span:after {
-  content: "";
-  position: absolute;
-  width: 2px;
-  height: 0;
-  background-color: white; /* 邊框色改為白色 */
-  transition: all 0.3s cubic-bezier(0.35, 0.1, 0.25, 1);
-}
-.buttons button span:before {
-  right: 0;
-  top: 0;
-  transition: all 0.5s cubic-bezier(0.35, 0.1, 0.25, 1);
-}
-.buttons button span:after {
-  left: 0;
-  bottom: 0;
 }
 
-/* 文字動畫容器 P 標籤 */
-.buttons button p {
-  padding: 0;
-  margin: 0;
-  transition: all 0.4s cubic-bezier(0.35, 0.1, 0.25, 1);
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  
-  display: flex;
-  align-items: center; 
-  justify-content: center; 
+.buttons .animated-btn:hover {
+    background-color: #44d8a4; /* 懸停時，變為強調色 */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3); 
 }
 
-/* 顯示文字 :before (常態 data-title) */
-.buttons button p:before {
-  content: attr(data-title);
-  /* 修正重疊：確保常態文字居中且不受干擾 */
-  position: absolute; 
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transform: translateY(-50%);
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white; /* 確保常態文字是白色的 */
+/* 兩個文字層的通用樣式 */
+.buttons .animated-btn span {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease-in-out;
+    top: 0; /* 確保文字層都在按鈕中間 */
 }
 
-/* 顯示文字 :after (懸停進入 data-text) */
-.buttons button p:after {
-  content: attr(data-text);
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  /* 修正重疊：確保懸停文字在非懸停狀態下被完全推到下方，不干擾 :before */
-  top: 150%; 
-  left: 0;
-  color: white; /* 懸停時，背景色已變，文字保持白色 */
-  z-index: 1;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* 常態文字 (BCTP) */
+.buttons .btn-default-text {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/* 懸停動畫 */
-.buttons button:hover:before, .buttons button:hover:after {
-  width: 100%;
+/* 懸停文字 (開始查詢) */
+.buttons .btn-hover-text {
+    opacity: 0; /* 初始不可見 */
+    transform: translateY(100%); /* 初始位置在按鈕下方 */
 }
 
-.buttons button:hover span {
-  z-index: 1;
+/* 懸停效果：常態文字向上移出並淡出 */
+.buttons .animated-btn:hover .btn-default-text {
+    opacity: 0;
+    transform: translateY(-100%);
 }
 
-.buttons button:hover span:before, .buttons button:hover span:after {
-  height: 100%;
+/* 懸停效果：懸停文字向上移入並淡入 */
+.buttons .animated-btn:hover .btn-hover-text {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/* 懸停時，舊文字 (:before) 向上移動並旋轉 */
-.buttons button:hover p:before {
-  top: -150%; /* 讓它完全移出 */
-  transform: rotate(5deg);
-}
-
-/* 懸停時，新文字 (:after) 從下方移動到中心 */
-.buttons button:hover p:after {
-  top: 0; /* 移到中心位置 */
-  transform: none; 
-}
 
 /* --- 查詢頁三區塊網格佈局 (query.html 專用) --- */
 .main-layout-grid {

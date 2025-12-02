@@ -1,4 +1,4 @@
-/* style.css - 最終修復版本 (首頁/查詢頁兼容，佈局/按鈕/Favicon 修正) */
+/* style.css - 最終修訂版本 (解決留白、按鈕不顯示、Favicon 相容性問題) */
 
 /* --- 基礎設定與字體重置 --- */
 html, body {
@@ -41,7 +41,7 @@ header p {
     opacity: 0.9;
 }
 
-/* --- 主要內容區 (Main) - 修正：移除 flex 屬性，防止內容被過度限制在中間一小塊 */
+/* --- 主要內容區 (Main) - 修正：移除 flex 屬性，讓內容佔用空間更大 */
 main {
     flex-grow: 1; 
     padding: 40px 0;
@@ -58,7 +58,7 @@ h2 {
 }
 
 
-/* --- 首頁 (index.html) 專用樣式 --- */
+/* --- 首頁 (index.html) 專用樣式 - 修正：放大 hero-section 寬度以解決留白問題 */
 .hero-section {
     text-align: center;
     padding: 30px;
@@ -66,7 +66,6 @@ h2 {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     margin-bottom: 30px;
-    /* 修正：增加最大寬度，讓內容更寬鬆，解決留白問題 */
     max-width: 900px; 
     width: 100%;
     margin-left: auto;
@@ -98,8 +97,7 @@ h2 {
 }
 
 .buttons button {
-  /* 修正：增加寬度，確保 "🛡️ 開始查詢" 不會溢出或擠壓 */
-  width: 200px; 
+  width: 200px; /* 寬度足夠容納文字 */
   height: 50px;
   background-color: white;
   margin: 20px;
@@ -113,7 +111,6 @@ h2 {
   transition: all 0.3s ease;
   cursor: pointer;
   border: 0;
-  /* 確保按鈕內容居中 */
   display: flex; 
   align-items: center;
   justify-content: center;
@@ -191,12 +188,13 @@ h2 {
 /* 顯示文字 :before (常態 data-title) */
 .buttons button p:before {
   content: attr(data-title);
-  /* 修正：確保文字常態可見 */
-  position: static; 
+  /* 修正：將 position: static 改為相對定位，並確保 top 在 50% 附近，提高相容性 */
+  position: absolute; 
+  top: 50%;
+  transform: translateY(-50%);
   width: auto;
-  top: auto;
-  transform: none; 
   z-index: 1;
+  /* 確保 text 和 emoji 對齊 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -239,7 +237,7 @@ h2 {
 
 /* 懸停時，新文字 (:after) 從下方移動到中心 */
 .buttons button:hover p:after {
-  top: 0; /* 移到中心位置 */
+  top: 0; /* 移到中心位置，讓 Flex 居中生效 */
   transform: none; 
 }
 

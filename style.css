@@ -74,7 +74,7 @@ h2 {
 }
 
 .hero-section img {
-    max-width: 150px; /* 【修正】縮小圖片 */
+    max-width: 150px; 
     height: auto;
     display: block; 
     margin: 0 auto 30px auto;
@@ -82,38 +82,209 @@ h2 {
     border: none; 
 }
 
-.start-button {
-    background-color: #28a745; 
-    color: white;
-    padding: 15px 30px;
-    font-size: 1.1em;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
-    display: inline-block; 
-    margin-top: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 【修正】增加陰影使它看起來像按鈕 */
-}
-.start-button:hover {
-    background-color: #218838;
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); 
-    transform: translateY(-2px); 
-}
-.start-button:active {
-    background-color: #1e7e34; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transform: translateY(0); 
+/* --- 刪除舊的 .start-button 樣式，由新的 .buttons 樣式取代 --- */
+
+
+/* --- 新增：自定義動畫按鈕樣式 (Buttons) --- */
+
+.button-link {
+    text-decoration: none; /* 移除超連結底線 */
+    display: inline-block; /* 確保連結可以包住按鈕並參與布局 */
 }
 
-/* --- 舊的雙欄佈局 (適用於 form.html) --- */
-.main-layout {
-    display: flex;
-    gap: 30px;
-    align-items: flex-start;
-    width: 100%; 
+.buttons {
+  display: flex;
+  justify-content: center; /* 讓按鈕在容器內居中 */
+  align-items: center;
+  margin-top: 25px; /* 添加一些間距 */
 }
+
+.buttons button {
+  width: 180px; /* 增加寬度以容納圖示 */
+  height: 50px;
+  background-color: white;
+  margin: 20px;
+  color: #568fa6;
+  position: relative;
+  overflow: hidden;
+  font-size: 14px;
+  letter-spacing: 1px;
+  font-weight: 500;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 0;
+  /* 確保按鈕內容居中 */
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 邊框動畫樣式 */
+.buttons button:before, .buttons button:after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background-color: #44d8a4; /* 成功色 */
+  transition: all 0.3s cubic-bezier(0.35, 0.1, 0.25, 1);
+}
+
+.buttons button:before {
+  right: 0;
+  top: 0;
+  transition: all 0.5s cubic-bezier(0.35, 0.1, 0.25, 1);
+}
+
+.buttons button:after {
+  left: 0;
+  bottom: 0;
+}
+
+.buttons button span {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+  padding: 0;
+  z-index: 1;
+}
+
+.buttons button span:before, .buttons button span:after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 0;
+  background-color: #44d8a4;
+  transition: all 0.3s cubic-bezier(0.35, 0.1, 0.25, 1);
+}
+
+.buttons button span:before {
+  right: 0;
+  top: 0;
+  transition: all 0.5s cubic-bezier(0.35, 0.1, 0.25, 1);
+}
+
+.buttons button span:after {
+  left: 0;
+  bottom: 0;
+}
+
+/* 文字動畫容器 P 標籤 - 確保居中和動畫 */
+.buttons button p {
+  padding: 0;
+  margin: 0;
+  transition: all 0.4s cubic-bezier(0.35, 0.1, 0.25, 1);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  
+  /* 核心：Flex 佈局來居中文字和 Emoji */
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+}
+
+/* 顯示文字 :before (常態 data-title) */
+.buttons button p:before {
+  content: attr(data-title);
+  /* 修正定位為靜態，由 Flex 佈局控制 */
+  position: static; 
+  width: auto;
+  top: auto;
+  transform: none; 
+  z-index: 1;
+  /* 確保 text 和 emoji 對齊 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 顯示文字 :after (懸停進入 data-text) */
+.buttons button p:after {
+  content: attr(data-text);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 150%; /* 保持初始位置在下方 */
+  left: 0;
+  color: #44d8a4;
+  z-index: 1;
+
+  /* 確保 text 和 emoji 對齊 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 懸停動畫 */
+.buttons button:hover:before, .buttons button:hover:after {
+  width: 100%;
+}
+
+.buttons button:hover span {
+  z-index: 1;
+}
+
+.buttons button:hover span:before, .buttons button:hover span:after {
+  height: 100%;
+}
+
+/* 懸停時，舊文字 (:before) 向上移動並旋轉 */
+.buttons button:hover p:before {
+  top: -150%; /* 讓它完全移出 */
+  transform: rotate(5deg);
+}
+
+/* 懸停時，新文字 (:after) 從下方移動到中心 */
+.buttons button:hover p:after {
+  top: 0; /* 移到中心位置 */
+  transform: none; 
+}
+
+
+/* START 狀態 (如果有需要的話) */
+.buttons button.start {
+  background-color: #44d8a4;
+  box-shadow: 0px 5px 10px -10px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.buttons button.start p:before {
+  top: -150%; 
+  transform: rotate(5deg);
+}
+
+.buttons button.start p:after {
+  color: white;
+  transition: all 0s ease;
+  content: attr(data-start);
+  top: 0; 
+  transform: none; 
+  animation: none;
+}
+
+.buttons button.start:hover:before, .buttons button.start:hover:after {
+  display: none;
+}
+
+.buttons button.start:hover span {
+  display: none;
+}
+
+.buttons button:active {
+  outline: none;
+  border: none;
+}
+
+.buttons button:focus {
+  outline: 0;
+}
+
 
 /* --- 查詢頁三區塊網格佈局 (query.html 專用) --- */
 .main-layout-grid {
@@ -148,6 +319,13 @@ h2 {
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
+/* --- 舊的雙欄佈局 (兼容 form.html) --- */
+.main-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    width: 100%; 
+}
 .main-layout .filter-panel {
     flex: 1; 
     min-width: 280px;
@@ -294,7 +472,7 @@ h2 {
 }
 
 
-/* --- 底部按鈕區 (通用樣式) --- */
+/* --- 底部按鈕區 (通用樣式 - 適用於 query/form 頁面) --- */
 .button-footer {
     display: flex;
     justify-content: center; 

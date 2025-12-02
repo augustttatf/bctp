@@ -1,4 +1,4 @@
-/* style.css - 最終修復版本 (首頁/查詢頁兼容，圖片/按鈕修正) */
+/* style.css - 最終修復版本 (首頁/查詢頁兼容，佈局/按鈕/Favicon 修正) */
 
 /* --- 基礎設定與字體重置 --- */
 html, body {
@@ -41,13 +41,10 @@ header p {
     opacity: 0.9;
 }
 
-/* --- 主要內容區 (Main) --- */
+/* --- 主要內容區 (Main) - 修正：移除 flex 屬性，防止內容被過度限制在中間一小塊 */
 main {
     flex-grow: 1; 
     padding: 40px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
 }
 
 /* --- 標題樣式 --- */
@@ -69,8 +66,11 @@ h2 {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     margin-bottom: 30px;
-    max-width: 800px;
+    /* 修正：增加最大寬度，讓內容更寬鬆，解決留白問題 */
+    max-width: 900px; 
     width: 100%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .hero-section img {
@@ -82,25 +82,24 @@ h2 {
     border: none; 
 }
 
-/* --- 刪除舊的 .start-button 樣式，由新的 .buttons 樣式取代 --- */
-
 
 /* --- 新增：自定義動畫按鈕樣式 (Buttons) --- */
 
 .button-link {
-    text-decoration: none; /* 移除超連結底線 */
-    display: inline-block; /* 確保連結可以包住按鈕並參與布局 */
+    text-decoration: none; 
+    display: inline-block; 
 }
 
 .buttons {
   display: flex;
-  justify-content: center; /* 讓按鈕在容器內居中 */
+  justify-content: center; 
   align-items: center;
-  margin-top: 25px; /* 添加一些間距 */
+  margin-top: 25px; 
 }
 
 .buttons button {
-  width: 180px; /* 增加寬度以容納圖示 */
+  /* 修正：增加寬度，確保 "🛡️ 開始查詢" 不會溢出或擠壓 */
+  width: 200px; 
   height: 50px;
   background-color: white;
   margin: 20px;
@@ -122,13 +121,13 @@ h2 {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* 邊框動畫樣式 */
+/* 邊框動畫樣式 (不變) */
 .buttons button:before, .buttons button:after {
   content: "";
   position: absolute;
   width: 0;
   height: 2px;
-  background-color: #44d8a4; /* 成功色 */
+  background-color: #44d8a4; 
   transition: all 0.3s cubic-bezier(0.35, 0.1, 0.25, 1);
 }
 
@@ -192,13 +191,12 @@ h2 {
 /* 顯示文字 :before (常態 data-title) */
 .buttons button p:before {
   content: attr(data-title);
-  /* 修正定位為靜態，由 Flex 佈局控制 */
+  /* 修正：確保文字常態可見 */
   position: static; 
   width: auto;
   top: auto;
   transform: none; 
   z-index: 1;
-  /* 確保 text 和 emoji 對齊 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -215,7 +213,6 @@ h2 {
   color: #44d8a4;
   z-index: 1;
 
-  /* 確保 text 和 emoji 對齊 */
   display: flex;
   align-items: center;
   justify-content: center;

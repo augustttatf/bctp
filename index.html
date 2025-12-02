@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
 </head>
-
 <body>
     <header>
         <div class="container">
@@ -18,18 +17,25 @@
 
     <main>
         <div class="container hero-section">
-            <img src="Home1mage.jpg" class="index-logo">
 
+            <!-- ⭐ 原本首頁圖片（LOGO/主視覺） -->
+            <img src="Home1mage.jpg" alt="BCTP 主視覺" class="index-logo">
+
+            <!-- ⭐ 原本介紹文字 —— 已完整恢復 -->
             <h2>深入了解霸凌行為的法律後果</h2>
-            <p>本平台旨在提供透明、易懂的法律資訊，幫助學生、家長和教育者認知霸凌行為的法律責任。</p>
+            <p>本平台旨在提供透明、易懂的法律資訊，幫助學生、家長和教育者認知霸凌行為可能帶來的法律責任和保護處分。</p>
+            <p>「法律認知的斷層，不該成為犯行的藉口。」</p>
 
-            <!-- ⭐ 修正後按鈕 -->
+            <!-- ⭐ 按鈕 -->
             <div class="homepage-buttons">
-                <button onclick="location.href='query.html'">
-                    <span></span>
-                    <p data-title="BCTP" data-text="開始查詢"></p>
-                </button>
+                <a href="query.html">
+                    <button class="fancy-btn">
+                        <span class="text default">BCTP</span>
+                        <span class="text hover">🛡️ 開始查詢</span>
+                    </button>
+                </a>
             </div>
+
         </div>
     </main>
 

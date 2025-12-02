@@ -62,68 +62,72 @@ footer {
 }
 
 /* -----------------------------
-   首頁按鈕動畫
+   動畫按鈕 (全站統一) - 顏色加強版
 ----------------------------- */
-.homepage-buttons {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.homepage-buttons button {
-    width: 180px;
-    height: 55px;
-    background-color: #44d8a4;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
+.btn-animated {
     position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 220px;          
+    height: 70px;          
+    padding: 0 20px;
+    font-size: 18px;       
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15); /* 初始陰影 */
 }
 
-.homepage-buttons button .default-text,
-.homepage-buttons button .hover-text {
+.btn-animated .default-text,
+.btn-animated .hover-text {
     position: absolute;
     width: 100%;
     text-align: center;
     transition: all 0.3s ease;
 }
 
-.homepage-buttons button .default-text {
+.btn-animated .default-text {
     top: 50%;
     transform: translateY(-50%);
     z-index: 1;
-    color: white;
 }
 
-.homepage-buttons button .hover-text {
+.btn-animated .hover-text {
     top: 150%;
     transform: translateY(-50%);
     z-index: 2;
-    color: white;
 }
 
-.homepage-buttons button:hover .default-text {
+.btn-animated:hover .default-text {
     top: -50%;
     opacity: 0;
 }
 
-.homepage-buttons button:hover .hover-text {
+.btn-animated:hover .hover-text {
     top: 50%;
     opacity: 1;
 }
 
-.homepage-buttons button:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+.btn-animated:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25);
 }
+
+/* 顏色分類 (加強 hover 變化) */
+.btn-green { background-color: #28a745; }
+.btn-green:hover { background-color: #1e7e34; box-shadow: 0 6px 10px rgba(0,0,0,0.25); }
+
+.btn-blue { background-color: #007bff; }
+.btn-blue:hover { background-color: #0056b3; box-shadow: 0 6px 10px rgba(0,0,0,0.25); }
+
+.btn-gray { background-color: #6c757d; }
+.btn-gray:hover { background-color: #495057; box-shadow: 0 6px 10px rgba(0,0,0,0.25); }
+
 
 /* -----------------------------
    query.html / form.html 共用排版
@@ -262,28 +266,6 @@ footer {
     margin-top: 35px;
     width: 100%;
 }
-
-/* query.html / form.html 按鈕樣式 */
-.button-footer a, .button-footer button {
-    padding: 12px 25px;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    min-width: 150px;
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
-    transition: all 0.3s ease;
-    color: white;
-}
-
-.button-footer .submit-button { background-color: #28a745; }
-.button-footer .back-button { background-color: #6c757d; }
-
-.button-footer .submit-button:hover { background-color: #218838; }
-.button-footer .back-button:hover { background-color: #5a6268; }
 
 /* -----------------------------
    響應式設計

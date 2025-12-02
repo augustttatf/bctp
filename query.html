@@ -28,7 +28,7 @@
                 <div class="main-layout-grid"> 
                     
                     <div class="filter-panel">
-                        <h2>步驟一：行為勾選</h2>
+                        <h2>步驟一：行為勾選 v0</h2>
                         <p>勾選觸發法律後果的行為，查看對應的法律後果與案例。</p>
 
                         <div class="checkbox-group" id="behavior-filters">
@@ -81,7 +81,7 @@
             const caseArea = document.getElementById('case-area'); 
             const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
             
-            // 提示訊息常數
+            // 容錯機制提示
             const FATAL_ERROR_MESSAGE = '網站錯誤：核心資料載入失敗，即將返回首頁。請檢查網路連線或稍後再試。';
 
             let lawData = { related_statutes_segmented: [], LawType_Mapping: {}, cases: [] }; 
@@ -123,7 +123,8 @@
 
                     lawData.related_statutes_segmented = statutesData.related_statutes_segmented || [];
                     lawData.LawType_Mapping = statutesData.LawType_Mapping || {};
-                    lawData.cases = casesData.cases || casesData || []; 
+                    // 檢查案例是否是陣列，確保數據結構正確
+                    lawData.cases = Array.isArray(casesData.cases) ? casesData.cases : (Array.isArray(casesData) ? casesData : []); 
 
                     // 載入成功：移除初始載入訊息，顯示主要內容
                     if (initialLoadingStatus) initialLoadingStatus.remove();
@@ -152,7 +153,7 @@
             }
 
 
-            // 輔助函數：創建顯示用的法條卡片
+            // 輔助函數：創建顯示用的法條卡片 (不變)
             function createLawCard(lawGroup) {
                 const card = document.createElement('div');
                 const isSupplementCategory = lawGroup.isSupplementCategory;
@@ -182,7 +183,7 @@
                 return card;
             }
 
-            // 輔助函數：創建案例卡片
+            // 輔助函數：創建案例卡片 (不變)
             function createCaseCard(caseItem) {
                 const card = document.createElement('div');
                 card.className = 'case-card';
@@ -257,7 +258,7 @@
                 const selectedBehaviors = checkedBehaviorNames.join('\n'); 
                 localStorage.setItem('selectedBehaviors', selectedBehaviors);
                 
-                // 1. 篩選法條 (邏輯不變)
+                // 1. 篩選法條
                 lawData.related_statutes_segmented.forEach(law => {
                     const isBehaviorLaw = law.LawType >= 1 && law.LawType <= 4;
                     const isGeneralOrSupplementLaw = law.LawType === 0 || law.LawType === 5;
@@ -294,7 +295,7 @@
                     }
                 });
                 
-                // 2. 顯示法條結果 (邏輯不變)
+                // 2. 顯示法條結果
                 const uniqueLawArray = Object.values(groupedLaws);
                 
                 let coreLaws = uniqueLawArray.filter(lawGroup => !lawGroup.isSupplementCategory);
@@ -323,14 +324,22 @@
                 }
                 
                 
-                // 3. 篩選並顯示案例 (【關鍵修復點】: 轉換為數字進行比對)
+                // 3. 篩選並顯示案例 (關鍵：最嚴格的資料類型轉換和檢查)
                 const selectedNewsTypes = Array.from(selectedLawTypes); 
 
                 const casesToDisplay = lawData.cases.filter(caseItem => {
-                    // 🚨 確保 NewsType 被轉換為數字
-                    const caseNewsType = parseInt(caseItem.NewsType);
-                    // 檢查是否為有效數字，並包含在選中的 LawType 中
-                    return !isNaN(caseNewsType) && selectedNewsTypes.includes(caseNewsType);
+                    // 確保 NewsType 欄位存在，且不為 null/undefined
+                    if (caseItem && caseItem.NewsType != null) {
+                        
+                        // 嘗試將 NewsType 轉為數字 (處理字串 "1" 和數字 1)
+                        const caseNewsType = parseInt(caseItem.NewsType);
+                        
+                        // 檢查 caseNewsType 是否為有效的數字（不是 NaN），且包含在選中的類型中
+                        const isMatch = !isNaN(caseNewsType) && selectedNewsTypes.includes(caseNewsType);
+                        
+                        return isMatch;
+                    }
+                    return false;
                 });
 
                 if (casesToDisplay.length === 0) {
@@ -343,7 +352,6 @@
                 }
                 
                 if (coreLaws.length === 0 && supplementLaws.length === 0 && casesToDisplay.length === 0 && checkedBoxes.length > 0) {
-                    // 如果勾選了但沒找到任何結果，提供一個總結提示
                     resultsArea.innerHTML = '<p class="note">未找到相關法律條文和案例。</p>';
                 }
             }

@@ -1,4 +1,4 @@
-/* style.css - 最終修訂版本 (解決留白、按鈕不顯示、Favicon 相容性問題) */
+/* style.css - 最終修訂版本 (解決留白、按鈕重疊、顏色對比度問題) */
 
 /* --- 基礎設定與字體重置 --- */
 html, body {
@@ -41,10 +41,11 @@ header p {
     opacity: 0.9;
 }
 
-/* --- 主要內容區 (Main) - 修正：移除 flex 屬性，讓內容佔用空間更大 */
+/* --- 主要內容區 (Main) - 留白修正微調 */
 main {
     flex-grow: 1; 
-    padding: 40px 0;
+    /* 移除頂部 padding，減少頁首和內容之間的間距 */
+    padding: 0 0 40px 0; 
 }
 
 /* --- 標題樣式 --- */
@@ -58,10 +59,11 @@ h2 {
 }
 
 
-/* --- 首頁 (index.html) 專用樣式 - 修正：放大 hero-section 寬度以解決留白問題 */
+/* --- 首頁 (index.html) 專用樣式 --- */
 .hero-section {
     text-align: center;
-    padding: 30px;
+    /* 增加頂部 padding，讓內容不至於太靠近頁首 */
+    padding: 50px 30px 30px 30px; 
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
@@ -97,11 +99,13 @@ h2 {
 }
 
 .buttons button {
-  width: 200px; /* 寬度足夠容納文字 */
+  width: 200px; 
   height: 50px;
-  background-color: white;
+  /* 修正：改變按鈕顏色，提高對比度 */
+  background-color: #007bff; 
   margin: 20px;
-  color: #568fa6;
+  /* 修正：文字顏色改為白色 */
+  color: white; 
   position: relative;
   overflow: hidden;
   font-size: 14px;
@@ -115,8 +119,14 @@ h2 {
   align-items: center;
   justify-content: center;
   border-radius: 3px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* 加深陰影 */
 }
+/* 懸停時按鈕變色，與邊框色協調 */
+.buttons button:hover {
+    background-color: #44d8a4; 
+    color: white;
+}
+
 
 /* 邊框動畫樣式 (不變) */
 .buttons button:before, .buttons button:after {
@@ -124,21 +134,18 @@ h2 {
   position: absolute;
   width: 0;
   height: 2px;
-  background-color: #44d8a4; 
+  background-color: white; /* 邊框色改為白色，在藍底上顯眼 */
   transition: all 0.3s cubic-bezier(0.35, 0.1, 0.25, 1);
 }
-
 .buttons button:before {
   right: 0;
   top: 0;
   transition: all 0.5s cubic-bezier(0.35, 0.1, 0.25, 1);
 }
-
 .buttons button:after {
   left: 0;
   bottom: 0;
 }
-
 .buttons button span {
   width: 100%;
   height: 100%;
@@ -149,28 +156,25 @@ h2 {
   padding: 0;
   z-index: 1;
 }
-
 .buttons button span:before, .buttons button span:after {
   content: "";
   position: absolute;
   width: 2px;
   height: 0;
-  background-color: #44d8a4;
+  background-color: white; /* 邊框色改為白色 */
   transition: all 0.3s cubic-bezier(0.35, 0.1, 0.25, 1);
 }
-
 .buttons button span:before {
   right: 0;
   top: 0;
   transition: all 0.5s cubic-bezier(0.35, 0.1, 0.25, 1);
 }
-
 .buttons button span:after {
   left: 0;
   bottom: 0;
 }
 
-/* 文字動畫容器 P 標籤 - 確保居中和動畫 */
+/* 文字動畫容器 P 標籤 */
 .buttons button p {
   padding: 0;
   margin: 0;
@@ -179,7 +183,6 @@ h2 {
   width: 100%;
   height: 100%;
   
-  /* 核心：Flex 佈局來居中文字和 Emoji */
   display: flex;
   align-items: center; 
   justify-content: center; 
@@ -188,16 +191,18 @@ h2 {
 /* 顯示文字 :before (常態 data-title) */
 .buttons button p:before {
   content: attr(data-title);
-  /* 修正：將 position: static 改為相對定位，並確保 top 在 50% 附近，提高相容性 */
+  /* 修正重疊：確保常態文字居中且不受干擾 */
   position: absolute; 
   top: 50%;
+  left: 0;
+  width: 100%;
+  height: 100%;
   transform: translateY(-50%);
-  width: auto;
   z-index: 1;
-  /* 確保 text 和 emoji 對齊 */
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white; /* 確保常態文字是白色的 */
 }
 
 /* 顯示文字 :after (懸停進入 data-text) */
@@ -206,9 +211,10 @@ h2 {
   position: absolute;
   width: 100%;
   height: 100%;
-  top: 150%; /* 保持初始位置在下方 */
+  /* 修正重疊：確保懸停文字在非懸停狀態下被完全推到下方，不干擾 :before */
+  top: 150%; 
   left: 0;
-  color: #44d8a4;
+  color: white; /* 懸停時，背景色已變，文字保持白色 */
   z-index: 1;
 
   display: flex;
@@ -237,49 +243,9 @@ h2 {
 
 /* 懸停時，新文字 (:after) 從下方移動到中心 */
 .buttons button:hover p:after {
-  top: 0; /* 移到中心位置，讓 Flex 居中生效 */
+  top: 0; /* 移到中心位置 */
   transform: none; 
 }
-
-
-/* START 狀態 (如果有需要的話) */
-.buttons button.start {
-  background-color: #44d8a4;
-  box-shadow: 0px 5px 10px -10px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
-}
-
-.buttons button.start p:before {
-  top: -150%; 
-  transform: rotate(5deg);
-}
-
-.buttons button.start p:after {
-  color: white;
-  transition: all 0s ease;
-  content: attr(data-start);
-  top: 0; 
-  transform: none; 
-  animation: none;
-}
-
-.buttons button.start:hover:before, .buttons button.start:hover:after {
-  display: none;
-}
-
-.buttons button.start:hover span {
-  display: none;
-}
-
-.buttons button:active {
-  outline: none;
-  border: none;
-}
-
-.buttons button:focus {
-  outline: 0;
-}
-
 
 /* --- 查詢頁三區塊網格佈局 (query.html 專用) --- */
 .main-layout-grid {

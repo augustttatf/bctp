@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     // 從 localStorage 取得使用者選的行為類型
     let selectedBehaviors = JSON.parse(localStorage.getItem('selectedBehaviors')) || [];
 
-    if (selectedBehaviors.length === 0) {
+    if (!selectedBehaviors || selectedBehaviors.length === 0) {
         alert('未選擇行為類型，將返回首頁');
         window.location.href = 'index.html';
         return;
@@ -16,8 +16,16 @@ document.addEventListener('DOMContentLoaded', async function() {
         const res = await fetch(QUIZ_JSON_URL);
         const quizData = await res.json();
 
+        // 確保 questionType 與 selectedBehaviors 都是字串
+        const selectedBehaviorsStr = selectedBehaviors.map(b => b.toString());
+
         // 過濾出符合使用者勾選行為的題目
-        let filteredQuestions = quizData.questions.filter(q => selectedBehaviors.includes(q.questionType.toString()));
+        let filteredQuestions = quizData.questions.filter(q => selectedBehaviorsStr.includes(q.questionType.toString()));
+
+        if (filteredQuestions.length === 0) {
+            quizWrapper.innerHTML = '<p>目前沒有符合你選擇行為的題目，請返回首頁重新選擇。</p>';
+            return;
+        }
 
         // 如果題目超過 10 題，隨機挑選 10 題
         if (filteredQuestions.length > 10) {
@@ -52,20 +60,17 @@ document.addEventListener('DOMContentLoaded', async function() {
                 if (parseInt(selected) === q.correctAnswerIndex) score++;
             });
 
-            // 將分數存入 localStorage，方便 form.html 讀取
+            // 存分數，跳轉表單頁
             localStorage.setItem('quizScore', score);
             localStorage.setItem('quizTotal', filteredQuestions.length);
-
-            // 跳轉表單頁
             window.location.href = 'form.html';
         });
 
     } catch (error) {
         console.error('載入測驗資料失敗:', error);
-        alert('測驗資料載入失敗，請稍後再試');
+        quizWrapper.innerHTML = '<p>測驗資料載入失敗，請稍後再試。</p>';
     }
 
-    // 隨機打散陣列
     function shuffleArray(array) {
         return array.sort(() => Math.random() - 0.5);
     }

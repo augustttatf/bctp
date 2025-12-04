@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 取得勾選類別
     const selectedTypes = JSON.parse(localStorage.getItem('selectedBehaviors') || '[]');
 
     if (selectedTypes.length === 0) {
@@ -8,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // --- 你的題庫，題目自己放 ---
+    // --- 你的題庫，題目自行放 ---
     const ALL_QUESTIONS = [
         // --- 密集訊息騷擾（10 題） ---
   {
@@ -259,25 +258,33 @@ document.addEventListener('DOMContentLoaded', function() {
   }
     ];
 
-    // 抽題函式
+    // 精準抽題函式
     function selectRandomQuestions(types, totalQuestions = 10) {
-        const perType = Math.floor(totalQuestions / types.length);
-        const remainder = totalQuestions % types.length;
         let selected = [];
+        const perType = Math.floor(totalQuestions / types.length);
+        let remainder = totalQuestions % types.length;
 
-        types.forEach((type, i) => {
-            const questionsOfType = ALL_QUESTIONS.filter(q => q.questionType === type);
-            const count = Math.min(perType + (i < remainder ? 1 : 0), questionsOfType.length);
-            const shuffled = questionsOfType.sort(() => Math.random() - 0.5).slice(0, count);
-            selected = selected.concat(shuffled);
+        types.forEach(type => {
+            const questionsOfType = ALL_QUESTIONS.filter(q => q.questionType === type).sort(() => Math.random() - 0.5);
+            let count = perType;
+            if (remainder > 0) {
+                count += 1;
+                remainder -= 1;
+            }
+            selected = selected.concat(questionsOfType.slice(0, count));
         });
+
+        // 若總題數不足10題，從剩餘題庫隨機補齊
+        if (selected.length < totalQuestions) {
+            const remainingQuestions = ALL_QUESTIONS.filter(q => !selected.includes(q)).sort(() => Math.random() - 0.5);
+            selected = selected.concat(remainingQuestions.slice(0, totalQuestions - selected.length));
+        }
 
         return selected.sort(() => Math.random() - 0.5); // 打亂順序
     }
 
     const quizQuestions = selectRandomQuestions(selectedTypes, 10);
 
-    // DOM
     const quizContainer = document.getElementById('quiz-questions');
     const resultContainer = document.getElementById('result-container');
     const scoreText = document.getElementById('score-text');
@@ -313,7 +320,6 @@ document.addEventListener('DOMContentLoaded', function() {
         scoreText.textContent = `你答對了 ${score} 題 / ${quizQuestions.length} 題。${score >= passScore ? '已達及格標準！' : '未達及格標準。'}`;
     });
 
-    // 進入反思頁
     goReflectionBtn.addEventListener('click', () => {
         const score = quizQuestions.reduce((acc, q, index) => {
             const selected = quizForm.querySelector(`input[name="q${index}"]:checked`);

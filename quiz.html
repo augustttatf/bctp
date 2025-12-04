@@ -3,34 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BCTP 學習單測驗</title>
+<title>BCTP - 學習單</title>
 <link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 </head>
-
 <body>
 <header>
-    <div class="container">
-        <h1>BCTP 學習單測驗</h1>
-        <p>依據你勾選的行為類型，系統已為你生成 10 題測驗題。</p>
-    </div>
+<div class="container">
+<h1>BCTP - 學習單</h1>
+<p>根據所選行為生成測驗題</p>
+</div>
 </header>
 
 <main>
-    <div class="container">
-        <form id="quiz-form">
-            <div id="quiz-wrapper">
-                <!-- 10 題將由 quiz.js 動態生成 -->
-            </div>
+<div class="container">
+<div id="quiz-wrapper">
+<p id="loading-message" class="loading-message" style="text-align:center;">載入題目中...</p>
+</div>
 
-            <div class="button-footer">
-                <button type="submit" class="btn-animated btn-green">提交測驗 →</button>
-            </div>
-        </form>
-    </div>
+<div class="button-footer" style="margin-top:20px;">
+<button id="submit-btn" class="btn-animated btn-green">
+<span class="default-text">完成並送出表單 →</span>
+<span class="hover-text">送出</span>
+</button>
+</div>
+</div>
 </main>
 
 <footer>
-    <p>BCTP (Bullying Consequence Transparency Platform)</p>
+<p>BCTP (Bullying Consequence Transparency Platform)</p>
 </footer>
 
 <script src="quiz.js"></script>

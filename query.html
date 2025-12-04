@@ -45,7 +45,6 @@
   </div>
 </div>
 
-<!-- 按鈕區塊 -->
 <div class="button-footer">
   <a href="index.html" class="btn-animated btn-gray">
     <span class="default-text">← 返回首頁</span>
@@ -78,17 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
   const nextBtn = document.getElementById('next-btn');
 
-  const FATAL_ERROR_MESSAGE = '網站錯誤：核心資料載入失敗，即將返回首頁。請檢查網路連線或稍後再試。';
   let lawData = { related_statutes_segmented: [], LawType_Mapping: {}, cases: [] };
-
-  function getLawTypeLabel(law) {
-    const lawTypeKey = law.LawType != null ? law.LawType.toString() : '';
-    let lawTypeLabel = lawData.LawType_Mapping[lawTypeKey] || '相關法條';
-    if (law.LawType === 0) return `🛡️ ${lawTypeLabel}`;
-    if (law.LawType === 5) return `🤝 ${lawTypeLabel}`;
-    if (law.ReplenishType === 1) return `⚠ ${lawTypeLabel} (建議和解/賠償)`;
-    return `🔗 ${lawTypeLabel}`;
-  }
+  const FATAL_ERROR_MESSAGE = '網站錯誤：核心資料載入失敗，即將返回首頁。';
 
   async function loadLawData() {
     try {
@@ -96,7 +86,6 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(STATUTES_URL),
         fetch(CASES_URL)
       ]);
-
       if (!statutesResponse.ok) throw new Error(`法條檔案載入失敗 (HTTP ${statutesResponse.status})`);
       if (!casesResponse.ok) throw new Error(`案例檔案載入失敗 (HTTP ${casesResponse.status})`);
 
@@ -112,41 +101,38 @@ document.addEventListener('DOMContentLoaded', function() {
       updateResults();
     } catch (error) {
       console.error('載入法律資料失敗:', error);
-      if (initialLoadingStatus) {
-        initialLoadingStatus.innerHTML = `❌ ${FATAL_ERROR_MESSAGE}<br>詳細錯誤: ${error.message}`;
-        initialLoadingStatus.style.color = 'red';
-      }
       alert(FATAL_ERROR_MESSAGE);
       window.location.href = 'index.html';
     }
   }
 
-  // 你原本的 createLawCard（保留邏輯）
+  function getLawTypeLabel(law) {
+    const lawTypeKey = law.LawType != null ? law.LawType.toString() : '';
+    let lawTypeLabel = lawData.LawType_Mapping[lawTypeKey] || '相關法條';
+    if (law.LawType === 0) return `🛡️ ${lawTypeLabel}`;
+    if (law.LawType === 5) return `🤝 ${lawTypeLabel}`;
+    if (law.ReplenishType === 1) return `⚠ ${lawTypeLabel} (建議和解/賠償)`;
+    return `🔗 ${lawTypeLabel}`;
+  }
+
   function createLawCard(lawGroup) {
     const card = document.createElement('div');
-
     const isSupplementCategory = lawGroup.isSupplementCategory;
     card.className = `law-card ${isSupplementCategory ? 'replenish-content' : ''}`;
-
     let html = `<h3 class="law-num-title">${lawGroup.LawNum || '無條款號'}</h3>`;
     html += `<p class="law-details"><strong>條文詳情：</strong> ${lawGroup.LawDetails || '無詳情'}</p>`;
-
     if (Array.isArray(lawGroup.combinedNotes) && lawGroup.combinedNotes.length > 0) {
       html += '<ul class="combined-relevance-list">';
       const isGeneralOrSupplement = lawGroup.LawType === 0 || lawGroup.LawType === 5;
-
       lawGroup.combinedNotes.forEach(note => {
         if (isGeneralOrSupplement) {
           html += `<li><strong>${getLawTypeLabel(lawGroup)}：</strong> ${lawGroup.RelevanceNote || note.RelevanceNote || '無相關性說明'}</li>`;
         } else {
-          const specificLawTypeLabel = getLawTypeLabel(note);
-          html += `<li><strong>${specificLawTypeLabel}：</strong> ${note.RelevanceNote || '無相關性說明'}</li>`;
+          html += `<li><strong>${getLawTypeLabel(note)}：</strong> ${note.RelevanceNote || '無相關性說明'}</li>`;
         }
       });
-
       html += '</ul>';
     }
-
     card.innerHTML = html;
     return card;
   }
@@ -157,19 +143,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let html = `<h4 class="case-title">${caseItem.newsTitle || '無案例標題'}</h4>`;
     html += `<p class="case-content"><strong>事件經過：</strong> ${caseItem.newscontent || '無事件經過'}</p>`;
     if (caseItem.source) html += `<p class="case-source"><strong>新聞來源：</strong> <a href="${caseItem.source}" target="_blank">點擊查看</a></p>`;
-
-    if (caseItem.videoconnection) {
-      const youtubeMatch = caseItem.videoconnection.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\?v=)|youtu\.be\/)([\w-]+)/);
-      const vimeoMatch = caseItem.videoconnection.match(/(?:vimeo\.com\/)(\d+)/);
-      if (youtubeMatch && youtubeMatch[1]) {
-        html += `<div class="video-container"><iframe src="https://www.youtube.com/embed/${youtubeMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
-      } else if (vimeoMatch && vimeoMatch[1]) {
-        html += `<div class="video-container"><iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
-      } else {
-        html += `<p class="case-video"><strong>相關影片：</strong> <a href="${caseItem.videoconnection}" target="_blank">點擊查看影片</a></p>`;
-      }
-    }
-
     card.innerHTML = html;
     return card;
   }
@@ -177,44 +150,29 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateResults() {
     resultsArea.innerHTML = '';
     caseArea.innerHTML = '';
-
     const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
-
-    // 無勾選：清空 localStorage 的選擇，顯示提示
     if (checkedBoxes.length === 0) {
-      localStorage.removeItem('selectedBehaviors');
-      localStorage.removeItem('selectedQuestionTypes');
-      localStorage.removeItem('selectedBehaviorNames');
       resultsArea.innerHTML = '<p class="note">請勾選左側行為以查看對應法律後果。</p>';
-      caseArea.innerHTML = '';
       return;
     }
 
-    const selectedLawTypes = new Set();
-    const checkedBehaviorNames = [];
-    const selectedBehaviorValues = [];
-    const selectedQuestionTypes = [];
-
+    const selectedLawTypes = [];
+    const selectedBehaviorNames = [];
     checkedBoxes.forEach(cb => {
-      const type = parseInt(cb.getAttribute('data-type'));
-      selectedLawTypes.add(type);
-      checkedBehaviorNames.push(`* ${cb.getAttribute('data-name')}`);
-      selectedBehaviorValues.push(cb.value);
-      selectedQuestionTypes.push(type);
+      selectedLawTypes.push(Number(cb.getAttribute('data-type')));
+      selectedBehaviorNames.push(cb.getAttribute('data-name'));
     });
 
-    // 儲存到 localStorage（多種格式，供 quiz.js 各種實作讀取）
-    localStorage.setItem('selectedBehaviors', JSON.stringify(selectedBehaviorValues)); // ["physical-injury","online-slander"]
-    localStorage.setItem('selectedQuestionTypes', JSON.stringify(selectedQuestionTypes)); // [1,2]
-    localStorage.setItem('selectedBehaviorNames', checkedBehaviorNames.join('\n'));
+    localStorage.setItem('selectedQuestionTypes', JSON.stringify(selectedLawTypes));
+    localStorage.setItem('selectedBehaviorNames', JSON.stringify(selectedBehaviorNames));
 
-    // 篩選並分組法條（去重）
+    // 篩選法條
     const groupedLaws = {};
-    (lawData.related_statutes_segmented || []).forEach(law => {
+    lawData.related_statutes_segmented.forEach(law => {
       const isBehaviorLaw = law.LawType >= 1 && law.LawType <= 4;
       const isGeneralOrSupplementLaw = law.LawType === 0 || law.LawType === 5;
-      if ((isBehaviorLaw && selectedLawTypes.has(law.LawType)) || isGeneralOrSupplementLaw) {
-        const key = law.LawNum || (`no-num-${law.LawType}-${Math.random()}`);
+      if ((isBehaviorLaw && selectedLawTypes.includes(law.LawType)) || isGeneralOrSupplementLaw) {
+        const key = law.LawNum || `no-num-${law.LawType}-${Math.random()}`;
         if (!groupedLaws[key]) {
           groupedLaws[key] = {
             LawNum: law.LawNum,
@@ -225,47 +183,20 @@ document.addEventListener('DOMContentLoaded', function() {
             combinedNotes: []
           };
         }
-        const alreadyExists = groupedLaws[key].combinedNotes.some(n => n.LawType === law.LawType);
-        if (!alreadyExists) {
+        if (!groupedLaws[key].combinedNotes.some(n => n.LawType === law.LawType)) {
           groupedLaws[key].combinedNotes.push({
             LawType: law.LawType,
-            ReplenishType: law.ReplenishType,
-            RelevanceNote: law.RelevanceNote
+            RelevanceNote: law.RelevanceNote,
+            ReplenishType: law.ReplenishType
           });
         }
-        if (law.LawType === 5 || law.ReplenishType === 1) groupedLaws[key].isSupplementCategory = true;
       }
     });
 
-    const uniqueLawArray = Object.values(groupedLaws);
-    const coreLaws = uniqueLawArray.filter(l => !l.isSupplementCategory);
-    const supplementLaws = uniqueLawArray.filter(l => l.isSupplementCategory);
+    Object.values(groupedLaws).forEach(lawGroup => resultsArea.appendChild(createLawCard(lawGroup)));
 
-    if (coreLaws.length > 0) {
-      const title = document.createElement('h3');
-      title.textContent = '🛡️ 核心與特定行為相關法條：';
-      resultsArea.appendChild(title);
-      coreLaws.forEach(lawGroup => resultsArea.appendChild(createLawCard(lawGroup)));
-    } else {
-      resultsArea.innerHTML += '<p class="note">無特定行為的核心法條。</p>';
-    }
-
-    if (supplementLaws.length > 0) {
-      const title = document.createElement('h3');
-      title.textContent = '⚖️ 協商、賠償與情節輕微處分：';
-      resultsArea.appendChild(title);
-      supplementLaws.forEach(lawGroup => resultsArea.appendChild(createLawCard(lawGroup)));
-    }
-
-    // 顯示相關案例
-    const casesToDisplay = (lawData.cases || []).filter(c => {
-      if (c && c.newsType != null) {
-        const type = parseInt(c.newsType);
-        return selectedLawTypes.has(type);
-      }
-      return false;
-    });
-
+    // 顯示案例
+    const casesToDisplay = lawData.cases.filter(c => selectedLawTypes.includes(Number(c.newsType)));
     if (casesToDisplay.length === 0) {
       caseArea.innerHTML = '<p class="note">目前沒有與所選行為相關的公開案例。</p>';
     } else {
@@ -273,35 +204,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // 綁定 checkbox 事件
   checkboxes.forEach(cb => cb.addEventListener('change', updateResults));
 
-  // 下一步按鈕
-nextBtn.addEventListener('click', function() {
+  nextBtn.addEventListener('click', function() {
     const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
     if (checkedBoxes.length === 0) {
-        alert('請至少勾選一個行為！');
-        return;
+      alert('請至少勾選一個行為！');
+      return;
     }
-
-    const selectedBehaviors = checkedBoxes.map(cb => cb.value); // ["physical-injury", "online-slander"]
-
-    // 存到 localStorage
-    localStorage.setItem('selectedBehaviors', JSON.stringify(selectedBehaviors));
-
-    // 顯示回傳資料
-    alert('selectedBehaviors: ' + JSON.stringify(selectedBehaviors));
-
-    // 跳轉到 quiz.html
+    const selectedQuestionTypes = checkedBoxes.map(cb => Number(cb.getAttribute('data-type')));
+    localStorage.setItem('selectedQuestionTypes', JSON.stringify(selectedQuestionTypes));
+    alert('selectedQuestionTypes: ' + JSON.stringify(selectedQuestionTypes));
     window.location.href = 'quiz.html';
-});
+  });
 
-
-
-  // 啟動
   loadLawData();
 });
 </script>
 </body>
 </html>
-

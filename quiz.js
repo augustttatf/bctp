@@ -1,15 +1,24 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const selectedBehaviors = JSON.parse(localStorage.getItem('selectedBehaviors') || '[]');
 
+    const selectedBehaviors = JSON.parse(localStorage.getItem('selectedBehaviors') || '[]');
     if(selectedBehaviors.length === 0){
         alert('未偵測到勾選行為，請返回查詢頁重新勾選！');
         window.location.href = 'query.html';
         return;
     }
 
-    // 題庫
+    // 對應勾選行為到 questionType
+    const behaviorToQuestionType = {
+        "physical-injury": 1,
+        "online-slander": 2,
+        "money-extortion": 3,
+        "psychological-damage": 4
+    };
+    const selectedTypes = selectedBehaviors.map(b => behaviorToQuestionType[b]);
+
+    // ===== 你可以在這裡放題目 =====
     const ALL_QUESTIONS = [
-  // --- 密集訊息騷擾（10 題） ---
+        // --- 密集訊息騷擾（10 題） ---
   {
     question: "少年法院依《少年事件處理法》第 26 條責付時，對於密集訊息騷擾的少年，可以下達何種禁止行為的命令？",
     options: ["禁止少年在校園內使用手機", "禁止對被害人或其家屬為恐嚇、騷擾、接觸、跟蹤之行為", "禁止少年參與任何校外活動", "禁止少年與任何朋友交談"],
@@ -256,51 +265,36 @@ document.addEventListener('DOMContentLoaded', function() {
     correctAnswerIndex: 1,
     questionType:1
   }
-];
+    ];
 
-    // 將題目依行為分類
-    const QUESTIONS_BY_BEHAVIOR = {
-        "physical-injury": ALL_QUESTIONS.slice(30, 40),
-        "online-slander": ALL_QUESTIONS.slice(20, 30),
-        "money-extortion": ALL_QUESTIONS.slice(10, 20),
-        "psychological-damage": ALL_QUESTIONS.slice(0, 10)
-    };
+    // 選出使用者勾選行為對應的題目
+    const quizQuestions = ALL_QUESTIONS.filter(q => selectedTypes.includes(q.questionType));
 
-    function selectRandomQuestions(behaviors, totalQuestions=10){
-        const perBehavior = Math.floor(totalQuestions / behaviors.length);
-        const remainder = totalQuestions % behaviors.length;
-        let selected = [];
-
-        behaviors.forEach((b,i)=>{
-            const questions = QUESTIONS_BY_BEHAVIOR[b] || [];
-            const count = perBehavior + (i < remainder ? 1 : 0);
-            const shuffled = questions.sort(()=>Math.random()-0.5).slice(0,count);
-            selected = selected.concat(shuffled);
-        });
-
-        return selected.sort(()=>Math.random()-0.5);
+    if(quizQuestions.length === 0){
+        alert('目前沒有對應的題目，請返回查詢頁重新勾選！');
+        window.location.href = 'query.html';
+        return;
     }
 
-    const quizQuestions = selectRandomQuestions(selectedBehaviors, 10);
     const quizContainer = document.getElementById('quiz-questions');
+    const quizForm = document.getElementById('quiz-form');
     const resultContainer = document.getElementById('result-container');
     const scoreText = document.getElementById('score-text');
     const goReflectionBtn = document.getElementById('go-reflection');
 
     // 渲染題目
-    quizQuestions.forEach((q,index)=>{
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'quiz-question';
-        let html = `<p><strong>Q${index+1}:</strong> ${q.question}</p>`;
-        q.options.forEach((opt,i)=>{
+    quizQuestions.forEach((q, index) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-question';
+        let html = `<p><strong>Q${index + 1}:</strong> ${q.question}</p>`;
+        q.options.forEach((opt, i) => {
             html += `<label><input type="radio" name="q${index}" value="${i}"> ${opt}</label><br>`;
         });
-        questionDiv.innerHTML = html;
-        quizContainer.appendChild(questionDiv);
+        div.innerHTML = html;
+        quizContainer.appendChild(div);
     });
 
     // 提交答案
-    const quizForm = document.getElementById('quiz-form');
     quizForm.addEventListener('submit', function(e){
         e.preventDefault();
         let score = 0;
@@ -317,14 +311,19 @@ document.addEventListener('DOMContentLoaded', function() {
         scoreText.textContent = `你答對了 ${score} 題 / ${quizQuestions.length} 題。${score >= passScore ? '已達及格標準！' : '未達及格標準。'}`;
     });
 
-    goReflectionBtn.addEventListener('click', ()=>{
-        const score = quizQuestions.reduce((acc,q,index)=>{
+    // 進入反思表單
+    goReflectionBtn.addEventListener('click', () => {
+        let score = 0;
+        quizQuestions.forEach((q,index)=>{
             const selected = quizForm.querySelector(`input[name="q${index}"]:checked`);
-            return acc + (selected && parseInt(selected.value) === q.correctAnswerIndex ? 1 : 0);
-        }, 0);
+            if(selected && parseInt(selected.value) === q.correctAnswerIndex){
+                score++;
+            }
+        });
 
-        if(score >= Math.ceil(quizQuestions.length * 0.6)){
-            window.location.href='reflection.html';
+        const passScore = Math.ceil(quizQuestions.length * 0.6);
+        if(score >= passScore){
+            window.location.href = 'reflection.html';
         } else {
             alert('未達及格標準，請重新作答以進入反思表單。');
         }

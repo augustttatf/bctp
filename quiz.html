@@ -3,26 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>學習單 - BCTP</title>
+<title>BCTP - 學習單</title>
 <link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 </head>
 <body>
 <header>
     <div class="container">
-        <h1>BCTP - 學習單</h1>
+        <h1>BCTP</h1>
+        <p>霸凌行為後果透明化資訊平台 - 學習單</p>
     </div>
 </header>
 
 <main>
     <div class="container">
+        <h2>請完成以下題目：</h2>
         <form id="quiz-form">
-            <div id="quiz-questions"></div>
-            <button type="submit" class="btn-green">提交答案</button>
+            <div id="quiz-questions">
+                <!-- 題目將由 quiz.js 動態生成 -->
+            </div>
+            <button type="submit" class="btn-animated btn-green">
+                <span class="default-text">提交答案</span>
+                <span class="hover-text">提交</span>
+            </button>
         </form>
 
-        <div id="result-container" style="display:none;">
+        <div id="result-container" style="display:none; margin-top: 20px;">
             <p id="score-text"></p>
-            <button id="go-reflection" class="btn-green">進入反思表單</button>
+            <button id="go-reflection" class="btn-animated btn-blue">
+                <span class="default-text">進入反思表單</span>
+                <span class="hover-text">進入反思表單</span>
+            </button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <a href="query.html" class="btn-animated btn-gray">
+                <span class="default-text">← 返回查詢頁</span>
+                <span class="hover-text">返回查詢頁</span>
+            </a>
         </div>
     </div>
 </main>
@@ -31,6 +49,7 @@
     <p>BCTP (Bullying Consequence Transparency Platform)</p>
 </footer>
 
+<!-- 引入 quiz.js -->
 <script src="quiz.js"></script>
 </body>
 </html>

@@ -1,14 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const selectedQuestionTypes = JSON.parse(localStorage.getItem('selectedQuestionTypes') || '[]');
+    const QUIZ_CONTAINER = document.getElementById('quiz-container');
+    const QUIZ_RESULT = document.getElementById('quiz-result');
+    const SUBMIT_BTN = document.getElementById('submit-btn');
 
-    if(selectedQuestionTypes.length === 0){
-        alert('未偵測到勾選類別，請返回查詢頁重新勾選！');
+    // 從 localStorage 讀取使用者在 query.html 勾選的類別
+    let selectedQuestionTypes = JSON.parse(localStorage.getItem('selectedBehaviors') || '[]');
+    if (!selectedQuestionTypes || selectedQuestionTypes.length === 0) {
+        alert('未選擇任何行為類別，請先回查詢頁勾選。');
         window.location.href = 'query.html';
         return;
     }
 
-    // 題目資料請自行放在 ALL_QUESTIONS
-    const ALL_QUESTIONS = [
+    // 這裡放你的題目資料，請自行填入題目
+    const allQuestions = [
         // --- 密集訊息騷擾（10 題） ---
   {
     question: "少年法院依《少年事件處理法》第 26 條責付時，對於密集訊息騷擾的少年，可以下達何種禁止行為的命令？",
@@ -258,75 +262,64 @@ document.addEventListener('DOMContentLoaded', function() {
   }
     ];
 
-    // 依 questionType 分類題目
-    const QUESTIONS_BY_TYPE = {};
-    ALL_QUESTIONS.forEach(q => {
-        if(!QUESTIONS_BY_TYPE[q.questionType]) QUESTIONS_BY_TYPE[q.questionType] = [];
-        QUESTIONS_BY_TYPE[q.questionType].push(q);
-    });
+    // 過濾題目，只保留符合使用者勾選類別
+    const filteredQuestions = allQuestions.filter(q => selectedQuestionTypes.includes(q.questionType.toString()));
 
-    function selectRandomQuestions(types, totalQuestions=10){
-        const perType = Math.floor(totalQuestions / types.length);
-        const remainder = totalQuestions % types.length;
-        let selected = [];
-
-        types.forEach((t,i)=>{
-            const questions = QUESTIONS_BY_TYPE[t] || [];
-            const count = perType + (i < remainder ? 1 : 0);
-            const shuffled = questions.sort(() => Math.random() - 0.5).slice(0, count);
-            selected = selected.concat(shuffled);
-        });
-
-        return selected.sort(() => Math.random() - 0.5);
+    if (filteredQuestions.length === 0) {
+        QUIZ_CONTAINER.innerHTML = '<p style="text-align:center;">目前沒有符合您選擇類別的題目。</p>';
+        SUBMIT_BTN.style.display = 'none';
+        return;
     }
 
-    const quizQuestions = selectRandomQuestions(selectedQuestionTypes, 10);
-
-    const quizContainer = document.getElementById('quiz-questions');
-    const resultContainer = document.getElementById('result-container');
-    const scoreText = document.getElementById('score-text');
-    const goReflectionBtn = document.getElementById('go-reflection');
+    // 隨機抽 10 題（若不足 10 題則全部出）
+    const shuffled = filteredQuestions.sort(() => 0.5 - Math.random());
+    const quizQuestions = shuffled.slice(0, 10);
 
     // 渲染題目
-    quizQuestions.forEach((q,index)=>{
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'quiz-question';
-        let html = `<p><strong>Q${index+1}:</strong> ${q.question}</p>`;
-        q.options.forEach((opt,i)=>{
-            html += `<label><input type="radio" name="q${index}" value="${i}"> ${opt}</label><br>`;
-        });
-        questionDiv.innerHTML = html;
-        quizContainer.appendChild(questionDiv);
-    });
+    function renderQuiz() {
+        QUIZ_CONTAINER.innerHTML = '';
+        quizQuestions.forEach((q, index) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'quiz-question';
+            qDiv.style.marginBottom = '20px';
 
-    // 提交答案
-    const quizForm = document.getElementById('quiz-form');
-    quizForm.addEventListener('submit', function(e){
-        e.preventDefault();
+            let html = `<p><strong>題目 ${index+1}：</strong>${q.question}</p>`;
+            html += '<div class="options">';
+            q.options.forEach((opt, i) => {
+                html += `<label style="display:block; margin:5px 0;">
+                            <input type="radio" name="q${index}" value="${i}"> ${opt}
+                         </label>`;
+            });
+            html += '</div>';
+            qDiv.innerHTML = html;
+            QUIZ_CONTAINER.appendChild(qDiv);
+        });
+    }
+
+    // 計算分數
+    function calculateScore() {
         let score = 0;
-        quizQuestions.forEach((q,index)=>{
-            const selected = quizForm.querySelector(`input[name="q${index}"]:checked`);
-            if(selected && parseInt(selected.value) === q.correctAnswerIndex){
-                score++;
+        quizQuestions.forEach((q, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            if (selected && parseInt(selected.value) === q.correctAnswerIndex) {
+                score += 6;
             }
         });
+        return score;
+    }
 
-        quizForm.style.display = 'none';
-        resultContainer.style.display = 'block';
-        const passScore = Math.ceil(quizQuestions.length * 0.6);
-        scoreText.textContent = `你答對了 ${score} 題 / ${quizQuestions.length} 題。${score >= passScore ? '已達及格標準！' : '未達及格標準。'}`;
+    // 提交事件
+    SUBMIT_BTN.addEventListener('click', () => {
+        const score = calculateScore();
+        const pass = score >= 60 ? '及格' : '不及格';
+        QUIZ_RESULT.style.display = 'block';
+        QUIZ_RESULT.innerHTML = `您得分：${score} 分，${pass}。`;
+        // 禁用所有選項避免修改
+        quizQuestions.forEach((q, index) => {
+            document.querySelectorAll(`input[name="q${index}"]`).forEach(el => el.disabled = true);
+        });
+        SUBMIT_BTN.disabled = true;
     });
 
-    goReflectionBtn.addEventListener('click', ()=>{
-        const score = quizQuestions.reduce((acc,q,index)=>{
-            const selected = quizForm.querySelector(`input[name="q${index}"]:checked`);
-            return acc + (selected && parseInt(selected.value) === q.correctAnswerIndex ? 1 : 0);
-        }, 0);
-
-        if(score >= Math.ceil(quizQuestions.length * 0.6)){
-            window.location.href='reflection.html';
-        } else {
-            alert('未達及格標準，請重新作答以進入反思表單。');
-        }
-    });
+    renderQuiz();
 });

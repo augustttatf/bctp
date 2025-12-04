@@ -6,42 +6,34 @@
 <title>BCTP - 學習單</title>
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+<style>
+body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+header, footer { text-align: center; padding: 1em; background: #333; color: #fff; }
+.container { max-width: 800px; margin: auto; padding: 1em; background: #fff; }
+.quiz-question { margin-bottom: 1.5em; padding: 0.5em; border-bottom: 1px solid #ccc; }
+.quiz-question p { margin: 0.5em 0; }
+button, #go-reflection { padding: 0.5em 1em; margin: 1em 0; cursor: pointer; }
+#result-container { display: none; padding: 1em; background: #e0ffe0; border: 1px solid #0a0; }
+</style>
 </head>
 <body>
+
 <header>
-    <div class="container">
-        <h1>BCTP</h1>
-        <p>霸凌行為後果透明化資訊平台 - 學習單</p>
-    </div>
+    <h1>BCTP 學習單</h1>
+    <p>請完成以下測驗題目</p>
 </header>
 
-<main>
-    <div class="container">
-        <h2>請完成以下題目：</h2>
-        <form id="quiz-form">
-            <div id="quiz-questions">
-                <!-- 題目將由 quiz.js 動態生成 -->
-            </div>
-            <button type="submit" class="btn-animated btn-green">
-                <span class="default-text">提交答案</span>
-                <span class="hover-text">提交</span>
-            </button>
-        </form>
-
-        <div id="result-container" style="display:none; margin-top: 20px;">
-            <p id="score-text"></p>
-            <button id="go-reflection" class="btn-animated btn-blue">
-                <span class="default-text">進入反思表單</span>
-                <span class="hover-text">進入反思表單</span>
-            </button>
+<main class="container">
+    <form id="quiz-form">
+        <div id="quiz-questions">
+            <!-- 題目由 quiz.js 動態渲染 -->
         </div>
+        <button type="submit">提交答案</button>
+    </form>
 
-        <div style="margin-top: 20px;">
-            <a href="query.html" class="btn-animated btn-gray">
-                <span class="default-text">← 返回查詢頁</span>
-                <span class="hover-text">返回查詢頁</span>
-            </a>
-        </div>
+    <div id="result-container">
+        <p id="score-text"></p>
+        <button id="go-reflection">進入反思表單</button>
     </div>
 </main>
 
@@ -49,7 +41,6 @@
     <p>BCTP (Bullying Consequence Transparency Platform)</p>
 </footer>
 
-<!-- 引入 quiz.js -->
 <script src="quiz.js"></script>
 </body>
 </html>

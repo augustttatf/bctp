@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-const ALL_QUESTIONS = [
+    // 題庫
+    const ALL_QUESTIONS = [
   // --- 密集訊息騷擾（10 題） ---
   {
     question: "少年法院依《少年事件處理法》第 26 條責付時，對於密集訊息騷擾的少年，可以下達何種禁止行為的命令？",
@@ -225,7 +226,6 @@ const ALL_QUESTIONS = [
         "psychological-damage": ALL_QUESTIONS.slice(0, 10)
     };
 
-    // 隨機抽題，平均分配
     function selectRandomQuestions(behaviors, totalQuestions=10){
         const perBehavior = Math.floor(totalQuestions / behaviors.length);
         const remainder = totalQuestions % behaviors.length;
@@ -242,57 +242,51 @@ const ALL_QUESTIONS = [
     }
 
     const quizQuestions = selectRandomQuestions(selectedBehaviors, 10);
-    let currentIndex = 0;
-    let score = 0;
-
-    const questionArea = document.getElementById('question-area');
-    const optionsArea = document.getElementById('options-area');
-    const progressArea = document.getElementById('progress');
-    const nextBtn = document.getElementById('next-btn');
+    const quizContainer = document.getElementById('quiz-questions');
     const resultContainer = document.getElementById('result-container');
     const scoreText = document.getElementById('score-text');
     const goReflectionBtn = document.getElementById('go-reflection');
 
-    function showQuestion(){
-        const q = quizQuestions[currentIndex];
-        questionArea.textContent = `Q${currentIndex+1}: ${q.question}`;
-        optionsArea.innerHTML = '';
+    // 渲染題目
+    quizQuestions.forEach((q,index)=>{
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'quiz-question';
+        let html = `<p><strong>Q${index+1}:</strong> ${q.question}</p>`;
         q.options.forEach((opt,i)=>{
-            const btn = document.createElement('button');
-            btn.textContent = opt;
-            btn.className = 'btn-quiz-option';
-            btn.addEventListener('click', ()=>checkAnswer(i));
-            optionsArea.appendChild(btn);
+            html += `<label><input type="radio" name="q${index}" value="${i}"> ${opt}</label><br>`;
         });
-        progressArea.textContent = `第 ${currentIndex+1} 題 / ${quizQuestions.length} 題`;
-        nextBtn.style.display = 'none';
-    }
+        questionDiv.innerHTML = html;
+        quizContainer.appendChild(questionDiv);
+    });
 
-    function checkAnswer(selectedIndex){
-        const correctIndex = quizQuestions[currentIndex].correctAnswerIndex;
-        if(selectedIndex === correctIndex) score++;
-        currentIndex++;
-        if(currentIndex < quizQuestions.length){
-            showQuestion();
-        } else {
-            showResult();
-        }
-    }
+    // 提交答案
+    const quizForm = document.getElementById('quiz-form');
+    quizForm.addEventListener('submit', function(e){
+        e.preventDefault();
+        let score = 0;
+        quizQuestions.forEach((q,index)=>{
+            const selected = quizForm.querySelector(`input[name="q${index}"]:checked`);
+            if(selected && parseInt(selected.value) === q.correctAnswerIndex){
+                score++;
+            }
+        });
 
-    function showResult(){
-        document.getElementById('quiz-container').style.display='none';
-        resultContainer.style.display='block';
+        quizForm.style.display = 'none';
+        resultContainer.style.display = 'block';
         const passScore = Math.ceil(quizQuestions.length * 0.6);
         scoreText.textContent = `你答對了 ${score} 題 / ${quizQuestions.length} 題。${score >= passScore ? '已達及格標準！' : '未達及格標準。'}`;
-    }
+    });
 
     goReflectionBtn.addEventListener('click', ()=>{
+        const score = quizQuestions.reduce((acc,q,index)=>{
+            const selected = quizForm.querySelector(`input[name="q${index}"]:checked`);
+            return acc + (selected && parseInt(selected.value) === q.correctAnswerIndex ? 1 : 0);
+        }, 0);
+
         if(score >= Math.ceil(quizQuestions.length * 0.6)){
             window.location.href='reflection.html';
         } else {
             alert('未達及格標準，請重新作答以進入反思表單。');
         }
     });
-
-    showQuestion();
 });

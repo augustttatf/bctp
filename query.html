@@ -17,7 +17,7 @@
 
 <main>
     <div class="container">
-        <div id="main-content-wrapper" style="display:none;">
+        <div id="main-content-wrapper">
             <div class="main-layout-grid">
 
                 <!-- 步驟一：行為勾選 -->
@@ -25,10 +25,10 @@
                     <h2>步驟一：行為勾選</h2>
                     <p>勾選觸發法律後果的行為，查看對應的法律後果與案例。</p>
                     <div class="checkbox-group" id="behavior-filters">
-                        <label><input type="checkbox" name="behavior" value="physical-injury" data-type="1" data-name="肢體推打 / 造成輕傷"> 肢體推打 / 造成輕傷</label>
-                        <label><input type="checkbox" name="behavior" value="online-slander" data-type="2" data-name="網路散布謠言 / 損害名譽"> 網路散布謠言 / 損害名譽</label>
-                        <label><input type="checkbox" name="behavior" value="money-extortion" data-type="3" data-name="威脅取財 / 損毀支付金錢"> 威脅取財 / 損毀支付金錢</label>
-                        <label><input type="checkbox" name="behavior" value="psychological-damage" data-type="4" data-name="密集訊息騷擾 / 造成精神壓力"> 密集訊息騷擾 / 造成精神壓力</label>
+                        <label><input type="checkbox" name="behavior" data-type="1" data-name="肢體推打 / 造成輕傷"> 肢體推打 / 造成輕傷</label>
+                        <label><input type="checkbox" name="behavior" data-type="2" data-name="網路散布謠言 / 損害名譽"> 網路散布謠言 / 損害名譽</label>
+                        <label><input type="checkbox" name="behavior" data-type="3" data-name="威脅取財 / 損毀支付金錢"> 威脅取財 / 損毀支付金錢</label>
+                        <label><input type="checkbox" name="behavior" data-type="4" data-name="密集訊息騷擾 / 造成精神壓力"> 密集訊息騷擾 / 造成精神壓力</label>
                     </div>
                 </div>
 
@@ -49,8 +49,8 @@
                 </div>
             </div>
 
-            <!-- 按鈕區塊 -->
-            <div class="button-footer">
+            <!-- 按鈕區塊，統一高度 -->
+            <div class="button-footer" style="margin-top: 20px; display: flex; gap: 10px;">
                 <a href="index.html" class="btn-animated btn-gray">
                     <span class="default-text">← 返回首頁</span>
                     <span class="hover-text">返回首頁</span>
@@ -81,7 +81,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
     const nextBtn = document.getElementById('next-btn');
 
-    const FATAL_ERROR_MESSAGE = '網站錯誤：核心資料載入失敗，即將返回首頁。請檢查網路連線或稍後再試。';
     let lawData = { related_statutes_segmented: [], LawType_Mapping: {}, cases: [] }; 
 
     function getLawTypeLabel(law) {
@@ -100,9 +99,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetch(CASES_URL)
             ]);
             
-            if (!statutesResponse.ok) throw new Error(`法條檔案載入失敗 (HTTP ${statutesResponse.status})`);
-            if (!casesResponse.ok) throw new Error(`案例檔案載入失敗 (HTTP ${casesResponse.status})`);
-            
             const statutesData = await statutesResponse.json();
             const casesData = await casesResponse.json();
 
@@ -112,124 +108,60 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (initialLoadingStatus) initialLoadingStatus.remove();
             if (mainContentWrapper) mainContentWrapper.style.display = 'block'; 
-            updateResults(); 
-
+            updateResults();
         } catch (error) {
             console.error('載入法律資料失敗:', error);
-            if (initialLoadingStatus) {
-                initialLoadingStatus.innerHTML = `❌ ${FATAL_ERROR_MESSAGE}<br>詳細錯誤: ${error.message}`;
-                initialLoadingStatus.style.color = 'red';
-            }
-            alert(FATAL_ERROR_MESSAGE);
-            window.location.href = 'index.html'; 
+            alert('網站錯誤：核心資料載入失敗');
+            window.location.href = 'index.html';
         }
-    }
-
-    function createLawCard(lawGroup) {
-        const card = document.createElement('div');
-        card.className = `law-card ${lawGroup.isSupplementCategory ? 'replenish-content' : ''}`; 
-        
-        let html = `<h3 class="law-num-title">${lawGroup.LawNum || '無條款號'}</h3>`;
-        html += `<p class="law-details"><strong>條文詳情：</strong> ${lawGroup.LawDetails || '無詳情'}</p>`;
-        if (lawGroup.combinedNotes.length > 0) {
-            html += '<ul class="combined-relevance-list">';
-            lawGroup.combinedNotes.forEach(note => {
-                html += `<li><strong>${getLawTypeLabel(note)}：</strong> ${note.RelevanceNote || '無相關性說明'}</li>`;
-            });
-            html += '</ul>';
-        }
-        card.innerHTML = html;
-        return card;
-    }
-
-    function createCaseCard(caseItem) {
-        const card = document.createElement('div');
-        card.className = 'case-card';
-        let html = `<h4 class="case-title">${caseItem.newsTitle || '無案例標題'}</h4>`;
-        html += `<p class="case-content"><strong>事件經過：</strong> ${caseItem.newscontent || '無事件經過'}</p>`;
-        if (caseItem.source) html += `<p class="case-source"><strong>新聞來源：</strong> <a href="${caseItem.source}" target="_blank">點擊查看</a></p>`;
-        
-        if (caseItem.videoconnection) {
-            const youtubeMatch = caseItem.videoconnection.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\?v=)|youtu\.be\/)([\w-]+)/);
-            const vimeoMatch = caseItem.videoconnection.match(/(?:vimeo\.com\/)(\d+)/);
-            if (youtubeMatch && youtubeMatch[1]) {
-                html += `<div class="video-container"><iframe src="https://www.youtube.com/embed/${youtubeMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
-            } else if (vimeoMatch && vimeoMatch[1]) {
-                html += `<div class="video-container"><iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
-            } else {
-                html += `<p class="case-video"><strong>相關影片：</strong> <a href="${caseItem.videoconnection}" target="_blank">點擊查看影片</a></p>`;
-            }
-        }
-        card.innerHTML = html;
-        return card;
     }
 
     function updateResults() {
         resultsArea.innerHTML = ''; 
         caseArea.innerHTML = ''; 
-        
-        const selectedLawTypes = new Set(); 
-        let groupedLaws = {}; 
+        const selectedLawTypes = new Set();
         const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
-        
         if (checkedBoxes.length === 0) return;
-        
         checkedBoxes.forEach(cb => selectedLawTypes.add(parseInt(cb.getAttribute('data-type'))));
-        
+
         lawData.related_statutes_segmented.forEach(law => {
-            const isBehaviorLaw = law.LawType >= 1 && law.LawType <= 4;
-            const isGeneralOrSupplementLaw = law.LawType === 0 || law.LawType === 5;
-            if ((isBehaviorLaw && selectedLawTypes.has(law.LawType)) || isGeneralOrSupplementLaw) {
-                const key = law.LawNum;
-                if (!groupedLaws[key]) groupedLaws[key] = { ...law, isSupplementCategory: law.LawType===5||law.ReplenishType===1, combinedNotes: [] };
-                const alreadyExists = groupedLaws[key].combinedNotes.some(note => note.LawType === law.LawType);
-                if (!alreadyExists) groupedLaws[key].combinedNotes.push({ LawType: law.LawType, ReplenishType: law.ReplenishType, RelevanceNote: law.RelevanceNote });
-                if (law.LawType===5||law.ReplenishType===1) groupedLaws[key].isSupplementCategory=true;
+            if (selectedLawTypes.has(law.LawType) || law.LawType === 0 || law.LawType === 5) {
+                const card = document.createElement('div');
+                card.className = 'law-card';
+                card.innerHTML = `<h3>${law.LawNum || '無條款號'}</h3>
+                                  <p>${law.LawDetails || '無詳情'}</p>`;
+                resultsArea.appendChild(card);
             }
         });
 
-        const uniqueLawArray = Object.values(groupedLaws);
-        const coreLaws = uniqueLawArray.filter(l=>!l.isSupplementCategory);
-        const supplementLaws = uniqueLawArray.filter(l=>l.isSupplementCategory);
-
-        if(coreLaws.length>0){
-            const title = document.createElement('h3');
-            title.textContent = '🛡️ 核心與特定行為相關法條：';
-            resultsArea.appendChild(title);
-            coreLaws.forEach(lawGroup=>resultsArea.appendChild(createLawCard(lawGroup)));
-        }
-        if(supplementLaws.length>0){
-            const title = document.createElement('h3');
-            title.textContent = '⚖️ 協商、賠償與情節輕微處分：';
-            resultsArea.appendChild(title);
-            supplementLaws.forEach(lawGroup=>resultsArea.appendChild(createLawCard(lawGroup)));
-        }
-
-        const casesToDisplay = lawData.cases.filter(c=>c.newsType!=null && selectedLawTypes.has(parseInt(c.newsType)));
-        if(casesToDisplay.length===0){
-            caseArea.innerHTML='<p class="note">目前沒有與所選行為相關的公開案例。</p>';
+        const filteredCases = lawData.cases.filter(c => selectedLawTypes.has(parseInt(c.newsType)));
+        if (filteredCases.length === 0) {
+            caseArea.innerHTML = '<p class="note">目前沒有與所選行為相關的公開案例。</p>';
         } else {
-            casesToDisplay.forEach(c=>caseArea.appendChild(createCaseCard(c)));
+            filteredCases.forEach(c => {
+                const card = document.createElement('div');
+                card.className = 'case-card';
+                card.innerHTML = `<h4>${c.newsTitle || '無標題'}</h4>
+                                  <p>${c.newscontent || '無事件經過'}</p>`;
+                caseArea.appendChild(card);
+            });
         }
     }
 
-    // 勾選事件更新結果
     checkboxes.forEach(cb => cb.addEventListener('change', updateResults));
 
-    // 下一步按鈕事件：必須勾選才能跳轉
     nextBtn.addEventListener('click', function(){
-    const selected = Array.from(checkboxes)
-                          .filter(cb=>cb.checked)
-                          .map(cb=>cb.value);
-    if(selected.length === 0){
-        alert('請至少勾選一個行為，才能進入學習單！');
-        return;
-    }
-    localStorage.setItem('selectedBehaviors', JSON.stringify(selected));
-    window.location.href = 'quiz.html';
-});
+        const selectedQuestionTypes = Array.from(checkboxes)
+            .filter(cb => cb.checked)
+            .map(cb => parseInt(cb.getAttribute('data-type')));
+        if(selectedQuestionTypes.length === 0){
+            alert('請至少勾選一個行為，才能進入學習單！');
+            return;
+        }
+        localStorage.setItem('selectedQuestionTypes', JSON.stringify(selectedQuestionTypes));
+        window.location.href = 'quiz.html';
+    });
 
-    // 載入資料
     loadLawData();
 });
 </script>

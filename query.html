@@ -276,18 +276,26 @@ document.addEventListener('DOMContentLoaded', function() {
   // 綁定 checkbox 事件
   checkboxes.forEach(cb => cb.addEventListener('change', updateResults));
 
-  // 下一步按鈕（會以 selectedQuestionTypes 以及 selectedBehaviors 一併存在 localStorage）
-  nextBtn.addEventListener('click', function() {
+  // 下一步按鈕
+nextBtn.addEventListener('click', function() {
     const selected = Array.from(checkboxes).filter(cb => cb.checked);
     if (selected.length === 0) {
-      alert('請至少勾選一個行為，才能進入學習單！');
-      return;
+        alert('請至少勾選一個行為，才能進入學習單！');
+        return;
     }
-    // （updateResults 已將資料存在 localStorage）直接跳轉
-    alert(selectedQuestionTypes);
-    alert(selectedBehaviors);
+
+    // 從 localStorage 讀取資料
+    const selectedQuestionTypes = JSON.parse(localStorage.getItem('selectedQuestionTypes') || '[]');
+    const selectedBehaviors = JSON.parse(localStorage.getItem('selectedBehaviors') || '[]');
+
+    // 顯示要傳送的資料
+    alert('selectedQuestionTypes: ' + JSON.stringify(selectedQuestionTypes));
+    alert('selectedBehaviors: ' + JSON.stringify(selectedBehaviors));
+
+    // 跳轉到 quiz.html
     window.location.href = 'quiz.html';
-  });
+});
+
 
   // 啟動
   loadLawData();

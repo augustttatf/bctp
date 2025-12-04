@@ -1,17 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const QUIZ_CONTAINER = document.getElementById('quiz-container');
-    const QUIZ_RESULT = document.getElementById('quiz-result');
-    const SUBMIT_BTN = document.getElementById('submit-btn');
-
-    // 從 localStorage 讀取使用者在 query.html 勾選的類別
-    let selectedQuestionTypes = JSON.parse(localStorage.getItem('selectedBehaviors') || '[]');
-    if (!selectedQuestionTypes || selectedQuestionTypes.length === 0) {
-        alert('未選擇任何行為類別，請先回查詢頁勾選。');
-        window.location.href = 'query.html';
-        return;
-    }
-
-    // 這裡放你的題目資料，請自行填入題目
+    // 題目資料，questionType 對應行為類型
     const allQuestions = [
         // --- 密集訊息騷擾（10 題） ---
   {
@@ -262,64 +250,68 @@ document.addEventListener('DOMContentLoaded', function() {
   }
     ];
 
-    // 過濾題目，只保留符合使用者勾選類別
-    const filteredQuestions = allQuestions.filter(q => selectedQuestionTypes.includes(q.questionType.toString()));
+    // 從 localStorage 讀取勾選的行為類型
+    const selectedTypes = JSON.parse(localStorage.getItem('selectedQuestionTypes') || '[]');
+    const filteredQuestions = allQuestions.filter(q => selectedTypes.includes(q.questionType));
 
-    if (filteredQuestions.length === 0) {
-        QUIZ_CONTAINER.innerHTML = '<p style="text-align:center;">目前沒有符合您選擇類別的題目。</p>';
-        SUBMIT_BTN.style.display = 'none';
-        return;
-    }
-
-    // 隨機抽 10 題（若不足 10 題則全部出）
+    // 隨機取最多 10 題
     const shuffled = filteredQuestions.sort(() => 0.5 - Math.random());
     const quizQuestions = shuffled.slice(0, 10);
 
-    // 渲染題目
-    function renderQuiz() {
-        QUIZ_CONTAINER.innerHTML = '';
-        quizQuestions.forEach((q, index) => {
-            const qDiv = document.createElement('div');
-            qDiv.className = 'quiz-question';
-            qDiv.style.marginBottom = '20px';
+    let currentIndex = 0;
+    const userAnswers = Array(quizQuestions.length).fill(null);
 
-            let html = `<p><strong>題目 ${index+1}：</strong>${q.question}</p>`;
-            html += '<div class="options">';
-            q.options.forEach((opt, i) => {
-                html += `<label style="display:block; margin:5px 0;">
-                            <input type="radio" name="q${index}" value="${i}"> ${opt}
-                         </label>`;
+    const questionArea = document.getElementById('question-area');
+    const optionsArea = document.getElementById('options-area');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const resultArea = document.getElementById('result-area');
+
+    function renderQuestion(index) {
+        const q = quizQuestions[index];
+        questionArea.textContent = `第 ${index+1} 題: ${q.question}`;
+        optionsArea.innerHTML = '';
+        q.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.textContent = opt;
+            btn.className = userAnswers[index] === i ? 'selected' : '';
+            btn.addEventListener('click', () => {
+                userAnswers[index] = i;
+                renderQuestion(index); // 更新按鈕狀態
             });
-            html += '</div>';
-            qDiv.innerHTML = html;
-            QUIZ_CONTAINER.appendChild(qDiv);
+            optionsArea.appendChild(btn);
         });
     }
 
-    // 計算分數
-    function calculateScore() {
-        let score = 0;
-        quizQuestions.forEach((q, index) => {
-            const selected = document.querySelector(`input[name="q${index}"]:checked`);
-            if (selected && parseInt(selected.value) === q.correctAnswerIndex) {
-                score += 6;
-            }
-        });
-        return score;
-    }
-
-    // 提交事件
-    SUBMIT_BTN.addEventListener('click', () => {
-        const score = calculateScore();
-        const pass = score >= 60 ? '及格' : '不及格';
-        QUIZ_RESULT.style.display = 'block';
-        QUIZ_RESULT.innerHTML = `您得分：${score} 分，${pass}。`;
-        // 禁用所有選項避免修改
-        quizQuestions.forEach((q, index) => {
-            document.querySelectorAll(`input[name="q${index}"]`).forEach(el => el.disabled = true);
-        });
-        SUBMIT_BTN.disabled = true;
+    prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderQuestion(currentIndex);
+        }
     });
 
-    renderQuiz();
+    nextBtn.addEventListener('click', () => {
+        if (currentIndex < quizQuestions.length - 1) {
+            currentIndex++;
+            renderQuestion(currentIndex);
+        } else {
+            // 計算分數
+            let score = 0;
+            quizQuestions.forEach((q, i) => {
+                if (userAnswers[i] === q.correctAnswerIndex) score += 6;
+            });
+            document.getElementById('quiz-container').style.display = 'none';
+            resultArea.style.display = 'block';
+            resultArea.innerHTML = `測驗完成！<br>分數：${score} / ${quizQuestions.length*6}<br>${score>=60 ? '及格' : '不及格'}`;
+        }
+    });
+
+    if (quizQuestions.length === 0) {
+        questionArea.textContent = '未選擇任何行為或該類別無題目';
+        optionsArea.innerHTML = '';
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+    } else {
+        renderQuestion(currentIndex);
+    }
 });

@@ -1,15 +1,12 @@
-/**
- * learning.js
- * 單一檔案版本：包含完整題庫（40 題）、出題、計分、遮罩/彈窗流程、通過放行機制
- *
- * 門檻：60 分（10 題，滿分 100）
- *
- * 注意：這個檔案假設放在同一目錄並被 learning.html 引用。
- */
+document.addEventListener('DOMContentLoaded', function() {
+    const selectedBehaviors = JSON.parse(localStorage.getItem('selectedBehaviors') || '[]');
 
-/* ============================
-   1) 40 題題庫（4 組各 10 題）請勿任意改動結構
-   ============================ */
+    if(selectedBehaviors.length === 0){
+        alert('未偵測到勾選行為，請返回查詢頁重新勾選！');
+        window.location.href = 'query.html';
+        return;
+    }
+
 const ALL_QUESTIONS = [
   // --- 密集訊息騷擾（10 題） ---
   {
@@ -220,248 +217,82 @@ const ALL_QUESTIONS = [
   }
 ];
 
-/* ============================
-   2) 設定與常用變數
-   ============================ */
-const PASS_THRESHOLD = 6; // 60 分門檻（10 題中的 6 題）
-const TOTAL_QUESTIONS_PER_QUIZ = 10;
-
-const container = document.getElementById('quiz-container');
-const submitBtn = document.getElementById('submit-btn');
-const reviewBtn = document.getElementById('review-btn');
-const retryBtn = document.getElementById('retry-btn');
-const resultEl = document.getElementById('result');
-const nextLink = document.getElementById('next-link');
-
-const overlay = document.getElementById('overlay');
-const overlayTitle = document.getElementById('overlay-title');
-const overlayMessage = document.getElementById('overlay-message');
-const overlayOk = document.getElementById('overlay-ok');
-
-/* 內部狀態 */
-let currentQuiz = []; // 10 題（亂選）
-let shuffledQuestions = []; // 此次 quiz 的題目（亂序）
-let preparedQuestions = []; // 附帶 answer 屬性
-let lastGrade = null;
-
-/* ============================
-   3) 工具與渲染函數
-   ============================ */
-function shuffleArray(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function prepareQuestions(qs) {
-  return qs.map(q => ({ ...q, answer: q.options[q.correctAnswerIndex] }));
-}
-
-function pickRandomTenFromForty() {
-  const pool = shuffleArray(ALL_QUESTIONS);
-  return pool.slice(0, TOTAL_QUESTIONS_PER_QUIZ);
-}
-
-function renderQuiz() {
-  // pick 10 題
-  currentQuiz = pickRandomTenFromForty();
-  preparedQuestions = prepareQuestions(currentQuiz);
-  shuffledQuestions = shuffleArray(preparedQuestions);
-
-  container.innerHTML = '';
-  shuffledQuestions.forEach((q, i) => {
-    const div = document.createElement('div');
-    div.className = 'question-block';
-    div.id = `qblock-${i}`;
-    div.innerHTML = `<p><strong>${i + 1}. ${q.question}</strong></p>`;
-    // 選項也亂序（但 answer 屬性仍是正確文字）
-    const opts = shuffleArray(q.options);
-    opts.forEach(opt => {
-      const safe = opt.replace(/"/g, '&quot;');
-      div.innerHTML += `
-        <label class="option">
-          <input type="radio" name="q${i}" value="${safe}">
-          ${opt}
-        </label>`;
-    });
-    container.appendChild(div);
-  });
-
-  // reset UI
-  resultEl.classList.add('hidden');
-  reviewBtn.classList.add('hidden');
-  retryBtn.classList.add('hidden');
-  nextLink.classList.add('hidden');
-  submitBtn.disabled = false;
-  submitBtn.querySelector('.default-text') && (submitBtn.querySelector('.default-text').textContent = '提交答案');
-  lastGrade = null;
-}
-
-/* 檢查是否都作答 */
-function allAnswered() {
-  return shuffledQuestions.every((_, i) => !!document.querySelector(`input[name="q${i}"]:checked`));
-}
-
-/* 評分 */
-function grade() {
-  let score = 0;
-  const details = [];
-
-  shuffledQuestions.forEach((q, i) => {
-    const sel = document.querySelector(`input[name="q${i}"]:checked`);
-    const user = sel ? sel.value : null;
-    const ok = user === q.answer;
-    if (ok) score++;
-    details.push({ index: i, selected: user, correct: q.answer, ok });
-  });
-
-  return { score, details };
-}
-
-/* 顯示結果區塊與按鈕 */
-function showResult(g) {
-  lastGrade = g;
-  const passed = g.score >= PASS_THRESHOLD;
-  resultEl.className = 'result ' + (passed ? 'pass' : 'fail');
-  resultEl.innerHTML = `你答對 ${g.score} 題（共 ${shuffledQuestions.length} 題）。`;
-  resultEl.classList.remove('hidden');
-
-  // 顯示檢視、重試、下一步視情況
-  reviewBtn.classList.remove('hidden');
-  retryBtn.classList.toggle('hidden', passed); // 過關就隱藏重新作答
-  nextLink.classList.toggle('hidden', !passed);
-
-  // 如果過關，存標記（讓 form.html 可以讀取）
-  if (passed) {
-    localStorage.setItem('quizPassed', 'true');
-    // 也可以把分數存起來
-    localStorage.setItem('quizScore', String(g.score));
-  } else {
-    localStorage.removeItem('quizPassed');
-    localStorage.setItem('quizScore', String(g.score));
-  }
-}
-
-/* 顯示答案（詳細） */
-function revealAnswers(details) {
-  details.forEach(d => {
-    const block = document.getElementById(`qblock-${d.index}`);
-    if (!block) return;
-    if (block.querySelector('.review-msg')) return; // 避免重複
-    const msg = document.createElement('div');
-    msg.className = d.ok ? 'correct small review-msg' : 'incorrect small review-msg';
-    msg.textContent = d.ok ? '你的答案正確' : `你的答案：${d.selected ?? '未作答'}；正確答案：${d.correct}`;
-    block.appendChild(msg);
-  });
-}
-
-/* 重置並重新出題 */
-function resetQuizAndRender() {
-  // 清除先前提示
-  document.querySelectorAll('.review-msg').forEach(el => el.remove());
-  resultEl.classList.add('hidden');
-  reviewBtn.classList.add('hidden');
-  retryBtn.classList.add('hidden');
-  nextLink.classList.add('hidden');
-  submitBtn.disabled = false;
-  renderQuiz();
-}
-
-/* ============================
-   4) 遮罩 / modal 行為（提交期間與結果確認）
-   ============================ */
-function showOverlay(message, showOk = false, okText = '確定') {
-  overlayTitle.textContent = '處理中…';
-  overlayMessage.textContent = message;
-  overlay.classList.remove('hidden');
-  overlay.setAttribute('aria-hidden', 'false');
-
-  // 顯示或隱藏 OK 按鈕
-  if (showOk) {
-    overlayOk.classList.remove('hidden');
-    overlayOk.querySelector('.default-text') && (overlayOk.querySelector('.default-text').textContent = okText);
-  } else {
-    overlayOk.classList.add('hidden');
-  }
-}
-
-function hideOverlay() {
-  overlay.classList.add('hidden');
-  overlay.setAttribute('aria-hidden', 'true');
-}
-
-/* overlay OK 被點擊後，收起遮罩（等待使用者確認） */
-overlayOk.addEventListener('click', function () {
-  hideOverlay();
-});
-
-/* ============================
-   5) 事件綁定（按鈕互動）
-   ============================ */
-submitBtn.addEventListener('click', function () {
-  if (!allAnswered()) {
-    if (!confirm('尚未完成作答，仍要提交？')) return;
-  }
-
-  // 防止重複送出、鎖住所有輸入
-  submitBtn.disabled = true;
-  submitBtn.querySelector('.default-text') && (submitBtn.querySelector('.default-text').textContent = '提交中...');
-  // 鎖住 radio（防止在評分期間變更）
-  document.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
-
-  // 顯示遮罩（處理中）
-  showOverlay('系統正在評分中，請稍候...', false);
-
-  // 模擬短暫處理時間（實際不需要，但給使用者反饋）
-  setTimeout(() => {
-    const g = grade();
-    showResult(g);
-
-    // 顯示結果的 overlay，並讓使用者按 OK 確認（確認後關遮罩）
-    const passed = g.score >= PASS_THRESHOLD;
-    showOverlay(passed ? `你已通過（${g.score} / ${shuffledQuestions.length}）。按「確定」前往下一步或檢視結果。` : `未通過（${g.score} / ${shuffledQuestions.length}），請檢視答案或重新作答。`, true, '我知道了');
-
-    // 當使用者按 overlay OK 時關遮罩，但保留結果區塊與按鈕狀態
-    overlayOk.onclick = function () {
-      hideOverlay();
-      // 如果未通過，開放重新作答與檢視
-      if (g.score < PASS_THRESHOLD) {
-        submitBtn.disabled = false;
-        submitBtn.querySelector('.default-text') && (submitBtn.querySelector('.default-text').textContent = '提交答案');
-      } else {
-        // 過關後 nextLink 已顯示，submitBtn 保持 disabled（防止重複更改 localStorage）
-        submitBtn.querySelector('.default-text') && (submitBtn.querySelector('.default-text').textContent = '已通過');
-      }
+    // 將題目依行為分類
+    const QUESTIONS_BY_BEHAVIOR = {
+        "physical-injury": ALL_QUESTIONS.slice(30, 40),
+        "online-slander": ALL_QUESTIONS.slice(20, 30),
+        "money-extortion": ALL_QUESTIONS.slice(10, 20),
+        "psychological-damage": ALL_QUESTIONS.slice(0, 10)
     };
 
-  }, 600); // short delay for UX
-});
+    // 隨機抽題，平均分配
+    function selectRandomQuestions(behaviors, totalQuestions=10){
+        const perBehavior = Math.floor(totalQuestions / behaviors.length);
+        const remainder = totalQuestions % behaviors.length;
+        let selected = [];
 
-reviewBtn.addEventListener('click', function () {
-  const g = lastGrade || grade();
-  revealAnswers(g.details);
-});
+        behaviors.forEach((b,i)=>{
+            const questions = QUESTIONS_BY_BEHAVIOR[b] || [];
+            const count = perBehavior + (i < remainder ? 1 : 0);
+            const shuffled = questions.sort(()=>Math.random()-0.5).slice(0,count);
+            selected = selected.concat(shuffled);
+        });
 
-retryBtn.addEventListener('click', function () {
-  // 重新作答：啟用 radio，重置按鈕狀態並出題
-  document.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = false);
-  resetQuizAndRender();
-});
+        return selected.sort(()=>Math.random()-0.5);
+    }
 
-/* nextLink 將使用 href 指向 form.html（HTML 中已設定） */
-/* 但為了安全起見，在點擊前再確認是否通過 */
-nextLink.addEventListener('click', function (e) {
-  const passed = localStorage.getItem('quizPassed') === 'true';
-  if (!passed) {
-    e.preventDefault();
-    alert('尚未達到通過標準，無法前往反思表單。');
-  }
-});
+    const quizQuestions = selectRandomQuestions(selectedBehaviors, 10);
+    let currentIndex = 0;
+    let score = 0;
 
-/* ============================
-   6) 啟動
-   ============================ */
-renderQuiz();
+    const questionArea = document.getElementById('question-area');
+    const optionsArea = document.getElementById('options-area');
+    const progressArea = document.getElementById('progress');
+    const nextBtn = document.getElementById('next-btn');
+    const resultContainer = document.getElementById('result-container');
+    const scoreText = document.getElementById('score-text');
+    const goReflectionBtn = document.getElementById('go-reflection');
+
+    function showQuestion(){
+        const q = quizQuestions[currentIndex];
+        questionArea.textContent = `Q${currentIndex+1}: ${q.question}`;
+        optionsArea.innerHTML = '';
+        q.options.forEach((opt,i)=>{
+            const btn = document.createElement('button');
+            btn.textContent = opt;
+            btn.className = 'btn-quiz-option';
+            btn.addEventListener('click', ()=>checkAnswer(i));
+            optionsArea.appendChild(btn);
+        });
+        progressArea.textContent = `第 ${currentIndex+1} 題 / ${quizQuestions.length} 題`;
+        nextBtn.style.display = 'none';
+    }
+
+    function checkAnswer(selectedIndex){
+        const correctIndex = quizQuestions[currentIndex].correctAnswerIndex;
+        if(selectedIndex === correctIndex) score++;
+        currentIndex++;
+        if(currentIndex < quizQuestions.length){
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult(){
+        document.getElementById('quiz-container').style.display='none';
+        resultContainer.style.display='block';
+        const passScore = Math.ceil(quizQuestions.length * 0.6);
+        scoreText.textContent = `你答對了 ${score} 題 / ${quizQuestions.length} 題。${score >= passScore ? '已達及格標準！' : '未達及格標準。'}`;
+    }
+
+    goReflectionBtn.addEventListener('click', ()=>{
+        if(score >= Math.ceil(quizQuestions.length * 0.6)){
+            window.location.href='reflection.html';
+        } else {
+            alert('未達及格標準，請重新作答以進入反思表單。');
+        }
+    });
+
+    showQuestion();
+});

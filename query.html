@@ -17,8 +17,10 @@
 
 <main>
     <div class="container">
-        <div id="main-content-wrapper" style="display:none;"> 
-            <div class="main-layout-grid"> 
+        <div id="main-content-wrapper" style="display:none;">
+            <div class="main-layout-grid">
+
+                <!-- 步驟一：行為勾選 -->
                 <div class="filter-panel">
                     <h2>步驟一：行為勾選</h2>
                     <p>勾選觸發法律後果的行為，查看對應的法律後果與案例。</p>
@@ -30,6 +32,7 @@
                     </div>
                 </div>
 
+                <!-- 步驟二：後果警示 -->
                 <div class="results-panel">
                     <h2>步驟二：後果警示 (即時互動)</h2>
                     <p>請在上方勾選行為標籤，結果將即時顯示相關法律條文。</p>
@@ -38,6 +41,7 @@
                     </div>
                 </div>
 
+                <!-- 步驟三：相關案例 -->
                 <div class="case-panel">
                     <h2>步驟三：相關案例</h2>
                     <p>請在上方勾選行為標籤，查看相關新聞案例。</p>
@@ -76,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const caseArea = document.getElementById('case-area'); 
     const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
     const nextBtn = document.getElementById('next-btn');
-    
+
     const FATAL_ERROR_MESSAGE = '網站錯誤：核心資料載入失敗，即將返回首頁。請檢查網路連線或稍後再試。';
     let lawData = { related_statutes_segmented: [], LawType_Mapping: {}, cases: [] }; 
 
@@ -124,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function createLawCard(lawGroup) {
         const card = document.createElement('div');
         card.className = `law-card ${lawGroup.isSupplementCategory ? 'replenish-content' : ''}`; 
+        
         let html = `<h3 class="law-num-title">${lawGroup.LawNum || '無條款號'}</h3>`;
         html += `<p class="law-details"><strong>條文詳情：</strong> ${lawGroup.LawDetails || '無詳情'}</p>`;
         if (lawGroup.combinedNotes.length > 0) {
@@ -164,17 +169,12 @@ document.addEventListener('DOMContentLoaded', function() {
         caseArea.innerHTML = ''; 
         
         const selectedLawTypes = new Set(); 
-        let checkedBehaviorNames = []; 
         let groupedLaws = {}; 
         const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
         
         if (checkedBoxes.length === 0) return;
         
-        checkedBoxes.forEach(cb => {
-            selectedLawTypes.add(parseInt(cb.getAttribute('data-type')));
-            checkedBehaviorNames.push(`* ${cb.getAttribute('data-name')}`);
-        });
-        localStorage.setItem('selectedBehaviorNames', checkedBehaviorNames.join('\n'));
+        checkedBoxes.forEach(cb => selectedLawTypes.add(parseInt(cb.getAttribute('data-type'))));
         
         lawData.related_statutes_segmented.forEach(law => {
             const isBehaviorLaw = law.LawType >= 1 && law.LawType <= 4;
@@ -205,13 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
             supplementLaws.forEach(lawGroup=>resultsArea.appendChild(createLawCard(lawGroup)));
         }
 
-        const casesToDisplay = lawData.cases.filter(c=>{
-            if(c.newsType!=null){
-                const type=parseInt(c.newsType);
-                return selectedLawTypes.has(type);
-            }
-            return false;
-        });
+        const casesToDisplay = lawData.cases.filter(c=>c.newsType!=null && selectedLawTypes.has(parseInt(c.newsType)));
         if(casesToDisplay.length===0){
             caseArea.innerHTML='<p class="note">目前沒有與所選行為相關的公開案例。</p>';
         } else {
@@ -219,10 +213,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 綁定 checkbox
-    checkboxes.forEach(cb=>cb.addEventListener('change', updateResults));
+    // 勾選事件更新結果
+    checkboxes.forEach(cb => cb.addEventListener('change', updateResults));
 
-    // 下一步按鈕
+    // 下一步按鈕事件：必須勾選才能跳轉
     nextBtn.addEventListener('click', function(){
         const selected = Array.from(checkboxes).filter(cb=>cb.checked).map(cb=>cb.value);
         if(selected.length === 0){
@@ -230,9 +224,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         localStorage.setItem('selectedBehaviors', JSON.stringify(selected));
-        window.location.href = 'quiz.html';
+        window.location.href = 'quiz.html'; // 跳轉到學習單頁面
     });
 
+    // 載入資料
     loadLawData();
 });
 </script>

@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const selectedTypes = JSON.parse(localStorage.getItem('selectedBehaviors') || '[]');
+    const selectedQuestionTypes = JSON.parse(localStorage.getItem('selectedQuestionTypes') || '[]');
 
-    if (selectedTypes.length === 0) {
+    if(selectedQuestionTypes.length === 0){
         alert('未偵測到勾選類別，請返回查詢頁重新勾選！');
         window.location.href = 'query.html';
         return;
     }
 
-    // --- 你的題庫，題目自行放 ---
+    // 題目資料請自行放在 ALL_QUESTIONS
     const ALL_QUESTIONS = [
         // --- 密集訊息騷擾（10 題） ---
   {
@@ -258,32 +258,29 @@ document.addEventListener('DOMContentLoaded', function() {
   }
     ];
 
-    // 精準抽題函式
-    function selectRandomQuestions(types, totalQuestions = 10) {
-        let selected = [];
-        const perType = Math.floor(totalQuestions / types.length);
-        let remainder = totalQuestions % types.length;
+    // 依 questionType 分類題目
+    const QUESTIONS_BY_TYPE = {};
+    ALL_QUESTIONS.forEach(q => {
+        if(!QUESTIONS_BY_TYPE[q.questionType]) QUESTIONS_BY_TYPE[q.questionType] = [];
+        QUESTIONS_BY_TYPE[q.questionType].push(q);
+    });
 
-        types.forEach(type => {
-            const questionsOfType = ALL_QUESTIONS.filter(q => q.questionType === type).sort(() => Math.random() - 0.5);
-            let count = perType;
-            if (remainder > 0) {
-                count += 1;
-                remainder -= 1;
-            }
-            selected = selected.concat(questionsOfType.slice(0, count));
+    function selectRandomQuestions(types, totalQuestions=10){
+        const perType = Math.floor(totalQuestions / types.length);
+        const remainder = totalQuestions % types.length;
+        let selected = [];
+
+        types.forEach((t,i)=>{
+            const questions = QUESTIONS_BY_TYPE[t] || [];
+            const count = perType + (i < remainder ? 1 : 0);
+            const shuffled = questions.sort(() => Math.random() - 0.5).slice(0, count);
+            selected = selected.concat(shuffled);
         });
 
-        // 若總題數不足10題，從剩餘題庫隨機補齊
-        if (selected.length < totalQuestions) {
-            const remainingQuestions = ALL_QUESTIONS.filter(q => !selected.includes(q)).sort(() => Math.random() - 0.5);
-            selected = selected.concat(remainingQuestions.slice(0, totalQuestions - selected.length));
-        }
-
-        return selected.sort(() => Math.random() - 0.5); // 打亂順序
+        return selected.sort(() => Math.random() - 0.5);
     }
 
-    const quizQuestions = selectRandomQuestions(selectedTypes, 10);
+    const quizQuestions = selectRandomQuestions(selectedQuestionTypes, 10);
 
     const quizContainer = document.getElementById('quiz-questions');
     const resultContainer = document.getElementById('result-container');
@@ -291,11 +288,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const goReflectionBtn = document.getElementById('go-reflection');
 
     // 渲染題目
-    quizQuestions.forEach((q, index) => {
+    quizQuestions.forEach((q,index)=>{
         const questionDiv = document.createElement('div');
         questionDiv.className = 'quiz-question';
-        let html = `<p><strong>Q${index + 1}:</strong> ${q.question}</p>`;
-        q.options.forEach((opt, i) => {
+        let html = `<p><strong>Q${index+1}:</strong> ${q.question}</p>`;
+        q.options.forEach((opt,i)=>{
             html += `<label><input type="radio" name="q${index}" value="${i}"> ${opt}</label><br>`;
         });
         questionDiv.innerHTML = html;
@@ -304,12 +301,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 提交答案
     const quizForm = document.getElementById('quiz-form');
-    quizForm.addEventListener('submit', function(e) {
+    quizForm.addEventListener('submit', function(e){
         e.preventDefault();
         let score = 0;
-        quizQuestions.forEach((q, index) => {
+        quizQuestions.forEach((q,index)=>{
             const selected = quizForm.querySelector(`input[name="q${index}"]:checked`);
-            if (selected && parseInt(selected.value) === q.correctAnswerIndex) {
+            if(selected && parseInt(selected.value) === q.correctAnswerIndex){
                 score++;
             }
         });
@@ -320,14 +317,14 @@ document.addEventListener('DOMContentLoaded', function() {
         scoreText.textContent = `你答對了 ${score} 題 / ${quizQuestions.length} 題。${score >= passScore ? '已達及格標準！' : '未達及格標準。'}`;
     });
 
-    goReflectionBtn.addEventListener('click', () => {
-        const score = quizQuestions.reduce((acc, q, index) => {
+    goReflectionBtn.addEventListener('click', ()=>{
+        const score = quizQuestions.reduce((acc,q,index)=>{
             const selected = quizForm.querySelector(`input[name="q${index}"]:checked`);
             return acc + (selected && parseInt(selected.value) === q.correctAnswerIndex ? 1 : 0);
         }, 0);
 
-        if (score >= Math.ceil(quizQuestions.length * 0.6)) {
-            window.location.href = 'reflection.html';
+        if(score >= Math.ceil(quizQuestions.length * 0.6)){
+            window.location.href='reflection.html';
         } else {
             alert('未達及格標準，請重新作答以進入反思表單。');
         }

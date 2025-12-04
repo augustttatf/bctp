@@ -18,7 +18,7 @@ const selectedTypes = selected.map(b => parseInt(b.type));
 //      題庫（你會放 40 題）
 // ===============================
 
-請你幫我更新quiz.html和quiz.js，以下是題目，const ALL_QUESTIONS = [
+  const ALL_QUESTIONS = [
   // --- 密集訊息騷擾（10 題） ---
   {
     question: "少年法院依《少年事件處理法》第 26 條責付時，對於密集訊息騷擾的少年，可以下達何種禁止行為的命令？",

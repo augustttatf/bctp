@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     const selectedQuestionTypes = checkedBoxes.map(cb => Number(cb.getAttribute('data-type')));
     localStorage.setItem('selectedQuestionTypes', JSON.stringify(selectedQuestionTypes));
-    alert('selectedQuestionTypes: ' + JSON.stringify(selectedQuestionTypes));
+    /* alert('selectedQuestionTypes: ' + JSON.stringify(selectedQuestionTypes)); */
     window.location.href = 'quiz.html';
   });
 

@@ -218,14 +218,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 下一步按鈕事件：必須勾選才能跳轉
     nextBtn.addEventListener('click', function(){
-        const selected = Array.from(checkboxes).filter(cb=>cb.checked).map(cb=>cb.value);
-        if(selected.length === 0){
-            alert('請至少勾選一個行為，才能進入學習單！');
-            return;
-        }
-        localStorage.setItem('selectedBehaviors', JSON.stringify(selected));
-        window.location.href = 'quiz.html'; // 跳轉到學習單頁面
-    });
+    const selected = Array.from(checkboxes)
+                          .filter(cb=>cb.checked)
+                          .map(cb=>cb.value);
+    if(selected.length === 0){
+        alert('請至少勾選一個行為，才能進入學習單！');
+        return;
+    }
+    localStorage.setItem('selectedBehaviors', JSON.stringify(selected));
+    window.location.href = 'quiz.html';
+});
 
     // 載入資料
     loadLawData();

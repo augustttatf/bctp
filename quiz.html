@@ -1,63 +1,39 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>法律學習單 - BCTP</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>學習單 - BCTP</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
-  <div class="container">
-    <h1>BCTP</h1>
-    <p class="subtitle">法律學習單（達標才能進入反思表單）</p>
-  </div>
+    <div class="container">
+        <h1>學習單</h1>
+        <p>依據你勾選的行為進行考核</p>
+    </div>
 </header>
 
 <main>
-  <div class="container">
-    <h2>法律學習單（請完成以下 10 題）</h2>
-
-    <div id="quiz-container" aria-live="polite"></div>
-
-    <div class="controls" style="margin-top:16px;">
-      <!-- 使用統一動畫按鈕樣式  -->
-      <button id="submit-btn" class="btn-animated btn-blue" type="button" aria-live="polite">
-        <span class="default-text">提交答案</span>
-        <span class="hover-text">送出！</span>
-      </button>
-
-      <button id="review-btn" class="btn-animated btn-gray hidden" type="button">
-        <span class="default-text">檢視答案</span>
-        <span class="hover-text">檢視答案</span>
-      </button>
-
-      <button id="retry-btn" class="btn-animated btn-gray hidden" type="button">
-        <span class="default-text">重新作答</span>
-        <span class="hover-text">重來一次</span>
-      </button>
-
-      <a id="next-link" class="btn-animated btn-green hidden" href="form.html">
-        <span class="default-text">前往反思表單 →</span>
-        <span class="hover-text">前往表單</span>
-      </a>
+    <div class="container">
+        <div id="quiz-container">
+            <div id="question-area"></div>
+            <div id="options-area"></div>
+            <button id="next-btn" class="btn-animated btn-green" style="display:none;">下一題</button>
+            <p id="progress"></p>
+        </div>
+        <div id="result-container" style="display:none;">
+            <h2>考核結果</h2>
+            <p id="score-text"></p>
+            <button id="go-reflection" class="btn-animated btn-blue">前往反思表單</button>
+        </div>
     </div>
-
-    <div id="result" class="result hidden" role="status" aria-atomic="true"></div>
-  </div>
 </main>
 
-<!-- 全域遮罩與 modal，用於處理提交等待與回饋（不會在未提交時顯示） -->
-<div id="overlay" class="overlay hidden" aria-hidden="true">
-  <div class="overlay-content" role="dialog" aria-modal="true" aria-labelledby="overlay-title">
-    <div id="overlay-title" class="overlay-title">處理中…</div>
-    <div id="overlay-message" class="overlay-message">請稍候，正在評分中。</div>
-    <div style="margin-top:12px;">
-      <button id="overlay-ok" class="btn-animated btn-blue hidden"><span class="default-text">確定</span><span class="hover-text">OK</span></button>
-    </div>
-  </div>
-</div>
+<footer>
+    <p>BCTP (Bullying Consequence Transparency Platform)</p>
+</footer>
 
-<script src="learning.js"></script>
+<script src="quiz.js"></script>
 </body>
 </html>

@@ -143,6 +143,19 @@ document.addEventListener('DOMContentLoaded', function() {
     let html = `<h4 class="case-title">${caseItem.newsTitle || '無案例標題'}</h4>`;
     html += `<p class="case-content"><strong>事件經過：</strong> ${caseItem.newscontent || '無事件經過'}</p>`;
     if (caseItem.source) html += `<p class="case-source"><strong>新聞來源：</strong> <a href="${caseItem.source}" target="_blank">點擊查看</a></p>`;
+
+    if (caseItem.videoconnection) {
+      const youtubeMatch = caseItem.videoconnection.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\?v=)|youtu\.be\/)([\w-]+)/);
+      const vimeoMatch = caseItem.videoconnection.match(/(?:vimeo\.com\/)(\d+)/);
+      if (youtubeMatch && youtubeMatch[1]) {
+        html += `<div class="video-container"><iframe src="https://www.youtube.com/embed/${youtubeMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
+      } else if (vimeoMatch && vimeoMatch[1]) {
+        html += `<div class="video-container"><iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
+      } else {
+        html += `<p class="case-video"><strong>相關影片：</strong> <a href="${caseItem.videoconnection}" target="_blank">點擊查看影片</a></p>`;
+      }
+    }
+
     card.innerHTML = html;
     return card;
   }

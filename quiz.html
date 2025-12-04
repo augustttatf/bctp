@@ -1,1 +1,40 @@
 
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>學習單 - BCTP</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <div class="container">
+        <h1>學習單</h1>
+        <p>依據你勾選的行為進行考核</p>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <div id="quiz-container">
+            <div id="question-area"></div>
+            <div id="options-area"></div>
+            <button id="next-btn" class="btn-animated btn-green" style="display:none;">下一題</button>
+            <p id="progress"></p>
+        </div>
+        <div id="result-container" style="display:none;">
+            <h2>考核結果</h2>
+            <p id="score-text"></p>
+            <button id="go-reflection" class="btn-animated btn-blue">前往反思表單</button>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>BCTP (Bullying Consequence Transparency Platform)</p>
+</footer>
+
+<script src="quiz.js"></script>
+</body>
+</html>

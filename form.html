@@ -6,6 +6,26 @@
     <title>BCTP - 反思表單</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✍️</text></svg>">
+    <style>
+        #overlay {
+            position: fixed;
+            top:0; left:0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(200,200,200,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-size: 1.5em;
+            color: #333;
+        }
+        #overlay.show { display: flex; }
+        .btn-disabled {
+            pointer-events: none;
+            opacity: 0.6 !important;
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -42,15 +62,13 @@
                 </div>
 
                 <div class="button-footer">
-                    <!-- 返回按鈕：灰色 -->
                     <a href="query.html" class="btn-animated btn-gray">
                         <span class="default-text">← 返回查詢頁面</span>
                         <span class="hover-text">返回查詢</span>
                     </a>
-                    <!-- 提交按鈕：藍色 -->
-                    <button type="submit" class="btn-animated btn-blue">
-                        <span class="default-text">最後一步：提交表單</span>
-                        <span class="hover-text">提交表單</span>
+                    <button type="submit" class="btn-animated btn-blue submit-button">
+                        <span class="default-text">提交反省表單</span>
+                        <span class="hover-text">送出！</span>
                     </button>
                 </div>
             </form>
@@ -58,18 +76,22 @@
     </div>
 </main>
 
+<div id="overlay">提交中，請稍候...</div>
+
 <footer>
     <p>BCTP (Bullying Consequence Transparency Platform)</p>
 </footer>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // *** 🚨 替換點：將此處替換為您重新部署後 Apps Script Web App URL ***
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyh17cPQLk0QpaMC4Rg8fYR8npLc8e0hymU2ldLUTMSS_dAPZr7HlStVRvejdhAx3I4Pg/exec'; 
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyh17cPQLk0QpaMC4Rg8fYR8npLc8e0hymU2ldLUTMSS_dAPZr7HlStVRvejdhAx3I4Pg/exec';
     
     const form = document.getElementById('reflection-form');
     const behaviorsText = document.getElementById('behaviors-text');
     const selectedBehaviors = localStorage.getItem('selectedBehaviors');
+    const overlay = document.getElementById('overlay');
+    const submitButton = form.querySelector('.submit-button');
+    const inputs = form.querySelectorAll('input, textarea');
 
     if (selectedBehaviors) {
         behaviorsText.textContent = selectedBehaviors;
@@ -78,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function() {
         behaviorsText.style.color = 'red';
     }
 
-    // 表單提交處理
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -88,11 +109,15 @@ document.addEventListener('DOMContentLoaded', function() {
             reflection: document.getElementById('reflection').value,
             behaviors: selectedBehaviors ? selectedBehaviors.replace(/\n/g, '; ') : '未勾選行為'
         };
-        
-        const submitButton = form.querySelector('.btn-green');
-        submitButton.querySelector('.default-text').style.display = 'none';
-        submitButton.querySelector('.hover-text').style.display = 'inline';
+
+        // 顯示過場遮罩
+        overlay.textContent = '提交中，請稍候...';
+        overlay.classList.add('show');
+
+        // 禁用輸入框和按鈕
         submitButton.disabled = true;
+        submitButton.classList.add('btn-disabled');
+        inputs.forEach(el => el.disabled = true);
 
         fetch(GAS_URL, {
             method: 'POST',
@@ -102,29 +127,34 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.result === 'success') {
-                alert('反思表單提交成功！數據已記錄。');
-                form.reset();
+                // 成功提示
                 localStorage.removeItem('selectedBehaviors'); 
-                submitButton.querySelector('.default-text').style.display = 'inline';
-                submitButton.querySelector('.hover-text').style.display = 'none';
-                submitButton.disabled = false;
                 behaviorsText.textContent = '（已提交，請返回主頁）';
+                alert('反思表單提交成功！數據已記錄。');
+
+                // 使用者確認後隱藏遮罩
+                overlay.classList.remove('show');
+
             } else {
+                overlay.classList.remove('show');
                 alert(`提交失敗：${data.message}`);
-                submitButton.querySelector('.default-text').style.display = 'inline';
-                submitButton.querySelector('.hover-text').style.display = 'none';
                 submitButton.disabled = false;
+                submitButton.classList.remove('btn-disabled');
+                inputs.forEach(el => el.disabled = false);
             }
         })
         .catch(error => {
+            overlay.classList.remove('show');
             console.error('Fetch error:', error);
             alert('網路或伺服器錯誤，請稍後再試。');
-            submitButton.querySelector('.default-text').style.display = 'inline';
-            submitButton.querySelector('.hover-text').style.display = 'none';
             submitButton.disabled = false;
+            submitButton.classList.remove('btn-disabled');
+            inputs.forEach(el => el.disabled = false);
         });
     });
 });
 </script>
+
 </body>
 </html>
+

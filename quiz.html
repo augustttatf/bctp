@@ -6,34 +6,27 @@
 <title>BCTP - 學習單</title>
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
-<style>
-body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
-header, footer { text-align: center; padding: 1em; background: #333; color: #fff; }
-.container { max-width: 800px; margin: auto; padding: 1em; background: #fff; }
-.quiz-question { margin-bottom: 1.5em; padding: 0.5em; border-bottom: 1px solid #ccc; }
-.quiz-question p { margin: 0.5em 0; }
-button, #go-reflection { padding: 0.5em 1em; margin: 1em 0; cursor: pointer; }
-#result-container { display: none; padding: 1em; background: #e0ffe0; border: 1px solid #0a0; }
-</style>
 </head>
 <body>
-
 <header>
-    <h1>BCTP 學習單</h1>
-    <p>請完成以下測驗題目</p>
+    <div class="container">
+        <h1>BCTP 學習單</h1>
+        <p>依所選行為類別完成學習題目</p>
+    </div>
 </header>
 
-<main class="container">
-    <form id="quiz-form">
-        <div id="quiz-questions">
-            <!-- 題目由 quiz.js 動態渲染 -->
+<main>
+    <div class="container">
+        <div id="quiz-container">
+            <p id="quiz-loading" style="text-align:center; font-size:1.1em;">載入題目中...</p>
         </div>
-        <button type="submit">提交答案</button>
-    </form>
 
-    <div id="result-container">
-        <p id="score-text"></p>
-        <button id="go-reflection">進入反思表單</button>
+        <div class="button-footer" style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+            <button id="prev-btn" class="btn-animated btn-gray">← 返回查詢</button>
+            <button id="submit-btn" class="btn-animated btn-green">提交學習單</button>
+        </div>
+
+        <div id="quiz-result" style="margin-top:20px; display:none; text-align:center; font-size:1.2em;"></div>
     </div>
 </main>
 
@@ -42,5 +35,13 @@ button, #go-reflection { padding: 0.5em 1em; margin: 1em 0; cursor: pointer; }
 </footer>
 
 <script src="quiz.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const prevBtn = document.getElementById('prev-btn');
+    prevBtn.addEventListener('click', () => {
+        window.location.href = 'query.html';
+    });
+});
+</script>
 </body>
 </html>

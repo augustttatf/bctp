@@ -8,7 +8,6 @@
 </head>
 
 <body>
-
 <header>
     <div class="container">
         <h1>BCTP 學習單測驗</h1>
@@ -18,15 +17,15 @@
 
 <main>
     <div class="container">
-        <div id="quiz-wrapper" class="quiz-container">
-            <div id="question-box">
-                <!-- 題目將由 quiz.js 動態生成 -->
+        <form id="quiz-form">
+            <div id="quiz-wrapper">
+                <!-- 10 題將由 quiz.js 動態生成 -->
             </div>
 
             <div class="button-footer">
-                <button id="next-btn" class="btn-animated btn-green">下一題 →</button>
+                <button type="submit" class="btn-animated btn-green">提交測驗 →</button>
             </div>
-        </div>
+        </form>
     </div>
 </main>
 
@@ -35,6 +34,5 @@
 </footer>
 
 <script src="quiz.js"></script>
-
 </body>
 </html>

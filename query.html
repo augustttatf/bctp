@@ -278,23 +278,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 下一步按鈕
 nextBtn.addEventListener('click', function() {
-    const selected = Array.from(checkboxes).filter(cb => cb.checked);
-    if (selected.length === 0) {
-        alert('請至少勾選一個行為，才能進入學習單！');
+    const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+    if (checkedBoxes.length === 0) {
+        alert('請至少勾選一個行為！');
         return;
     }
 
-    // 從 localStorage 讀取資料
-    const selectedQuestionTypes = JSON.parse(localStorage.getItem('selectedQuestionTypes') || '[]');
-    const selectedBehaviors = JSON.parse(localStorage.getItem('selectedBehaviors') || '[]');
+    const selectedBehaviors = checkedBoxes.map(cb => cb.value); // ["physical-injury", "online-slander"]
 
-    // 顯示要傳送的資料
-    alert('selectedQuestionTypes: ' + JSON.stringify(selectedQuestionTypes));
+    // 存到 localStorage
+    localStorage.setItem('selectedBehaviors', JSON.stringify(selectedBehaviors));
+
+    // 顯示回傳資料
     alert('selectedBehaviors: ' + JSON.stringify(selectedBehaviors));
 
     // 跳轉到 quiz.html
     window.location.href = 'quiz.html';
 });
+
 
 
   // 啟動

@@ -1,77 +1,85 @@
 document.addEventListener('DOMContentLoaded', async function() {
-    const QUIZ_JSON_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/blablabla.json';
-    const quizWrapper = document.getElementById('quiz-wrapper');
-    const submitBtn = document.getElementById('submit-btn');
+  const QUIZ_JSON_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/blablabla.json';
+  const quizContainer = document.getElementById('quiz-container');
+  const submitBtn = document.getElementById('submit-btn');
+  const loadingMessage = document.getElementById('loading-message');
 
-    // 從 localStorage 讀取使用者勾選的行為
-    let selectedQuestionTypes = JSON.parse(localStorage.getItem('selectedQuestionTypes') || '[]');
-    let selectedBehaviors = JSON.parse(localStorage.getItem('selectedBehaviors') || '[]');
+  // 取得使用者勾選行為
+  const selectedBehaviors = JSON.parse(localStorage.getItem('selectedBehaviors') || '[]');
+  if (selectedBehaviors.length === 0) {
+    alert('未選擇行為，將返回查詢頁');
+    window.location.href = 'query.html';
+    return;
+  }
 
-    if(selectedQuestionTypes.length === 0 || selectedBehaviors.length === 0){
-        quizWrapper.innerHTML = '<p class="note">未選擇任何行為，無法生成題目。請返回查詢頁面勾選行為。</p>';
-        submitBtn.style.display = 'none';
-        return;
+  // 讀取題目 JSON
+  let quizData;
+  try {
+    const res = await fetch(QUIZ_JSON_URL);
+    if (!res.ok) throw new Error(`讀取題目失敗 (${res.status})`);
+    quizData = await res.json();
+  } catch (err) {
+    console.error(err);
+    quizContainer.innerHTML = `<p class="note">題目載入失敗，請稍後再試。</p>`;
+    return;
+  }
+
+  // 過濾題目：僅選擇與 selectedBehaviors 對應的 questionType
+  const questionTypeMapping = quizData.questionType_mapping;
+  const filteredQuestions = quizData.questions.filter(q => selectedBehaviors.includes(Object.keys(questionTypeMapping).find(k => parseInt(k) === q.questionType)));
+  
+  // 只取前 10 題
+  const questions = filteredQuestions.slice(0, 10);
+
+  if (questions.length === 0) {
+    quizContainer.innerHTML = '<p class="note">沒有符合所選行為的題目。</p>';
+    return;
+  }
+
+  loadingMessage?.remove();
+
+  // 生成題目 DOM
+  const formEl = document.createElement('form');
+  formEl.id = 'quiz-form';
+  questions.forEach((q, idx) => {
+    const qDiv = document.createElement('div');
+    qDiv.className = 'quiz-question';
+    qDiv.innerHTML = `
+      <p class="question-text">${idx + 1}. ${q.question}</p>
+      ${q.options.map((opt, i) => `
+        <label>
+          <input type="radio" name="q${idx}" value="${i}" required>
+          ${opt}
+        </label>
+      `).join('')}
+    `;
+    formEl.appendChild(qDiv);
+  });
+
+  quizContainer.appendChild(formEl);
+
+  // 提交按鈕事件
+  submitBtn.addEventListener('click', function() {
+    const form = document.getElementById('quiz-form');
+    if (!form.checkValidity()) {
+      alert('請完成所有題目');
+      return;
     }
 
-    try {
-        const response = await fetch(QUIZ_JSON_URL);
-        if(!response.ok) throw new Error(`載入題庫失敗 (HTTP ${response.status})`);
-        const data = await response.json();
+    // 蒐集答案
+    const answers = {};
+    questions.forEach((q, idx) => {
+      const selected = form.querySelector(`input[name="q${idx}"]:checked`);
+      answers[`q${idx}`] = selected ? parseInt(selected.value) : null;
+    });
 
-        const allQuestions = data.questions.filter(q => selectedQuestionTypes.includes(q.questionType));
-        if(allQuestions.length === 0){
-            quizWrapper.innerHTML = '<p class="note">選擇的行為目前無對應題目。</p>';
-            submitBtn.style.display = 'none';
-            return;
-        }
+    // 存到 localStorage 以便 form.html 使用
+    localStorage.setItem('quizAnswers', JSON.stringify({
+      selectedBehaviors,
+      answers
+    }));
 
-        // 隨機選 10 題或全部
-        const shuffled = allQuestions.sort(() => 0.5 - Math.random());
-        const quizQuestions = shuffled.slice(0, 10);
-
-        // 儲存使用者答案
-        const userAnswers = Array(quizQuestions.length).fill(null);
-
-        // 生成題目
-        quizWrapper.innerHTML = '';
-        quizQuestions.forEach((q, index) => {
-            const questionDiv = document.createElement('div');
-            questionDiv.className = 'quiz-question';
-            questionDiv.innerHTML = `<h3>題目 ${index + 1}: ${q.question}</h3>`;
-            const optionsDiv = document.createElement('div');
-            optionsDiv.className = 'quiz-options';
-            q.options.forEach((opt, optIndex) => {
-                const label = document.createElement('label');
-                label.innerHTML = `<input type="radio" name="q${index}" value="${optIndex}"> ${opt}`;
-                optionsDiv.appendChild(label);
-            });
-            questionDiv.appendChild(optionsDiv);
-            quizWrapper.appendChild(questionDiv);
-        });
-
-        // 送出按鈕
-        submitBtn.addEventListener('click', function(){
-            // 收集答案
-            quizQuestions.forEach((q, index) => {
-                const selected = document.querySelector(`input[name="q${index}"]:checked`);
-                userAnswers[index] = selected ? parseInt(selected.value) : null;
-            });
-
-            // 檢查是否都作答
-            const unanswered = userAnswers.some(a => a === null);
-            if(unanswered){
-                if(!confirm('有題目尚未作答，仍要送出嗎？')) return;
-            }
-
-            // 存進 localStorage 送到 form.html
-            localStorage.setItem('quizAnswers', JSON.stringify(userAnswers));
-            localStorage.setItem('quizQuestions', JSON.stringify(quizQuestions));
-            window.location.href = 'form.html';
-        });
-
-    } catch (err){
-        console.error(err);
-        quizWrapper.innerHTML = `<p class="note">載入題目發生錯誤：${err.message}</p>`;
-        submitBtn.style.display = 'none';
-    }
+    // 跳轉表單頁
+    window.location.href = 'form.html';
+  });
 });

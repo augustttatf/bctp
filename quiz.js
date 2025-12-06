@@ -53,21 +53,37 @@ document.addEventListener('DOMContentLoaded', async function() {
     quizForm.appendChild(questionDiv);
   });
 
-  // 提交按鈕
+  // ➤ 修正版提交按鈕邏輯：未達60分不能進入 form.html
   submitBtn.addEventListener('click', function() {
     const answers = [];
+    let score = 0;
+
     for (let i = 0; i < quizQuestions.length; i++) {
       const selected = quizForm.querySelector(`input[name="q${i}"]:checked`);
-      answers.push(selected ? Number(selected.value) : null);
+      const ansVal = selected ? Number(selected.value) : null;
+
+      answers.push(ansVal);
+
+      // 判分：每題 10 分
+      if (ansVal !== null && ansVal === quizQuestions[i].correctAnswerIndex) {
+        score += 10;
+      }
     }
 
-    // 儲存答案到 localStorage，供 form.html 取用
+    // ➤ 未達 60 分 → 不能進入下一頁
+    if (score < 60) {
+      alert(`你的得分是：${score} 分\n⚠ 需要 ≥ 60 分才能進入下一步。`);
+      return;
+    }
+
+    // ➤ 儲存結果
     localStorage.setItem('quizAnswers', JSON.stringify({
       questionTypes: selectedQuestionTypes,
-      answers: answers
+      answers: answers,
+      score: score
     }));
 
-    // 跳轉到表單頁
+    // ➤ 達標後進入表單
     window.location.href = 'form.html';
   });
 });

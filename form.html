@@ -1,160 +1,158 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BCTP - 反思表單</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✍️</text></svg>">
-    <style>
-        #overlay {
-            position: fixed;
-            top:0; left:0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(200,200,200,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            font-size: 1.5em;
-            color: #333;
-        }
-        #overlay.show { display: flex; }
-        .btn-disabled {
-            pointer-events: none;
-            opacity: 0.6 !important;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BCTP - 反思表單</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✍️</text></svg>">
+<style>
+    #overlay {
+        position: fixed;
+        top:0; left:0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(200,200,200,0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        font-size: 1.5em;
+        color: #333;
+    }
+    #overlay.show { display: flex; }
+    .btn-disabled {
+        pointer-events: none;
+        opacity: 0.6 !important;
+    }
+    pre { white-space: pre-wrap; margin: 0; }
+</style>
 </head>
 <body>
 <header>
-    <div class="container">
-        <h1>BCTP</h1>
-        <p>霸凌行為後果透明化資訊平台</p>
-    </div>
+<div class="container">
+<h1>BCTP</h1>
+<p>霸凌行為後果透明化資訊平台</p>
+</div>
 </header>
 
 <main>
-    <div class="container">
-        <div class="form-card">
-            <h2>步驟三：提交反思表單</h2>
-            <p>請您針對先前選擇的行為，認真寫下反思內容。您的反思將被記錄以供輔導參考。</p>
-            
-            <div id="selected-behaviors-display" style="margin-bottom: 20px; padding: 15px; background-color: #eef; border-radius: 4px; border-left: 5px solid #007bff;">
-                <strong>您勾選的行為：</strong> <pre id="behaviors-text" style="margin: 0; white-space: pre-wrap; color: inherit; font-family: inherit;"></pre>
-            </div>
+<div class="container">
+<div class="form-card">
+<h2>步驟三：提交反思表單</h2>
+<p>請您針對先前選擇的行為，認真寫下反思內容。您的反思將被記錄以供輔導參考。</p>
 
-            <form id="reflection-form">
-                <div class="form-group">
-                    <label for="school">學校名稱 (必填)：</label>
-                    <input type="text" id="school" name="school" required placeholder="例如：某某高職 / 某某國中">
-                </div>
+<div id="selected-behaviors-display" style="margin-bottom:20px; padding:15px; background-color:#eef; border-radius:4px; border-left:5px solid #007bff;">
+<strong>您勾選的行為：</strong>
+<pre id="behaviors-text"></pre>
+</div>
 
-                <div class="form-group">
-                    <label for="studentName">姓名 (必填)：</label>
-                    <input type="text" id="studentName" name="studentName" required placeholder="請輸入您的真實姓名或輔導代號">
-                </div>
+<form id="reflection-form">
+<div class="form-group">
+<label for="school">學校名稱 (必填)：</label>
+<input type="text" id="school" name="school" required placeholder="例如：某某高職 / 某某國中">
+</div>
 
-                <div class="form-group">
-                    <label for="reflection">反省內容 (必填)：</label>
-                    <textarea id="reflection" name="reflection" rows="8" required placeholder="請寫下您對可能面臨的法律責任和賠償的看法與反省..."></textarea>
-                </div>
+<div class="form-group">
+<label for="studentName">姓名 (必填)：</label>
+<input type="text" id="studentName" name="studentName" required placeholder="請輸入您的真實姓名或輔導代號">
+</div>
 
-                <div class="button-footer">
-                    <a href="query.html" class="btn-animated btn-gray">
-                        <span class="default-text">← 返回查詢頁面</span>
-                        <span class="hover-text">返回查詢</span>
-                    </a>
-                    <button type="submit" class="btn-animated btn-blue submit-button">
-                        <span class="default-text">提交反省表單</span>
-                        <span class="hover-text">送出！</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+<div class="form-group">
+<label for="reflection">反省內容 (必填)：</label>
+<textarea id="reflection" name="reflection" rows="8" required placeholder="請寫下您對可能面臨的法律責任和賠償的看法與反省..."></textarea>
+</div>
+
+<div class="button-footer">
+<button type="button" class="btn-animated btn-gray" onclick="window.location.href='query.html'">
+<span class="default-text">← 返回查詢頁面</span>
+<span class="hover-text">返回查詢</span>
+</button>
+<button type="submit" class="btn-animated btn-blue submit-button">
+<span class="default-text">提交反思表單</span>
+<span class="hover-text">送出！</span>
+</button>
+</div>
+</form>
+</div>
+</div>
 </main>
 
 <div id="overlay">提交中，請稍候...</div>
 
 <footer>
-    <p>BCTP (Bullying Consequence Transparency Platform)</p>
+<p>BCTP (Bullying Consequence Transparency Platform)</p>
 </footer>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbyh17cPQLk0QpaMC4Rg8fYR8npLc8e0hymU2ldLUTMSS_dAPZr7HlStVRvejdhAx3I4Pg/exec';
-    
     const form = document.getElementById('reflection-form');
     const behaviorsText = document.getElementById('behaviors-text');
-    const selectedBehaviors = localStorage.getItem('selectedBehaviors');
     const overlay = document.getElementById('overlay');
     const submitButton = form.querySelector('.submit-button');
     const inputs = form.querySelectorAll('input, textarea');
 
-    if (selectedBehaviors) {
-        behaviorsText.textContent = selectedBehaviors;
+    // 讀取 quizAnswers
+    const quizData = JSON.parse(localStorage.getItem('quizAnswers') || '{}');
+
+    if (quizData && quizData.questionTypes && quizData.answers) {
+        // 顯示選擇的行為
+        const mapping = {1:"肢體推打", 2:"網路散布謠言", 3:"威脅取財", 4:"密集訊息騷擾"};
+        const behaviorNames = quizData.questionTypes.map(t => mapping[t] || "未知行為");
+        behaviorsText.textContent = behaviorNames.join('\n');
     } else {
-        behaviorsText.textContent = '未勾選任何行為。請返回查詢頁面。';
+        behaviorsText.textContent = '未取得先前選擇的行為，請返回查詢頁面。';
         behaviorsText.style.color = 'red';
     }
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function(e){
         e.preventDefault();
 
         const formData = {
             school: document.getElementById('school').value,
             studentName: document.getElementById('studentName').value,
             reflection: document.getElementById('reflection').value,
-            behaviors: selectedBehaviors ? selectedBehaviors.replace(/\n/g, '; ') : '未勾選行為'
+            behaviors: behaviorsText.textContent,
+            quizAnswers: quizData.answers || []
         };
 
-        // 顯示過場遮罩
         overlay.textContent = '提交中，請稍候...';
         overlay.classList.add('show');
 
-        // 禁用輸入框和按鈕
         submitButton.disabled = true;
         submitButton.classList.add('btn-disabled');
-        inputs.forEach(el => el.disabled = true);
+        inputs.forEach(el=>el.disabled=true);
 
-        fetch(GAS_URL, {
-            method: 'POST',
-            contentType: 'application/json',
+        fetch(GAS_URL,{
+            method:'POST',
+            headers: {'Content-Type':'application/json'},
             body: JSON.stringify(formData)
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.result === 'success') {
-                // 成功提示
-                localStorage.removeItem('selectedBehaviors'); 
-                behaviorsText.textContent = '（已提交，請返回主頁）';
+        .then(res=>res.json())
+        .then(data=>{
+            overlay.classList.remove('show');
+            if(data.result==='success'){
+                localStorage.removeItem('quizAnswers');
+                behaviorsText.textContent='（已提交，請返回主頁）';
                 alert('反思表單提交成功！數據已記錄。');
-
-                // 使用者確認後隱藏遮罩
-                overlay.classList.remove('show');
-
             } else {
-                overlay.classList.remove('show');
-                alert(`提交失敗：${data.message}`);
-                submitButton.disabled = false;
+                alert('提交失敗：'+data.message);
+                submitButton.disabled=false;
                 submitButton.classList.remove('btn-disabled');
-                inputs.forEach(el => el.disabled = false);
+                inputs.forEach(el=>el.disabled=false);
             }
         })
-        .catch(error => {
+        .catch(err=>{
             overlay.classList.remove('show');
-            console.error('Fetch error:', error);
+            console.error(err);
             alert('網路或伺服器錯誤，請稍後再試。');
-            submitButton.disabled = false;
+            submitButton.disabled=false;
             submitButton.classList.remove('btn-disabled');
-            inputs.forEach(el => el.disabled = false);
+            inputs.forEach(el=>el.disabled=false);
         });
     });
 });
 </script>
-
 </body>
 </html>
-

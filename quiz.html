@@ -1,37 +1,32 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BCTP - 學習單</title>
-<link rel="stylesheet" href="style.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BCTP 測驗</title>
+
+  <!-- 📚 書本 icon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<header>
-  <div class="container">
-    <h1>BCTP</h1>
-    <p>霸凌行為相關條文學習單</p>
-  </div>
-</header>
 
-<main>
-  <div class="container">
-    <div id="quiz-container">
-      <h2>學習單：請作答以下題目</h2>
-      <form id="quiz-form"></form>
-      <button id="submit-btn" class="btn-animated btn-green">
-        <span class="default-text">提交 → 填寫表單</span>
-        <span class="hover-text">提交</span>
-      </button>
-    </div>
-  </div>
-</main>
+  <header>
+    <h1>BCTP 測驗</h1>
+  </header>
 
-<footer>
-<p>BCTP (Bullying Consequence Transparency Platform)</p>
-</footer>
+  <main>
+    <form id="quiz-form"></form>
 
-<script src="quiz.js"></script>
+    <button id="submit-btn" class="btn-animated btn-green">
+    <span class="default-text">送出測驗 →</span>
+    <span class="hover-text">送出</span>
+  </button>
+
+    <p id="score-display" style="margin-top:20px;font-weight:bold;"></p>
+  </main>
+
+  <script src="quiz.js"></script>
 </body>
 </html>

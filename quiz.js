@@ -1,11 +1,15 @@
-document.addEventListener('DOMContentLoaded', async function() {
-  const QUIZ_JSON_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/blablabla.json';
+document.addEventListener('DOMContentLoaded', async function () {
+  const QUIZ_JSON_URL =
+    'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/blablabla.json';
 
   const quizForm = document.getElementById('quiz-form');
   const submitBtn = document.getElementById('submit-btn');
+  const scoreDisplay = document.getElementById('score-display');
 
-  // 取得 query.html 傳來的 selectedQuestionTypes
-  const selectedQuestionTypes = JSON.parse(localStorage.getItem('selectedQuestionTypes') || '[]');
+  // 取得 query.html 傳來的 selectedQuestionTypes（數字陣列）
+  const selectedQuestionTypes = JSON.parse(
+    localStorage.getItem('selectedQuestionTypes') || '[]'
+  );
 
   if (!selectedQuestionTypes.length) {
     alert('未選擇行為類型，將返回行為勾選頁');
@@ -18,72 +22,89 @@ document.addEventListener('DOMContentLoaded', async function() {
   try {
     const res = await fetch(QUIZ_JSON_URL);
     const data = await res.json();
-    // 篩選出 selectedQuestionTypes 對應的題目
-    allQuestions = data.questions.filter(q => selectedQuestionTypes.includes(q.questionType));
+
+    // 依選取的類型篩題
+    allQuestions = data.questions.filter((q) =>
+      selectedQuestionTypes.includes(q.questionType)
+    );
   } catch (err) {
     console.error(err);
-    alert('題庫載入失敗，請稍後再試');
+    alert('題庫載入失敗');
     return;
   }
 
   if (!allQuestions.length) {
-    quizForm.innerHTML = '<p class="note">沒有符合所選行為的題目。</p>';
+    quizForm.innerHTML = '<p>沒有符合的題目。</p>';
     return;
   }
 
-  // 隨機選出最多 10 題
+  // 取最多 10 題
   const shuffled = allQuestions.sort(() => 0.5 - Math.random());
   const quizQuestions = shuffled.slice(0, 10);
 
-  // 生成題目 HTML
+  // 產生題目
   quizQuestions.forEach((q, idx) => {
-    const questionDiv = document.createElement('div');
-    questionDiv.className = 'quiz-question';
+    const div = document.createElement('div');
+    div.className = 'quiz-question';
 
-    const qTitle = document.createElement('h3');
-    qTitle.textContent = `${idx + 1}. ${q.question}`;
-    questionDiv.appendChild(qTitle);
+    div.innerHTML = `<h3>${idx + 1}. ${q.question}</h3>`;
 
     q.options.forEach((opt, i) => {
-      const label = document.createElement('label');
-      label.innerHTML = `<input type="radio" name="q${idx}" value="${i}"> ${opt}`;
-      questionDiv.appendChild(label);
+      div.innerHTML += `
+        <label>
+          <input type="radio" name="q${idx}" value="${i}"> ${opt}
+        </label><br>
+      `;
     });
 
-    quizForm.appendChild(questionDiv);
+    quizForm.appendChild(div);
   });
 
-  // ➤ 修正版提交按鈕邏輯：未達60分不能進入 form.html
-  submitBtn.addEventListener('click', function() {
-    const answers = [];
+  // ================
+  //   點擊送出測驗
+  // ================
+  submitBtn.addEventListener('click', function () {
     let score = 0;
+    let answeredCount = 0;
 
     for (let i = 0; i < quizQuestions.length; i++) {
-      const selected = quizForm.querySelector(`input[name="q${i}"]:checked`);
-      const ansVal = selected ? Number(selected.value) : null;
+      const selected = quizForm.querySelector(
+        `input[name="q${i}"]:checked`
+      );
 
-      answers.push(ansVal);
-
-      // 判分：每題 10 分
-      if (ansVal !== null && ansVal === quizQuestions[i].correctAnswerIndex) {
-        score += 10;
+      if (selected) {
+        answeredCount++;
+        if (Number(selected.value) === quizQuestions[i].answer) {
+          score += 10; // 每題 10 分
+        }
       }
     }
 
-    // ➤ 未達 60 分 → 不能進入下一頁
+    // 顯示分數
+    scoreDisplay.textContent = `您的得分：${score} 分`;
+/*
+    // 檢查是否答完（可選）
+    if (answeredCount < quizQuestions.length) {
+      alert('請完成所有題目再提交！');
+      return;
+    }
+    */
+
+    // **60 分才能進入表單**
     if (score < 60) {
-      alert(`你的得分是：${score} 分\n⚠ 需要 ≥ 60 分才能進入下一步。`);
+      alert('分數未達 60 分，請再試一次！');
       return;
     }
 
-    // ➤ 儲存結果
-    localStorage.setItem('quizAnswers', JSON.stringify({
-      questionTypes: selectedQuestionTypes,
-      answers: answers,
-      score: score
-    }));
+    // 過關 → 儲存分數 & 跳到 form.html
+    localStorage.setItem(
+      'quizResult',
+      JSON.stringify({
+        selectedQuestionTypes: selectedQuestionTypes,
+        score: score
+      })
+    );
 
-    // ➤ 達標後進入表單
     window.location.href = 'form.html';
   });
 });

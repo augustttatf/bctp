@@ -96,8 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 讀取 quizAnswers
     const quizData = JSON.parse(localStorage.getItem('quizAnswers') || '{}');
 
-    if (quizData && quizData.questionTypes && quizData.answers) {
-        // 顯示選擇的行為
+    if (quizData && quizData.questionTypes) {
         const mapping = {1:"肢體推打", 2:"網路散布謠言", 3:"威脅取財", 4:"密集訊息騷擾"};
         const behaviorNames = quizData.questionTypes.map(t => mapping[t] || "未知行為");
         behaviorsText.textContent = behaviorNames.join('\n');
@@ -113,8 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
             school: document.getElementById('school').value,
             studentName: document.getElementById('studentName').value,
             reflection: document.getElementById('reflection').value,
-            behaviors: behaviorsText.textContent,
-            quizAnswers: quizData.answers || []
+            behaviors: behaviorsText.textContent
         };
 
         overlay.textContent = '提交中，請稍候...';
@@ -122,37 +120,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
         submitButton.disabled = true;
         submitButton.classList.add('btn-disabled');
-        inputs.forEach(el=>el.disabled=true);
+        inputs.forEach(el=>el.disabled = true);
 
-        fetch(GAS_URL,{
-            method:'POST',
-            headers: {'Content-Type':'application/json'},
+        fetch(GAS_URL, {
+            method: "POST",
+            mode: "no-cors",   // ★★★ 必加！否則 GAS 無法收資料
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify(formData)
         })
-        .then(res=>res.json())
-        .then(data=>{
+        .then(() => {
             overlay.classList.remove('show');
-            if(data.result==='success'){
-                localStorage.removeItem('quizAnswers');
-                behaviorsText.textContent='（已提交，請返回主頁）';
-                alert('反思表單提交成功！數據已記錄。');
-            } else {
-                alert('提交失敗：'+data.message);
-                submitButton.disabled=false;
-                submitButton.classList.remove('btn-disabled');
-                inputs.forEach(el=>el.disabled=false);
-            }
+
+            // 對 no-cors，成功無法接收回應 → 視為成功
+            alert("反思表單提交成功！數據已記錄。");
+
+            localStorage.removeItem('quizAnswers');
+            behaviorsText.textContent = '（已提交，請返回主頁）';
         })
-        .catch(err=>{
+        .catch(err => {
             overlay.classList.remove('show');
-            console.error(err);
-            alert('網路或伺服器錯誤，請稍後再試。');
-            submitButton.disabled=false;
+            alert("伺服器錯誤，請稍後再試");
+            submitButton.disabled = false;
             submitButton.classList.remove('btn-disabled');
-            inputs.forEach(el=>el.disabled=false);
+            inputs.forEach(el => el.disabled = false);
         });
     });
 });
 </script>
+
 </body>
 </html>

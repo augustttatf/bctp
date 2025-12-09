@@ -117,13 +117,21 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function getLawTypeLabel(law) {
-    const key = String(law.LawType ?? '');
-    const label = lawData.LawType_Mapping[key] || '相關法條';
-    if (law.LawType === 0) return `🛡️ ${label}`;
-    if (law.LawType === 5) return `🤝 ${label}`;
-    if (law.ReplenishType === 1) return `⚠ ${label} (建議和解/賠償)`;
-    return `🔗 ${label}`;
-  }
+  const key = String(law.LawType ?? '');
+  const label = lawData.LawType_Mapping[key] || '相關法條';
+
+  // 通用
+  if (law.LawType === 0) return `🛡️ ${label}`;
+    
+  if (law.LawType === 1) return `🤝 ${label}`;
+
+  // 補充法條（和解／賠償建議）
+  if (law.ReplenishType === 1) return `⚠ ${label} (建議和解/賠償)`;
+
+
+  // 其餘皆屬於六大霸凌類別
+  return `🔗 ${label}`;
+}
 
   function createLawCard(lawGroup) {
     const card = document.createElement('div');
@@ -181,9 +189,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const grouped = {};
     lawData.related_statutes_segmented.forEach(law => {
       const shouldShow =
-        (law.LawType >= 1 && law.LawType <= 6 && selectedLawTypes.includes(law.LawType)) ||
-        law.LawType === 0 ||
-        law.LawType === 5;
+        selectedLawTypes.includes(law.LawType) ||  
+        law.LawType === 0 ||                       
+        law.ReplenishType === 1;                   
 
       if (!shouldShow) return;
 

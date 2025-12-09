@@ -38,7 +38,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
-  const QUIZ_JSON_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/blablabla.json';  // 替換為實際的題庫 JSON 檔案 URL
+  const QUIZ_JSON_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/main/blablabla.json';  // 更新你的 json 檔案網址
   const quizContainer = document.getElementById('quiz-container');
   const nextBtn = document.getElementById('next-btn');
   const scoreBox = document.getElementById('score-box');
@@ -54,43 +54,35 @@ document.addEventListener('DOMContentLoaded', async function() {
     return;
   }
 
-  // 更新后的 questionType_mapping，只保留相关行为标签
-  const questionTypeMapping = {
-    "2": "肢體推打",
-    "3": "網路散布謠言",
-    "4": "威脅取財",
-    "5": "密集訊息騷擾",
-    "6": "性霸凌"
-  };
-
   try {
+    // 載入題庫資料
     const res = await fetch(QUIZ_JSON_URL);
     const data = await res.json();
-    let filtered = data.questions.filter(q => selectedQuestionTypes.includes(q.questionType.toString()));
+
+    // 根據選擇的行為類型過濾問題
+    let filtered = data.questions.filter(q => selectedQuestionTypes.includes(q.questionType));
     if (!filtered.length) {
       quizContainer.innerHTML = '<p>沒有符合所選行為的題目。</p>';
       nextBtn.disabled = true;
       return;
     }
-    quizQuestions = filtered.sort(() => 0.5 - Math.random()).slice(0, 10);  // 隨機選取 10 道題目
+
+    // 隨機排序並選擇前 10 題
+    quizQuestions = filtered.sort(() => 0.5 - Math.random()).slice(0, 10);
   } catch (err) {
     console.error(err);
     alert('題庫載入失敗，請稍後再試');
     return;
   }
 
+  // 渲染測驗題目
   function renderQuiz() {
     quizContainer.innerHTML = '';
     quizQuestions.forEach((q, idx) => {
       const div = document.createElement('div');
       div.className = 'quiz-question';
-      div.innerHTML = `<h3>${idx + 1}. ${q.question}</h3>`;
-
-      // 顯示行為類型（使用更新後的映射）
-      if (questionTypeMapping[q.questionType]) {
-        div.innerHTML += `<p><strong>行為類型：</strong>${questionTypeMapping[q.questionType]}</p>`;
-      }
-
+      div.innerHTML = `<h3>${idx+1}. ${q.question}</h3>`;
+      
       // 顯示選項
       q.options.forEach((opt, i) => {
         const label = document.createElement('label');
@@ -98,25 +90,24 @@ document.addEventListener('DOMContentLoaded', async function() {
         div.appendChild(label);
         div.appendChild(document.createElement('br'));
       });
+      
       quizContainer.appendChild(div);
     });
-
     scoreBox.textContent = '';
   }
 
   renderQuiz();
 
+  // 下一步按鈕事件
   nextBtn.addEventListener('click', function() {
     score = 0;
     quizQuestions.forEach((q, idx) => {
       const selected = quizContainer.querySelector(`input[name="q${idx}"]:checked`);
-      if (selected && Number(selected.value) === q.correctAnswerIndex) {
-        score += 10;  // 每題正確加 10 分
-      }
+      if (selected && Number(selected.value) === q.correctAnswerIndex) score += 10;
     });
 
+    // 如果分數達到 60 分，儲存答案並跳轉到反思表單
     if (score >= 60) {
-      // 儲存答案並跳轉至反思表單頁
       localStorage.setItem('quizAnswers', JSON.stringify({
         questionTypes: selectedQuestionTypes,
         answers: quizQuestions.map((q, idx) => {
@@ -126,7 +117,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       }));
       window.location.href = 'form.html';
     } else {
-      // 如果分數低於 60，重新洗牌題目並顯示分數
       alert(`未達 60 分，分數：${score} 分 → 題目將重新洗牌`);
       scoreBox.textContent = `分數：${score} 分，請重新答題`;
       score = 0;

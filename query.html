@@ -177,10 +177,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const grouped = {};
     lawData.related_statutes_segmented.forEach(law => {
-      const shouldShow =
-        law.LawType === 0 ||                  // 通用
-        selectedLawTypes.includes(law.LawType) ||  // 使用者勾選
-        law.ReplenishType === 1;              // 補充
+      const shouldShow = 
+        (law.LawType >= 2 && law.LawType <= 6 && selectedLawTypes.includes(law.LawType)) ||
+        law.LawType === 0 ||
+        law.LawType === 1;
 
       if (!shouldShow) return;
 

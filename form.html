@@ -97,8 +97,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const quizData = JSON.parse(localStorage.getItem('quizAnswers') || '{}');
 
     if (quizData && quizData.questionTypes) {
-        const mapping = {1:"肢體推打", 2:"網路散布謠言", 3:"威脅取財", 4:"密集訊息騷擾"};
-        const behaviorNames = quizData.questionTypes.map(t => mapping[t] || "未知行為");
+        const questionTypeMapping = {
+            "2": "肢體推打",
+            "3": "網路散布謠言",
+            "4": "威脅取財",
+            "5": "密集訊息騷擾",
+            "6": "性霸凌"
+        };
+
+        const behaviorNames = quizData.questionTypes.map(t => questionTypeMapping[t] || "未知行為");
         behaviorsText.textContent = behaviorNames.join('\n');
     } else {
         behaviorsText.textContent = '未取得先前選擇的行為，請返回查詢頁面。';
@@ -120,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         submitButton.disabled = true;
         submitButton.classList.add('btn-disabled');
-        inputs.forEach(el=>el.disabled = true);
+        inputs.forEach(el => el.disabled = true);
 
         fetch(GAS_URL, {
             method: "POST",

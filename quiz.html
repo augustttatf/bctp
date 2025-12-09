@@ -53,10 +53,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     return;
   }
 
+  // 更新后的 questionType_mapping，只保留相关行为标签
+  const questionTypeMapping = {
+    "2": "肢體推打",
+    "3": "網路散布謠言",
+    "4": "威脅取財",
+    "5": "密集訊息騷擾",
+    "6": "性霸凌"
+  };
+
   try {
     const res = await fetch(QUIZ_JSON_URL);
     const data = await res.json();
-    let filtered = data.questions.filter(q => selectedQuestionTypes.includes(q.questionType));
+    let filtered = data.questions.filter(q => selectedQuestionTypes.includes(q.questionType.toString()));
     if (!filtered.length) {
       quizContainer.innerHTML = '<p>沒有符合所選行為的題目。</p>';
       nextBtn.disabled = true;
@@ -74,7 +83,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     quizQuestions.forEach((q, idx) => {
       const div = document.createElement('div');
       div.className = 'quiz-question';
-      div.innerHTML = `<h3>${idx+1}. ${q.question}</h3>`;
+      div.innerHTML = `<h3>${idx + 1}. ${q.question}</h3>`;
+      
+      // 顯示行為類型（使用更新後的映射）
+      if (questionTypeMapping[q.questionType]) {
+        div.innerHTML += `<p><strong>行為類型：</strong>${questionTypeMapping[q.questionType]}</p>`;
+      }
+
       q.options.forEach((opt, i) => {
         const label = document.createElement('label');
         label.innerHTML = `<input type="radio" name="q${idx}" value="${i}"> ${opt}`;

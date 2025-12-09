@@ -168,55 +168,54 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function updateResults() {
-    resultsArea.innerHTML = '';
-    caseArea.innerHTML = '';
+  resultsArea.innerHTML = '';
+  caseArea.innerHTML = '';
 
-    const checkedBoxes = [...checkboxes].filter(cb => cb.checked);
-    if (checkedBoxes.length === 0) {
-      resultsArea.innerHTML = '<p class="note">請勾選左側行為以查看對應法律後果。</p>';
-      return;
-    }
-
-    const selectedLawTypes = checkedBoxes.map(cb => Number(cb.dataset.type));
-    localStorage.setItem('selectedQuestionTypes', JSON.stringify(selectedLawTypes));
-
-    const grouped = {};
-    lawData.related_statutes_segmented.forEach(law => {
-      const shouldShow = 
-        (law.LawType >= 1 && law.LawType <= 5 && selectedLawTypes.includes(law.LawType)) ||
-        law.LawType === 0;
-
-      if (!shouldShow) return;
-
-      const key = law.LawNum;
-      if (!grouped[key]) {
-        grouped[key] = {
-          LawNum: law.LawNum,
-          LawDetails: law.LawDetails,
-          isSupplementCategory: law.LawType === 1,
-          combinedNotes: []
-        };
-      }
-
-      grouped[key].combinedNotes.push({
-        LawType: law.LawType,
-        RelevanceNote: law.RelevanceNote,
-        ReplenishType: law.ReplenishType
-      });
-    });
-
-    Object.values(grouped).forEach(g => resultsArea.appendChild(createLawCard(g)));
-
-    const caseList = lawData.cases.filter(caseItem =>
-      selectedLawTypes.includes(Number(caseItem.newsType))
-    );
-
-    if (caseList.length === 0) {
-      caseArea.innerHTML = '<p class="note">目前沒有與所選行為相關的公開案例。</p>';
-    } else {
-      caseList.forEach(caseItem => caseArea.appendChild(createCaseCard(caseItem)));
-    }
+  const checkedBoxes = [...checkboxes].filter(cb => cb.checked);
+  if (checkedBoxes.length === 0) {
+    resultsArea.innerHTML = '<p class="note">請勾選左側行為以查看對應法律後果。</p>';
+    return;
   }
+
+  const selectedLawTypes = checkedBoxes.map(cb => Number(cb.dataset.type));
+  localStorage.setItem('selectedQuestionTypes', JSON.stringify(selectedLawTypes));
+
+  const grouped = {};
+  lawData.related_statutes_segmented.forEach(law => {
+    const shouldShow = selectedLawTypes.includes(law.LawType) || law.LawType === 0; // 確保選擇的 LawType 正確篩選出所有相關條文
+
+    if (!shouldShow) return;
+
+    const key = law.LawNum;
+    if (!grouped[key]) {
+      grouped[key] = {
+        LawNum: law.LawNum,
+        LawDetails: law.LawDetails,
+        isSupplementCategory: law.LawType === 1,
+        combinedNotes: []
+      };
+    }
+
+    grouped[key].combinedNotes.push({
+      LawType: law.LawType,
+      RelevanceNote: law.RelevanceNote,
+      ReplenishType: law.ReplenishType
+    });
+  });
+
+  Object.values(grouped).forEach(g => resultsArea.appendChild(createLawCard(g)));
+
+  const caseList = lawData.cases.filter(caseItem =>
+    selectedLawTypes.includes(Number(caseItem.newsType))
+  );
+
+  if (caseList.length === 0) {
+    caseArea.innerHTML = '<p class="note">目前沒有與所選行為相關的公開案例。</p>';
+  } else {
+    caseList.forEach(caseItem => caseArea.appendChild(createCaseCard(caseItem)));
+  }
+}
+
 
   checkboxes.forEach(cb => cb.addEventListener('change', updateResults));
 

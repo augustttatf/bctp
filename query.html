@@ -25,11 +25,11 @@
     <h2>步驟一：行為勾選</h2>
     <p>勾選觸發法律後果的行為，查看對應的法律後果與案例。</p>
     <div class="checkbox-group" id="behavior-filters">
-      <label><input type="checkbox" name="behavior" value="肢體推打" data-type="2"> 肢體推打</label>
-      <label><input type="checkbox" name="behavior" value="網路散布謠言" data-type="3"> 網路散布謠言</label>
-      <label><input type="checkbox" name="behavior" value="威脅取財" data-type="4"> 威脅取財</label>
-      <label><input type="checkbox" name="behavior" value="密集訊息騷擾" data-type="5"> 密集訊息騷擾</label>
-      <label><input type="checkbox" name="behavior" value="性霸凌" data-type="6"> 性霸凌</label>
+      <label><input type="checkbox" name="behavior" value="physical-injury" data-type="2"> 肢體推打</label>
+      <label><input type="checkbox" name="behavior" value="online-slander" data-type="3"> 網路散布謠言</label>
+      <label><input type="checkbox" name="behavior" value="money-extortion" data-type="4"> 威脅取財</label>
+      <label><input type="checkbox" name="behavior" value="psychological-damage" data-type="5"> 密集訊息騷擾</label>
+      <label><input type="checkbox" name="behavior" value="sexual-bullying" data-type="6"> 性霸凌</label>
     </div>
   </div>
 
@@ -54,13 +54,11 @@
 <!-- 底部按鈕 -->
 <div class="button-footer">
 
-  <!-- 返回首頁（改用 button） -->
   <button class="btn-animated btn-gray" onclick="location.href='index.html'">
     <span class="default-text">← 返回首頁</span>
     <span class="hover-text">返回首頁</span>
   </button>
 
-  <!-- 下一步 學習單 -->
   <button id="next-btn" class="btn-animated btn-green">
     <span class="default-text">下一步：測驗 →</span>
     <span class="hover-text">霸凌行為測驗</span>
@@ -117,11 +115,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function getLawTypeLabel(law) {
-    if(law.ReplenishType === 1) return `⚠ ${lawData.LawType_Mapping["1"]} (建議和解/賠償)`;
-    const key = String(law.LawType ?? '');
-    const label = lawData.LawType_Mapping[key] || '相關法條';
-    if (law.LawType === 0) return `🛡️ ${label}`;
-    return `🔗 ${label}`;
+    if (law.ReplenishType === 1) return `⚠ ${lawData.LawType_Mapping["1"]} (建議和解/賠償)`;
+    if (law.LawType === 0) return `🛡️ ${lawData.LawType_Mapping["0"]}`;
+    return `🔗 ${lawData.LawType_Mapping[String(law.LawType)] || '相關法條'}`;
   }
 
   function createLawCard(lawGroup) {
@@ -170,7 +166,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const checkedBoxes = [...checkboxes].filter(cb => cb.checked);
     if (checkedBoxes.length === 0) {
+      /*
       resultsArea.innerHTML = '<p class="note">請勾選左側行為以查看對應法律後果。</p>';
+      */
       return;
     }
 
@@ -180,9 +178,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const grouped = {};
     lawData.related_statutes_segmented.forEach(law => {
       const shouldShow =
-        selectedLawTypes.includes(law.LawType) ||
-        law.LawType === 0 ||
-        law.ReplenishType === 1;
+        law.LawType === 0 ||                  // 通用
+        selectedLawTypes.includes(law.LawType) ||  // 使用者勾選
+        law.ReplenishType === 1;              // 補充
 
       if (!shouldShow) return;
 

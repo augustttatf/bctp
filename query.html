@@ -25,10 +25,11 @@
     <h2>步驟一：行為勾選</h2>
     <p>勾選觸發法律後果的行為，查看對應的法律後果與案例。</p>
     <div class="checkbox-group" id="behavior-filters">
-      <label><input type="checkbox" name="behavior" value="physical-injury" data-type="1" data-name="肢體推打 / 造成輕傷"> 肢體推打 / 造成輕傷</label>
-      <label><input type="checkbox" name="behavior" value="online-slander" data-type="2" data-name="網路散布謠言 / 損害名譽"> 網路散布謠言 / 損害名譽</label>
-      <label><input type="checkbox" name="behavior" value="money-extortion" data-type="3" data-name="威脅取財 / 損毀支付金錢"> 威脅取財 / 損毀支付金錢</label>
-      <label><input type="checkbox" name="behavior" value="psychological-damage" data-type="4" data-name="密集訊息騷擾 / 造成精神壓力"> 密集訊息騷擾 / 造成精神壓力</label>
+      <label><input type="checkbox" name="behavior" value="physical-injury" data-type="2" data-name="肢體推打"> 肢體推打</label>
+      <label><input type="checkbox" name="behavior" value="online-slander" data-type="3" data-name="網路散布謠言"> 網路散布謠言</label>
+      <label><input type="checkbox" name="behavior" value="money-extortion" data-type="4" data-name="威脅取財"> 威脅取財</label>
+      <label><input type="checkbox" name="behavior" value="psychological-damage" data-type="5" data-name="密集訊息騷擾"> 密集訊息騷擾</label>
+      <label><input type="checkbox" name="behavior" value="sexual-bullying" data-type="6" data-name="性霸凌"> 性霸凌</label>
     </div>
   </div>
 
@@ -76,7 +77,7 @@
 </footer>
 
 <script>
-/* === 你原有的 JS，未修改 === */
+/* === 更新後的 JS === */
 
 document.addEventListener('DOMContentLoaded', function() {
   const STATUTES_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/meowmeowmeow.json';
@@ -90,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
   const nextBtn = document.getElementById('next-btn');
 
-  let lawData = { related_statutes_segmented: [], LawType_Mapping: {}, cases: [] };
+  let lawData = { related_statutes_segmented: [], LawType_Mapping: {}, cases: [], NewsType_Mapping: {} };
   const FATAL_ERROR_MESSAGE = '網站錯誤：核心資料載入失敗，即將返回首頁。';
 
   async function loadLawData() {
@@ -106,6 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
       lawData.related_statutes_segmented = statutesData.related_statutes_segmented || [];
       lawData.LawType_Mapping = statutesData.LawType_Mapping || {};
       lawData.cases = Array.isArray(casesData.news) ? casesData.news : [];
+      lawData.NewsType_Mapping = casesData.NewsType_Mapping || {};
 
       initialLoadingStatus.remove();
       mainContentWrapper.style.display = 'block';
@@ -121,8 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const key = String(law.LawType ?? '');
     const label = lawData.LawType_Mapping[key] || '相關法條';
     if (law.LawType === 0) return `🛡️ ${label}`;
-    if (law.LawType === 5) return `🤝 ${label}`;
-    if (law.ReplenishType === 1) return `⚠ ${label} (建議和解/賠償)`;
+    if (law.LawType === 1) return `⚠ ${label}`;
     return `🔗 ${label}`;
   }
 
@@ -182,9 +183,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const grouped = {};
     lawData.related_statutes_segmented.forEach(law => {
       const shouldShow = 
-        (law.LawType >= 1 && law.LawType <= 4 && selectedLawTypes.includes(law.LawType)) ||
-        law.LawType === 0 ||
-        law.LawType === 5;
+        (law.LawType >= 1 && law.LawType <= 5 && selectedLawTypes.includes(law.LawType)) ||
+        law.LawType === 0;
 
       if (!shouldShow) return;
 
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
         grouped[key] = {
           LawNum: law.LawNum,
           LawDetails: law.LawDetails,
-          isSupplementCategory: law.LawType === 5 || law.ReplenishType === 1,
+          isSupplementCategory: law.LawType === 1,
           combinedNotes: []
         };
       }
@@ -208,16 +208,15 @@ document.addEventListener('DOMContentLoaded', function() {
     Object.values(grouped).forEach(g => resultsArea.appendChild(createLawCard(g)));
 
     const caseList = lawData.cases.filter(caseItem =>
-  selectedLawTypes.includes(Number(caseItem.newsType))
-);
+      selectedLawTypes.includes(Number(caseItem.newsType))
+    );
 
-  if (caseList.length === 0) {
+    if (caseList.length === 0) {
       caseArea.innerHTML = '<p class="note">目前沒有與所選行為相關的公開案例。</p>';
     } else {
       caseList.forEach(caseItem => caseArea.appendChild(createCaseCard(caseItem)));
     }
-  
- }
+  }
 
   checkboxes.forEach(cb => cb.addEventListener('change', updateResults));
 

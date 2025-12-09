@@ -1,236 +1,89 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BCTP - 行為後果查詢</title>
-<link rel="stylesheet" href="style.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>霸凌行為測驗</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-<div class="container">
-<h1>BCTP</h1>
-<p>霸凌行為後果透明化資訊平台</p>
-</div>
-</header>
+  <header>
+    <h1>霸凌行為測驗</h1>
+  </header>
 
-<main>
-<div class="container">
-<div id="main-content-wrapper" style="display:none;">
-<div class="main-layout-grid">
+  <main>
+    <!-- 顯示選擇的行為類型 -->
+    <section>
+      <h2>選擇的行為類型</h2>
+      <p id="law-types">正在載入選擇的行為類型...</p>
+    </section>
 
-  <!-- 左側 勾選區 -->
-  <div class="filter-panel">
-    <h2>步驟一：行為勾選</h2>
-    <p>勾選觸發法律後果的行為，查看對應的法律後果與案例。</p>
-    <div class="checkbox-group" id="behavior-filters">
-      <label><input type="checkbox" name="behavior" value="physical-injury" data-type="2" data-name="肢體推打"> 肢體推打</label>
-      <label><input type="checkbox" name="behavior" value="online-slander" data-type="3" data-name="網路散布謠言"> 網路散布謠言</label>
-      <label><input type="checkbox" name="behavior" value="money-extortion" data-type="4" data-name="威脅取財"> 威脅取財</label>
-      <label><input type="checkbox" name="behavior" value="psychological-damage" data-type="5" data-name="密集訊息騷擾"> 密集訊息騷擾</label>
-      <label><input type="checkbox" name="behavior" value="sexual-bullying" data-type="6" data-name="性霸凌"> 性霸凌</label>
-    </div>
-  </div>
+    <!-- 顯示相關案例 -->
+    <section>
+      <h2>相關案例</h2>
+      <div id="case-list">
+        <p>正在載入相關案例...</p>
+      </div>
+    </section>
 
-  <!-- 中間 法條區 -->
-  <div class="results-panel">
-    <h2>步驟二：後果警示 (即時互動)</h2>
-    <p>請在上方勾選行為標籤，結果將即時顯示相關法律條文。</p>
-    <div id="results-area">
-      <p id="initial-loading-status" class="loading-message" style="text-align:center; font-size:1.1em;">載入法律資料中...</p>
-    </div>
-  </div>
+    <!-- 開始測驗按鈕 -->
+    <button id="start-quiz-btn">開始測驗</button>
+  </main>
 
-  <!-- 右側 案例區 -->
-  <div class="case-panel">
-    <h2>步驟三：相關案例</h2>
-    <p>請在上方勾選行為標籤，查看相關新聞案例。</p>
-    <div id="case-area"></div>
-  </div>
+  <footer>
+    <p>BCTP - 霸凌行為後果透明化資訊平台</p>
+  </footer>
 
-</div>
-
-<!-- 底部按鈕 -->
-<div class="button-footer">
-
-  <!-- 返回首頁（改用 button） -->
-  <button class="btn-animated btn-gray" onclick="location.href='index.html'">
-    <span class="default-text">← 返回首頁</span>
-    <span class="hover-text">返回首頁</span>
-  </button>
-
-  <!-- 下一步 學習單 -->
-  <button id="next-btn" class="btn-animated btn-green">
-    <span class="default-text">下一步：測驗 →</span>
-    <span class="hover-text">霸凌行為測驗</span>
-  </button>
-
-</div>
-
-</div>
-</div>
-</main>
-
-<footer>
-<p>BCTP (Bullying Consequence Transparency Platform)</p>
-</footer>
-
-<script>
-/* === 更新後的 JS === */
-
-document.addEventListener('DOMContentLoaded', function() {
-  const STATUTES_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/meowmeowmeow.json';
-  const CASES_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/refs/heads/main/newjeans.json';
-
-  const mainContentWrapper = document.getElementById('main-content-wrapper');
-  const initialLoadingStatus = document.getElementById('initial-loading-status');
-  const filterContainer = document.getElementById('behavior-filters');
-  const resultsArea = document.getElementById('results-area');
-  const caseArea = document.getElementById('case-area');
-  const checkboxes = filterContainer.querySelectorAll('input[type="checkbox"]');
-  const nextBtn = document.getElementById('next-btn');
-
-  let lawData = { related_statutes_segmented: [], LawType_Mapping: {}, cases: [], NewsType_Mapping: {} };
-  const FATAL_ERROR_MESSAGE = '網站錯誤：核心資料載入失敗，即將返回首頁。';
-
-  async function loadLawData() {
-    try {
-      const [statutesResponse, casesResponse] = await Promise.all([
-        fetch(STATUTES_URL),
-        fetch(CASES_URL)
-      ]);
-
-      const statutesData = await statutesResponse.json();
-      const casesData = await casesResponse.json();
-
-      lawData.related_statutes_segmented = statutesData.related_statutes_segmented || [];
-      lawData.LawType_Mapping = statutesData.LawType_Mapping || {};
-      lawData.cases = Array.isArray(casesData.news) ? casesData.news : [];
-      lawData.NewsType_Mapping = casesData.NewsType_Mapping || {};
-
-      initialLoadingStatus.remove();
-      mainContentWrapper.style.display = 'block';
-
-      updateResults();
-    } catch (error) {
-      alert(FATAL_ERROR_MESSAGE);
-      window.location.href = 'index.html';
-    }
-  }
-
-  function getLawTypeLabel(law) {
-    const key = String(law.LawType ?? '');
-    const label = lawData.LawType_Mapping[key] || '相關法條';
-    if (law.LawType === 0) return `🛡️ ${label}`;
-    if (law.LawType === 1) return `⚠ ${label}`;
-    return `🔗 ${label}`;
-  }
-
-  function createLawCard(lawGroup) {
-    const card = document.createElement('div');
-    card.className = `law-card ${lawGroup.isSupplementCategory ? 'replenish-content' : ''}`;
-
-    let html = `<h3 class="law-num-title">${lawGroup.LawNum}</h3>`;
-    html += `<p class="law-details"><strong>條文詳情：</strong> ${lawGroup.LawDetails}</p>`;
-
-    html += `<ul class="combined-relevance-list">`;
-    lawGroup.combinedNotes.forEach(note => {
-      html += `<li><strong>${getLawTypeLabel(note)}：</strong> ${note.RelevanceNote}</li>`;
-    });
-    html += `</ul>`;
-
-    card.innerHTML = html;
-    return card;
-  }
-
-  function createCaseCard(caseItem) {
-    const card = document.createElement('div');
-    card.className = 'case-card';
-    let html = `<h4 class="case-title">${caseItem.newsTitle || '無案例標題'}</h4>`;
-    html += `<p class="case-content"><strong>事件經過：</strong> ${caseItem.newscontent || '無事件經過'}</p>`;
-    if (caseItem.source) html += `<p class="case-source"><strong>新聞來源：</strong> <a href="${caseItem.source}" target="_blank">點擊查看</a></p>`;
-
-    if (caseItem.videoconnection) {
-      const youtubeMatch = caseItem.videoconnection.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\?v=)|youtu\.be\/)([\w-]+)/);
-      const vimeoMatch = caseItem.videoconnection.match(/(?:vimeo\.com\/)(\d+)/);
-      if (youtubeMatch && youtubeMatch[1]) {
-        html += `<div class="video-container"><iframe src="https://www.youtube.com/embed/${youtubeMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
-      } else if (vimeoMatch && vimeoMatch[1]) {
-        html += `<div class="video-container"><iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
-      } else {
-        html += `<p class="case-video"><strong>相關影片：</strong> <a href="${caseItem.videoconnection}" target="_blank">點擊查看影片</a></p>`;
-      }
-    }
-
-    card.innerHTML = html;
-    return card;
-  }
-
-  function updateResults() {
-  resultsArea.innerHTML = '';
-  caseArea.innerHTML = '';
-
-  const checkedBoxes = [...checkboxes].filter(cb => cb.checked);
-  if (checkedBoxes.length === 0) {
-    resultsArea.innerHTML = '<p class="note">請勾選左側行為以查看對應法律後果。</p>';
-    return;
-  }
-
-  const selectedLawTypes = checkedBoxes.map(cb => Number(cb.dataset.type));
-  localStorage.setItem('selectedQuestionTypes', JSON.stringify(selectedLawTypes));
-
-  const grouped = {};
-  lawData.related_statutes_segmented.forEach(law => {
-    const shouldShow = selectedLawTypes.includes(law.LawType) || law.LawType === 0; // 確保選擇的 LawType 正確篩選出所有相關條文
-
-    if (!shouldShow) return;
-
-    const key = law.LawNum;
-    if (!grouped[key]) {
-      grouped[key] = {
-        LawNum: law.LawNum,
-        LawDetails: law.LawDetails,
-        isSupplementCategory: law.LawType === 1,
-        combinedNotes: []
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const lawTypesMapping = {
+        2: "肢體推打",
+        3: "網路散布謠言",
+        4: "威脅取財",
+        5: "密集訊息騷擾",
+        6: "性霸凌"
       };
-    }
 
-    grouped[key].combinedNotes.push({
-      LawType: law.LawType,
-      RelevanceNote: law.RelevanceNote,
-      ReplenishType: law.ReplenishType
+      // 從 localStorage 讀取選擇的行為類型和案例
+      const selectedLawTypes = JSON.parse(localStorage.getItem('selectedLawTypes')) || [];
+      const selectedCases = JSON.parse(localStorage.getItem('selectedCases')) || [];
+
+      // 顯示選擇的行為類型
+      if (selectedLawTypes.length > 0) {
+        const lawTypesLabel = selectedLawTypes.map(type => lawTypesMapping[type] || '未知類型').join(', ');
+        document.getElementById('law-types').innerText = `選擇的行為類型：${lawTypesLabel}`;
+      } else {
+        document.getElementById('law-types').innerText = '未選擇任何行為類型';
+      }
+
+      // 顯示相關案例
+      if (selectedCases.length > 0) {
+        const caseListHtml = selectedCases.map(caseItem => {
+          return `
+            <div class="case-card">
+              <h4 class="case-title">${caseItem.newsTitle}</h4>
+              <p class="case-content">${caseItem.newscontent}</p>
+              <a href="${caseItem.source}" target="_blank">查看來源</a>
+              ${caseItem.videoconnection ? `<a href="${caseItem.videoconnection}" target="_blank">查看相關影片</a>` : ''}
+            </div>
+          `;
+        }).join('');
+        document.getElementById('case-list').innerHTML = caseListHtml;
+      } else {
+        document.getElementById('case-list').innerHTML = '<p>目前沒有相關案例。</p>';
+      }
+
+      // 開始測驗按鈕
+      document.getElementById('start-quiz-btn').addEventListener('click', function() {
+        if (selectedLawTypes.length === 0) {
+          alert('請先選擇至少一個行為類型！');
+          return;
+        }
+        // 將用戶帶到測驗頁面，可以根據需求跳轉到 quiz
+        window.location.href = 'quiz.html';  // 這裡的 quiz.html 可以是你測驗頁面的地址
+      });
     });
-  });
-
-  Object.values(grouped).forEach(g => resultsArea.appendChild(createLawCard(g)));
-
-  const caseList = lawData.cases.filter(caseItem =>
-    selectedLawTypes.includes(Number(caseItem.newsType))
-  );
-
-  if (caseList.length === 0) {
-    caseArea.innerHTML = '<p class="note">目前沒有與所選行為相關的公開案例。</p>';
-  } else {
-    caseList.forEach(caseItem => caseArea.appendChild(createCaseCard(caseItem)));
-  }
-}
-
-
-  checkboxes.forEach(cb => cb.addEventListener('change', updateResults));
-
-  nextBtn.addEventListener('click', () => {
-    const checked = [...checkboxes].filter(cb => cb.checked);
-    if (checked.length === 0) {
-      alert('請至少勾選一個行為！');
-      return;
-    }
-    window.location.href = 'quiz.html';
-  });
-
-  loadLawData();
-});
-</script>
+  </script>
 
 </body>
 </html>

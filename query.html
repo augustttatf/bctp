@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
         grouped[key] = {
           LawNum: law.LawNum,
           LawDetails: law.LawDetails,
-          isSupplementCategory: law.ReplenishType === 1,
+          isSupplementCategory: law.LawType === 1 || law.ReplenishType === 1,
           combinedNotes: []
         };
       }

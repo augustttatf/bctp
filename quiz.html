@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BCTP - 霸凌行為測驗（測試版）</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
 <style>
   body { font-family: Arial, sans-serif; background:#f5f5f5; }
   .container { max-width: 900px; margin: auto; padding: 20px; }
@@ -137,7 +138,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         questionTypes: selectedQuestionTypes,
         answers
       }));
-      window.location.href = '4form.html';
+      window.location.href = 'form.html';
     } else {
       // 未達標 → 提示 + 重新洗牌
       alert(`未達 60 分，分數：${score} 分 → 題目將重新洗牌`);

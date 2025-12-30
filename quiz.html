@@ -24,7 +24,7 @@
 
 <div class="container">
   <h1>BCTP 霸凌行為測驗（測試版）</h1>
-  <p>⚠ 測試用途：每題顯示正確答案，不影響原本回傳值和計分</p>
+  <p>⚠ 測試用途：每題顯示正確答案，需達 60 分才能進入下一頁</p>
 
   <div id="quiz-container"></div>
   <button id="next-btn">下一步：反思表單 →</button>
@@ -95,7 +95,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       const div = document.createElement('div');
       div.className = 'quiz-question';
 
-      // 顯示題目 + 正確答案
       div.innerHTML = `
         <h3>
           ${idx + 1}. ${q.question}
@@ -103,7 +102,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         </h3>
       `;
 
-      // 選項隨機排序
       const options = q.options.slice();
       options.sort(() => 0.5 - Math.random());
 
@@ -130,18 +128,25 @@ document.addEventListener('DOMContentLoaded', async function () {
       return selected ? Number(selected.value) : null;
     });
 
-    // 顯示分數（不管多少分）
     scoreBox.textContent = `你的分數：${score} 分`;
 
-    // 回傳值完全不變
-    localStorage.setItem('quizAnswers', JSON.stringify({
-      score,
-      questionTypes: selectedQuestionTypes,
-      answers
-    }));
-
-    // 一律換頁
-    window.location.href = 'form.html';
+    if (score >= 60) {
+      // 達標 → 存回傳值並換頁
+      localStorage.setItem('quizAnswers', JSON.stringify({
+        score,
+        questionTypes: selectedQuestionTypes,
+        answers
+      }));
+      window.location.href = '4form.html';
+    } else {
+      // 未達標 → 提示 + 重新洗牌
+      alert(`未達 60 分，分數：${score} 分 → 題目將重新洗牌`);
+      scoreBox.textContent = `分數：${score} 分，請重新答題`;
+      // 重新洗牌題目和選項
+      quizQuestions.forEach(q => q.options.sort(() => 0.5 - Math.random()));
+      quizQuestions.sort(() => 0.5 - Math.random());
+      renderQuiz();
+    }
   });
 });
 </script>

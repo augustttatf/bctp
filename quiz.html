@@ -3,42 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BCTP - 霸凌行為測驗</title>
-<link rel="stylesheet" href="style.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+<title>BCTP - 霸凌行為測驗 beta</title>
+
 <style>
-  .quiz-question { margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-  #score-box { margin-top: 20px; font-size: 1.2em; font-weight: bold; }
+  body { font-family: Arial, sans-serif; background:#f5f5f5; }
+  .container { max-width: 900px; margin:auto; padding:20px; }
+  .quiz-question {
+    background:#fff;
+    border:1px solid #ccc;
+    border-radius:6px;
+    padding:15px;
+    margin-bottom:20px;
+  }
+  .answer {
+    color:#c00;
+    font-size:0.9em;
+  }
+  #score-box {
+    margin-top:20px;
+    font-size:1.2em;
+    font-weight:bold;
+  }
 </style>
 </head>
+
 <body>
-<header>
-  <div class="container">
-    <h1>BCTP 測驗</h1>
-    <p>請回答以下問題，達 60 分才能進入反思表單。</p>
-  </div>
-</header>
 
-<main>
-  <div class="container">
-    <div id="quiz-container"></div>
+<div class="container">
+  <h1>BCTP 霸凌行為測驗beta</h1>
 
-    <button id="next-btn" class="btn-animated btn-green">
-      <span class="default-text">下一步：反思表單 →</span>
-      <span class="hover-text">提交測驗</span>
-    </button>
+  <div id="quiz-container"></div>
 
-    <div id="score-box"></div>
-  </div>
-</main>
+  <button id="next-btn">提交測驗</button>
 
-<footer>
-  <p>BCTP (Bullying Consequence Transparency Platform)</p>
-</footer>
+  <div id="score-box"></div>
+</div>
 
 <script>
-document.addEventListener('DOMContentLoaded', async function() {
-  const QUIZ_JSON_URL = 'https://raw.githubusercontent.com/augustttatf/bctp/main/blablabla.json';  // 用你提供的 JSON 連結
+document.addEventListener('DOMContentLoaded', async function () {
+
+  const QUIZ_JSON_URL =
+    'https://raw.githubusercontent.com/augustttatf/bctp/main/blablabla.json';
+
   const quizContainer = document.getElementById('quiz-container');
   const nextBtn = document.getElementById('next-btn');
   const scoreBox = document.getElementById('score-box');
@@ -46,113 +52,98 @@ document.addEventListener('DOMContentLoaded', async function() {
   let quizQuestions = [];
   let score = 0;
 
-  // 從 localStorage 讀取選擇的行為類型
-  const selectedQuestionTypes = JSON.parse(localStorage.getItem('selectedQuestionTypes') || '[]');
+  const selectedQuestionTypes =
+    JSON.parse(localStorage.getItem('selectedQuestionTypes') || '[]');
+
   if (!selectedQuestionTypes.length) {
-    alert('未選擇行為類型，將返回行為勾選頁');
+    alert('未選擇行為類型，返回上一頁');
     window.location.href = 'query.html';
     return;
   }
 
-  try {
-    const res = await fetch(QUIZ_JSON_URL);
-    if (!res.ok) throw new Error(`Failed to fetch JSON: ${res.status} ${res.statusText}`);
-    const data = await res.json();
+  const res = await fetch(QUIZ_JSON_URL);
+  const data = await res.json();
 
-    // 將題目依 questionType 分組
-    const groupedByType = {};
-    selectedQuestionTypes.forEach(type => {
-      groupedByType[type] = data.questions.filter(q => q.questionType === type);
-    });
+  const groupedByType = {};
+  selectedQuestionTypes.forEach(type => {
+    groupedByType[type] =
+      data.questions.filter(q => q.questionType === type);
+  });
 
-    // 平均分配題目，每類型題目數量
-    const totalQuestions = 10;
-    const typeCount = selectedQuestionTypes.length;
-    const baseCount = Math.floor(totalQuestions / typeCount);
-    let remainder = totalQuestions % typeCount;
+  const totalQuestions = 10;
+  const baseCount = Math.floor(totalQuestions / selectedQuestionTypes.length);
+  let remainder = totalQuestions % selectedQuestionTypes.length;
 
-    // 抽題
-    quizQuestions = [];
-    selectedQuestionTypes.forEach(type => {
-      let typeQuestions = groupedByType[type].slice(); // 複製陣列
-      // 隨機排序
-      typeQuestions.sort(() => 0.5 - Math.random());
-      let count = baseCount + (remainder > 0 ? 1 : 0);
-      remainder--;
-      quizQuestions.push(...typeQuestions.slice(0, count));
-    });
+  quizQuestions = [];
+  selectedQuestionTypes.forEach(type => {
+    let arr = groupedByType[type].slice();
+    arr.sort(() => 0.5 - Math.random());
+    let count = baseCount + (remainder > 0 ? 1 : 0);
+    remainder--;
+    quizQuestions.push(...arr.slice(0, count));
+  });
 
-    // 若總題數不足 10，從各類型補足
-    if (quizQuestions.length < totalQuestions) {
-      let shortage = totalQuestions - quizQuestions.length;
-      const extraPool = [];
-      Object.values(groupedByType).forEach(arr => extraPool.push(...arr));
-      extraPool.sort(() => 0.5 - Math.random());
-      quizQuestions.push(...extraPool.slice(0, shortage));
-    }
-
-    // 將題目打亂順序
-    quizQuestions.sort(() => 0.5 - Math.random());
-
-  } catch (err) {
-    console.error('Error loading quiz data:', err);
-    alert(`題庫載入失敗，請稍後再試。詳細錯誤：${err.message}`);
-    return;
+  if (quizQuestions.length < totalQuestions) {
+    const pool = [];
+    Object.values(groupedByType).forEach(a => pool.push(...a));
+    pool.sort(() => 0.5 - Math.random());
+    quizQuestions.push(...pool.slice(0, totalQuestions - quizQuestions.length));
   }
 
-  // 渲染測驗題目
+  quizQuestions.sort(() => 0.5 - Math.random());
+
   function renderQuiz() {
     quizContainer.innerHTML = '';
     quizQuestions.forEach((q, idx) => {
       const div = document.createElement('div');
       div.className = 'quiz-question';
-      div.innerHTML = `<h3>${idx+1}. ${q.question}</h3>`;
 
-      // 選項隨機排序
-      const options = q.options.slice();
-      options.sort(() => 0.5 - Math.random());
+      div.innerHTML = `
+        <h3>
+          ${idx + 1}. ${q.question}
+          <span class="answer">, answer=${q.options[q.correctAnswerIndex]}</span>
+        </h3>
+      `;
 
-      options.forEach((opt, i) => {
-        const label = document.createElement('label');
-        label.innerHTML = `<input type="radio" name="q${idx}" value="${q.options.indexOf(opt)}"> ${opt}`;
-        div.appendChild(label);
-        div.appendChild(document.createElement('br'));
+      q.options.forEach((opt, i) => {
+        div.innerHTML += `
+          <label>
+            <input type="radio" name="q${idx}" value="${i}">
+            ${opt}
+          </label><br>
+        `;
       });
 
       quizContainer.appendChild(div);
     });
-    scoreBox.textContent = '';
   }
 
   renderQuiz();
 
-  // 下一步按鈕事件
-  nextBtn.addEventListener('click', function() {
+  nextBtn.addEventListener('click', function () {
     score = 0;
-    quizQuestions.forEach((q, idx) => {
-      const selected = quizContainer.querySelector(`input[name="q${idx}"]:checked`);
-      if (selected && Number(selected.value) === q.correctAnswerIndex) score += 10;
+
+    const answers = quizQuestions.map((q, idx) => {
+      const selected =
+        quizContainer.querySelector(\`input[name="q\${idx}"]:checked\`);
+      if (selected && Number(selected.value) === q.correctAnswerIndex) {
+        score += 10;
+      }
+      return selected ? Number(selected.value) : null;
     });
 
-    if (score >= 60) {
-      localStorage.setItem('quizAnswers', JSON.stringify({
-        questionTypes: selectedQuestionTypes,
-        answers: quizQuestions.map((q, idx) => {
-          const selected = quizContainer.querySelector(`input[name="q${idx}"]:checked`);
-          return selected ? Number(selected.value) : null;
-        })
-      }));
-      window.location.href = 'form.html';
-    } else {
-      alert(`未達 60 分，分數：${score} 分 → 題目將重新洗牌`);
-      scoreBox.textContent = `分數：${score} 分，請重新答題`;
-      score = 0;
-      // 重新排序題目及選項
-      quizQuestions.forEach(q => q.options.sort(() => 0.5 - Math.random()));
-      quizQuestions.sort(() => 0.5 - Math.random());
-      renderQuiz();
-    }
+    scoreBox.textContent = `你的分數：${score} 分`;
+
+    localStorage.setItem('quizAnswers', JSON.stringify({
+      score,
+      questionTypes: selectedQuestionTypes,
+      answers
+    }));
+
+    // ⭐ 不管幾分，一定換頁
+    window.location.href = 'form.html';
   });
+
 });
 </script>
 

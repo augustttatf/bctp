@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         questionTypes: selectedQuestionTypes,
         answers
       }));
-      window.location.href = '4form.html';
+      window.location.href = 'form.html';
     } else {
       alert(`未達 60 分（${score} 分），請重新作答`);
       quizQuestions.forEach(q => q.options.sort(() => 0.5 - Math.random()));
